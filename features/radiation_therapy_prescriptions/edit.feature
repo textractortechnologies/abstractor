@@ -8,8 +8,6 @@ Feature: Editing radiation therapy prescription
       | Site                                    |
       | Vague blather.                          |
     When I go to the last radiation therapy prescription edit page
-    And I choose "Rejected" within the first ".has_laterality .edit_abstractor_suggestion"
-    And I wait for the ajax request to finish
     And I click on ".edit_link" within the first ".has_laterality"
     And I choose "left"
     Then the "left" checkbox within ".has_laterality" should be checked
@@ -19,7 +17,7 @@ Feature: Editing radiation therapy prescription
     And I click on ".edit_link" within the first ".has_laterality"
     And I wait for the ajax request to finish
     Then the "left" checkbox within ".has_laterality" should be checked
-    When I check "input#abstractor_abstraction_not_applicable" within the first ".has_laterality"
+    When I check "not applicable" within the first ".has_laterality"
     Then the "left" checkbox within ".has_laterality" should not be checked
     When I press "Save"
     And I go to the last radiation therapy prescription edit page
@@ -44,7 +42,7 @@ Feature: Editing radiation therapy prescription
     When I go to the last radiation therapy prescription edit page
     And I should see "Delete group"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
-    And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain selector ".edit_link"
+    And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain selector ".edit_link"
     When I do not confirm link "Delete group"
     Then I should see 2 ".abstractor_abstraction_group" within ".abstractor_subject_groups"
     When I confirm link "Delete group"
@@ -52,7 +50,9 @@ Feature: Editing radiation therapy prescription
     Then I should see 1 ".abstractor_abstraction_group" within ".abstractor_subject_groups"
     Then I should see "Add group"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
-    And I should not see an ".edit_link" element
+    And I should see "edit" anywhere within ".has_anatomical_location"
+    And I should see "edit" anywhere within ".has_laterality"
+    And I should see "edit" anywhere within ".has_radiation_therapy_prescription_date"
 
   @javascript
   Scenario: Viewing abstraction groups with no suggestions
@@ -63,8 +63,8 @@ Feature: Editing radiation therapy prescription
     When I go to the last radiation therapy prescription edit page
     Then I should see "Anatomical location"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
-    And the "Needs review" radio button within the first ".has_anatomical_location" should be checked
-    And I should not see an ".edit_link" element
+    And the "Accepted" checkbox within ".has_anatomical_location" should not be checked
+    And I should see "edit" anywhere within ".has_anatomical_location"
     And I should see "Add group"
     And I should not see "Delete group"
     And ".abstractor_suggestion_values" in the first ".has_anatomical_location" should contain text "unknown"
@@ -78,8 +78,8 @@ Feature: Editing radiation therapy prescription
     When I go to the last radiation therapy prescription edit page
     Then I should see "Anatomical location"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
-    And the "Needs review" radio button within the last ".has_anatomical_location" should be checked
-    And I should not see an ".edit_link" element
+    And the "Accepted" checkbox within ".has_anatomical_location" should not be checked
+    And I should see "edit" anywhere within ".has_anatomical_location"
     And I should see "Add group"
     And I should not see "Delete group"
     And ".abstractor_suggestion_values" in the first ".has_anatomical_location" should contain text "temporal lobe"
@@ -105,8 +105,6 @@ Feature: Editing radiation therapy prescription
       | Site                                    |
       | Vague blather.                          |
     When I go to the last radiation therapy prescription edit page
-    And I choose "Rejected" within the first ".has_radiation_therapy_prescription_date"
-    And I wait for the ajax request to finish
     And I click on ".edit_link" within the first ".has_radiation_therapy_prescription_date"
     And I fill in "abstractor_abstraction_value" with "2014-06-03" within ".has_radiation_therapy_prescription_date"
     And I press "Save"
@@ -120,24 +118,24 @@ Feature: Editing radiation therapy prescription
       | Site                                    |
       | Vague blather.                          |
     When I go to the last radiation therapy prescription edit page
-    Then the "Needs review" radio button within the first ".has_anatomical_location" should be checked
-    And the "Needs review" radio button within the first ".has_laterality" should be checked
-    And the "Needs review" radio button within the first ".has_radiation_therapy_prescription_date" should be checked
+    Then the "Accepted" checkbox within ".has_anatomical_location" should not be checked
+    Then the "Accepted" checkbox within ".has_laterality" should not be checked
+    Then the "Accepted" checkbox within ".has_radiation_therapy_prescription_date" should not be checked
     And ".abstractor_abstraction_value" in the first ".has_anatomical_location" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".has_laterality" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should contain text "[Not set]"
     When I do not confirm link "Not applicable group" in the first ".abstractor_abstraction_group"
-    Then the "Rejected" radio button within ".has_anatomical_location" should not be checked
-    And the "Rejected" radio button within ".has_laterality" should not be checked
-    And the "Rejected" radio button within ".has_radiation_therapy_prescription_date" should not be checked
+    Then the "Accepted" checkbox within ".has_anatomical_location" should not be checked
+    And the "Accepted" checkbox within ".has_laterality" should not be checked
+    And the "Accepted" checkbox within ".has_radiation_therapy_prescription_date" should not be checked
     And ".abstractor_abstraction_value" in the first ".has_anatomical_location" should not contain text "not applicable"
     And ".abstractor_abstraction_value" in the first ".has_laterality" should not contain text "not applicable"
     And ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should not contain text "not applicable"
     When I confirm link "Not applicable group" in the first ".abstractor_abstraction_group"
     And I wait for the ajax request to finish
-    Then the "Rejected" radio button within the first ".has_anatomical_location" should be checked
-    And the "Rejected" radio button within the first ".has_laterality" should be checked
-    And the "Rejected" radio button within the first ".has_radiation_therapy_prescription_date" should be checked
+    Then the "Accepted" checkbox within ".has_anatomical_location" should not be checked
+    And the "Accepted" checkbox within ".has_laterality" should not be checked
+    And the "Accepted" checkbox within ".has_radiation_therapy_prescription_date" should not be checked
     And ".abstractor_abstraction_value" in the first ".has_anatomical_location" should contain text "not applicable"
     And ".abstractor_abstraction_value" in the first ".has_laterality" should contain text "not applicable"
     And ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should contain text "not applicable"
@@ -149,24 +147,24 @@ Feature: Editing radiation therapy prescription
       | Site                                    |
       | Vague blather.                          |
     When I go to the last radiation therapy prescription edit page
-    Then the "Needs review" radio button within the first ".has_anatomical_location" should be checked
-    And the "Needs review" radio button within the first ".has_laterality" should be checked
-    And the "Needs review" radio button within the first ".has_radiation_therapy_prescription_date" should be checked
+    Then the "Accepted" checkbox within ".has_anatomical_location" should not be checked
+    Then the "Accepted" checkbox within ".has_laterality" should not be checked
+    Then the "Accepted" checkbox within ".has_radiation_therapy_prescription_date" should not be checked
     And ".abstractor_abstraction_value" in the first ".has_anatomical_location" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".has_laterality" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should contain text "[Not set]"
     When I do not confirm link "Unknown group" in the first ".abstractor_abstraction_group"
-    Then the "Accepted" radio button within ".has_anatomical_location" should not be checked
-    And the "Accepted" radio button within ".has_laterality" should not be checked
-    And the "Accepted" radio button within ".has_radiation_therapy_prescription_date" should not be checked
+    Then the "Accepted" checkbox within ".has_anatomical_location" should not be checked
+    And the "Accepted" checkbox within ".has_laterality" should not be checked
+    And the "Accepted" checkbox within ".has_radiation_therapy_prescription_date" should not be checked
     And ".abstractor_abstraction_value" in the first ".has_anatomical_location" should not contain text "unknown"
     And ".abstractor_abstraction_value" in the first ".has_laterality" should not contain text "unknown"
     And ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should not contain text "unknown"
     When I confirm link "Unknown group" in the first ".abstractor_abstraction_group"
     And I wait for the ajax request to finish
-    Then the "Accepted" radio button within the first ".has_anatomical_location" should be checked
-    And the "Accepted" radio button within the first ".has_laterality" should be checked
-    And the "Accepted" radio button within the first ".has_radiation_therapy_prescription_date" should be checked
+    Then the "Accepted" checkbox within ".has_anatomical_location" should be checked
+    And the "Accepted" checkbox within ".has_laterality" should be checked
+    And the "Accepted" checkbox within ".has_radiation_therapy_prescription_date" should be checked
     And ".abstractor_abstraction_value" in the first ".has_anatomical_location" should contain text "unknown"
     And ".abstractor_abstraction_value" in the first ".has_laterality" should contain text "unknown"
     And ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should contain text "unknown"

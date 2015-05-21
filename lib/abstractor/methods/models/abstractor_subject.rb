@@ -312,10 +312,9 @@ module Abstractor
             end
             abstractor_suggestion = abstractor_abstraction.detect_abstractor_suggestion(suggested_value, unknown, not_applicable)
             if !abstractor_suggestion
-              abstractor_suggestion_status_needs_review = Abstractor::AbstractorSuggestionStatus.where(name: 'Needs review').first
               abstractor_suggestion = Abstractor::AbstractorSuggestion.create(
                                                                   abstractor_abstraction: abstractor_abstraction,
-                                                                  abstractor_suggestion_status: abstractor_suggestion_status_needs_review,
+                                                                  accepted: nil,
                                                                   suggested_value: suggested_value,
                                                                   unknown: unknown,
                                                                   not_applicable: not_applicable

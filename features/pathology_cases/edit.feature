@@ -13,8 +13,6 @@ Feature: Editing pathology case
       |      101        | OR-124              |     1      |
       |      102        | OR-125              |     2      |
     And I go to the last pathology case edit page
-    And I choose "Rejected" within the first ".has_surgery .edit_abstractor_suggestion"
-    And I wait for the ajax request to finish
     And I click on ".edit_link" within the first ".abstractor_abstraction"
     And I fill in "input.combobox" autocompleter within the first ".abstractor_abstraction" with "OR-124"
     And I press "Save"

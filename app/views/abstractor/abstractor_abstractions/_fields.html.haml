@@ -2,19 +2,16 @@
 - unless abstractor_abstraction.blank?
   - abstractor_abstraction_schema   = abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema
   - abstractor_suggestions          = abstractor_abstraction.abstractor_suggestions.order(:id)
-  - rejected_suggestions            = abstractor_suggestions.joins(:abstractor_suggestion_status).where(:abstractor_suggestion_statuses => {:name => 'Rejected'})
+  - rejected_suggestions            = abstractor_suggestions.where(accepted: false)
   - about = abstractor_abstraction.about
 
   .abstractor_abstraction_display
     .abstractor_abstraction_schema_name
       = abstractor_abstraction_schema.display_name
     .abstractor_abstraction_value
-      - if rejected_suggestions.length == abstractor_suggestions.length
-        %span.editable_abstraction
-          = abstractor_abstraction.display_value
-        = link_to 'edit', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_abstraction_path(abstractor_abstraction)), :class=>'icon_link edit_link'
-      - else
+      %span.editable_abstraction
         = abstractor_abstraction.display_value
+      = link_to 'edit', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_abstraction_path(abstractor_abstraction)), :class=>'icon_link edit_link'
       - versions = abstractor_abstraction.versions.sort{|a,b| b.created_at <=> a.created_at}.reject{|v| v.reify.blank? || v.reify.display_value =~ /not set/i}
       = render partial: 'abstractor/abstractor_abstractions/abstraction_history', locals: { versions: versions }
     .abstractor_suggestions
@@ -45,14 +42,9 @@
                         .explanation_text
                           = abstractor_suggestion_source.custom_explanation
               .abstractor_suggestion_status
-                %ul.abstractor_suggestion_status_group
-                  - values = Abstractor::AbstractorSuggestionStatus.all.sort_by(&:name).map{|s| [s.name, s.id] }
-                  -  values.each do |value|
-                    - id = "abstractor_suggestion_abstractor_suggestion_status_id_#{value.last}_#{abstractor_suggestion.id}"
-                    %li
-                      = f.radio_button :abstractor_suggestion_status_id, value.last, id: id, class: 'abstractor_suggestion_status_selection'
-                      = f.label :abstractor_suggestion_status_id, value.first, value: value.last, for: id, class: "abstractor_suggestion_status_selection_label #{f.object.abstractor_suggestion_status_id == value.last ? 'abstractor_suggestion_status_selection_label_active' : 'abstractor_suggestion_status_selection_label_inactive' }"
-                = f.radio_button :abstractor_suggestion_status_id, '', { style: 'display:none;' }
+                - id = "abstractor_suggestion_accepted_#{abstractor_suggestion.id}"
+                = f.check_box :accepted, id: id, class: 'abstractor_suggestion_status_selection'
+                = f.label :accepted, for: id
       - else
         - abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name == 'nlp suggestion' }.each do |abstractor_abstraction_source|
           - abstractor_abstraction_source.normalize_from_method_to_sources(abstractor_abstraction.about).each do |source|

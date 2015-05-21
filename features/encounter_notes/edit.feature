@@ -10,8 +10,10 @@ Feature: Editing encounter note
     When I go to the last encounter note edit page
     Then I should see "Karnofsky performance status"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
-    And the "Needs review" radio button within ".has_karnofsky_performance_status" should be checked
-    And I should not see an ".edit_link" element
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status" should not be checked
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status_date" should not be checked
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status_date"
     And ".custom_explanation .explanation_text" in the first ".has_karnofsky_performance_status_date" should contain text "A bit of custom logic."
 
   @javascript
@@ -22,11 +24,10 @@ Feature: Editing encounter note
       | Hello, I have no idea what is your KPS. |
     When I go to the last encounter note edit page
     Then I should see "Karnofsky performance status"
-    When I choose "Rejected" within ".has_karnofsky_performance_status"
     And I go to the last encounter note edit page
     Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
-    And the "Rejected" radio button within ".has_karnofsky_performance_status" should be checked
-    And I should see an ".edit_link" element
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status" should not be checked
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
 
   @javascript
   Scenario: Viewing accepted unknown suggestion
@@ -36,28 +37,81 @@ Feature: Editing encounter note
       | Hello, I have no idea what is your KPS. |
     When I go to the last encounter note edit page
     Then I should see "Karnofsky performance status"
-    When I choose "Accepted" within ".has_karnofsky_performance_status"
+    When I check "Accepted" within ".has_karnofsky_performance_status"
     And I go to the last encounter note edit page
     Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "unknown"
-    And the "Accepted" radio button within ".has_karnofsky_performance_status" should be checked
-    And I should not see an ".edit_link" element
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status" should be checked
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
 
   @javascript
-  Scenario: Viewing not applicable suggestion
+  Scenario: Viewing unknown suggestion
     Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                               |
       | Hello, I have no idea what is your KPS. |
     When I go to the last encounter note edit page
     Then I should see "Karnofsky performance status"
-    When I choose "Rejected" within ".has_karnofsky_performance_status"
-    And I follow "edit"
+    And I follow "edit" within ".has_karnofsky_performance_status"
+    And I check "unknown"
+    And I press "Save"
+    And I go to the last encounter note edit page
+    And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "unknown"
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status" should be checked
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
+
+  @javascript
+  Scenario: Setting an abstraction to unknown for an accepted suggestion
+    Given abstraction schemas are set
+    And encounter notes with the following information exist
+      | Note Text              |
+      | Looking good. KPS: 100 |
+    When I go to the last encounter note edit page
+    Then I should see "Karnofsky performance status"
+    When I check "Accepted" within ".has_karnofsky_performance_status"
+    Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "100% - Normal; no complaints; no evidence of disease."
+    And I follow "edit" within ".has_karnofsky_performance_status"
+    And I check "unknown"
+    And I press "Save"
+    And I go to the last encounter note edit page
+    And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "unknown"
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status" should not be checked
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
+
+  @javascript
+  Scenario: Setting an abstraction to a non-suggested value for an accepted suggestion
+    Given abstraction schemas are set
+    And encounter notes with the following information exist
+      | Note Text              |
+      | Looking good. KPS: 100 |
+    When I go to the last encounter note edit page
+    Then I should see "Karnofsky performance status"
+    When I check "Accepted" within ".has_karnofsky_performance_status"
+    Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "100% - Normal; no complaints; no evidence of disease."
+    And I follow "edit" within ".has_karnofsky_performance_status"
+    When I fill in "input.combobox" autocompleter within the first ".abstractor_abstraction" with "90% - Able to carry on normal activity; minor signs or symptoms of disease."
+    And I press "Save"
+    And I go to the last encounter note edit page
+    And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "90% - Able to carry on normal activity; minor signs or symptoms of disease."
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status" should not be checked
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
+
+  @javascript
+  Scenario: Setting an abstraction to not applicable for an accepted suggestion
+    Given abstraction schemas are set
+    And encounter notes with the following information exist
+      | Note Text              |
+      | Looking good. KPS: 100 |
+    When I go to the last encounter note edit page
+    Then I should see "Karnofsky performance status"
+    When I check "Accepted" within ".has_karnofsky_performance_status"
+    Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "100% - Normal; no complaints; no evidence of disease."
+    And I follow "edit" within ".has_karnofsky_performance_status"
     And I check "not applicable"
     And I press "Save"
     And I go to the last encounter note edit page
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "not applicable"
-    And the "Rejected" radio button within ".has_karnofsky_performance_status" should be checked
-    And I should see an ".edit_link" element
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status" should not be checked
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
 
   @javascript
   Scenario: Viewing accepted suggestion
@@ -66,12 +120,12 @@ Feature: Editing encounter note
       | Note Text              |
       | Looking good. KPS: 100 |
     When I go to the last encounter note edit page
-    When I choose "Accepted" within ".has_karnofsky_performance_status"
+    When I check "Accepted" within ".has_karnofsky_performance_status"
     And I go to the last encounter note edit page
     Then I should see "Karnofsky performance status"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "100% - Normal; no complaints; no evidence of disease."
-    And the "Accepted" radio button within ".has_karnofsky_performance_status" should be checked
-    And I should not see an ".edit_link" element
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status" should be checked
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
 
   @javascript
   Scenario: Changing status for unknown suggestion
@@ -80,25 +134,23 @@ Feature: Editing encounter note
       | Note Text                                    |
       | Looking good. Not too sure about KPS though. |
     When I go to the last encounter note edit page
-    When I choose "Rejected" within ".has_karnofsky_performance_status"
-    And I wait for the ajax request to finish
     Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain text "History"
-    And I should see an ".edit_link" element
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
     And ".edit_abstractor_suggestion" in the first ".abstractor_abstraction" should contain selector ".abstractor_abstraction_source_tooltip_img"
-    When I choose "Accepted" within ".has_karnofsky_performance_status"
+    When I check "Accepted" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "unknown"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain text "History"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain text "[Not set]"
-    And I should not see an ".edit_link" element
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
     And ".edit_abstractor_suggestion" in the first ".abstractor_abstraction" should contain selector ".abstractor_abstraction_source_tooltip_img"
-    When I choose "Needs review" within ".has_karnofsky_performance_status"
+    When I uncheck "Accepted" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "History"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "unknown"
-    And I should not see an ".edit_link" element
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
     And ".edit_abstractor_suggestion" in the first ".abstractor_abstraction" should contain selector ".abstractor_abstraction_source_tooltip_img"
 
   @javascript
@@ -108,30 +160,27 @@ Feature: Editing encounter note
       | Note Text                                    |
       | Looking good. Not too sure about KPS though. |
     And I go to the last encounter note edit page
-    When I choose "Rejected" within ".has_karnofsky_performance_status"
-    And I follow "edit"
+    And I follow "edit" within ".has_karnofsky_performance_status"
     And I check "not applicable"
     And I press "Save"
     And I go to the last encounter note edit page
-    And I choose "Rejected" within ".has_karnofsky_performance_status"
-    And I wait for the ajax request to finish
     Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "not applicable"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain text "History"
-    And I should see an ".edit_link" element
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
     And ".edit_abstractor_suggestion" in the first ".abstractor_abstraction" should contain selector ".abstractor_abstraction_source_tooltip_img"
-    When I choose "Accepted" within ".has_karnofsky_performance_status"
+    When I check "Accepted" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "unknown"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "History"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain text "[Not set]"
-    And I should not see an ".edit_link" element
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
     And ".edit_abstractor_suggestion" in the first ".abstractor_abstraction" should contain selector ".abstractor_abstraction_source_tooltip_img"
-    When I choose "Needs review" within ".has_karnofsky_performance_status"
+    When I uncheck "Accepted" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "History"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "unknown"
-    And I should not see an ".edit_link" element
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
     And ".edit_abstractor_suggestion" in the first ".abstractor_abstraction" should contain selector ".abstractor_abstraction_source_tooltip_img"
 
   @javascript
@@ -141,27 +190,25 @@ Feature: Editing encounter note
       | Note Text               |
       | Looking good. KPS: 100. |
     And I go to the last encounter note edit page
-    And I choose "Rejected" within ".has_karnofsky_performance_status"
-    And I wait for the ajax request to finish
-    Then I should see an ".edit_link" element
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
     And ".edit_abstractor_suggestion" in the first ".abstractor_abstraction" should contain selector ".abstractor_abstraction_source_tooltip_img"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain text "History"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
     And I go to the last encounter note edit page
-    And I choose "Accepted" within ".has_karnofsky_performance_status"
+    And I check "Accepted" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "100% - Normal; no complaints; no evidence of disease."
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain text "History"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain text "[Not set]"
-    And I should not see an ".edit_link" element
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
     And ".edit_abstractor_suggestion" in the first ".abstractor_abstraction" should contain selector ".abstractor_abstraction_source_tooltip_img"
     And I go to the last encounter note edit page
-    And I choose "Needs review" within ".has_karnofsky_performance_status"
+    And I uncheck "Accepted" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "History"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "100% - Normal; no complaints; no evidence of disease."
-    And I should not see an ".edit_link" element
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
     And ".edit_abstractor_suggestion" in the first ".abstractor_abstraction" should contain selector ".abstractor_abstraction_source_tooltip_img"
 
   @javascript
@@ -170,27 +217,22 @@ Feature: Editing encounter note
     And encounter notes with the following information exist
       | Note Text                                                      |
       | Looking good. KPS: 100.  On second thought make that KPS: 50.  |
-    And I go to the last encounter note edit page
-    And I choose "Rejected" within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion"
-    And I wait for the ajax request to finish
-    Then ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "[Not set]"
-    And the "Needs review" radio button within the last ".has_karnofsky_performance_status .edit_abstractor_suggestion" should be checked
-    And I should not see an ".edit_link" element
-    When I choose "Accepted" within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion"
+    When I go to the last encounter note edit page
+    And I check "Accepted" within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "100% - Normal; no complaints; no evidence of disease."
-    And the "Rejected" radio button within the last ".has_karnofsky_performance_status .edit_abstractor_suggestion" should be checked
-    And I should not see an ".edit_link" element
-    When I choose "Accepted" within the last ".has_karnofsky_performance_status .edit_abstractor_suggestion"
+    And the "Accepted" checkbox within the last ".has_karnofsky_performance_status .edit_abstractor_suggestion" should not be checked
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
+    When I check "Accepted" within the last ".has_karnofsky_performance_status .edit_abstractor_suggestion"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "50% - Requires considerable assistance and frequent medical care."
-    And the "Rejected" radio button within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion" should be checked
-    And I should not see an ".edit_link" element
-    When I choose "Needs review" within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion"
+    And the "Accepted" checkbox within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion" should not be checked
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
+    When I uncheck "Accepted" within the last ".has_karnofsky_performance_status .edit_abstractor_suggestion"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "[Not set]"
-    And the "Needs review" radio button within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion" should be checked
-    And I should not see an ".edit_link" element
+    And the "Accepted" checkbox within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion" should not be checked
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
 
   @javascript
   Scenario: Viewing source for suggestion with source and match value
@@ -299,13 +341,11 @@ Feature: Editing encounter note
     And encounter notes with the following information exist
       | Note Text              |
       |Hello, your KPS is 100%.|
-    And I go to the last encounter note edit page
-    And I choose "Rejected" within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion"
-    And I wait for the ajax request to finish
-    And I click on ".edit_link" within the first ".abstractor_abstraction"
+    When I go to the last encounter note edit page
+    And I follow "edit" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
     Then the element "select.combobox" should be hidden
-    And I should not see an ".edit_link" element
+    And I should not see "edit" anywhere within ".has_karnofsky_performance_status"
     And ".abstractor_abstraction_edit" in the first ".abstractor_abstraction" should contain selector "select.combobox"
     And "select.combobox" in the first ".abstractor_abstraction" should have options "100% - Normal; no complaints; no evidence of disease., 90% - Able to carry on normal activity; minor signs or symptoms of disease., 80% - Normal activity with effort; some signs or symptoms of disease."
     And ".abstractor_abstraction_edit" in the first ".abstractor_abstraction" should contain selector "input#abstractor_abstraction_not_applicable"
@@ -314,10 +354,10 @@ Feature: Editing encounter note
     And "input#abstractor_abstraction_unknown" in the first ".abstractor_abstraction" should not be checked
     Then ".abstractor_abstraction_edit input[type='submit']" should contain "Save"
     And I should see "Cancel"
-    When I check "input#abstractor_abstraction_unknown" within the first ".abstractor_abstraction"
+    When I check "unknown" within the first ".abstractor_abstraction_edit"
     Then "select.combobox" in the first ".abstractor_abstraction" should not contain selector "option[selected='selected']"
     And "input#abstractor_abstraction_not_applicable" in the first ".abstractor_abstraction" should not be checked
-    When I check "input#abstractor_abstraction_not_applicable" within the first ".abstractor_abstraction"
+    When I check "not applicable" within the first ".abstractor_abstraction"
     Then "select.combobox" in the first ".abstractor_abstraction" should not contain selector "option[selected='selected']"
     And "input#abstractor_abstraction_unknown" in the first ".abstractor_abstraction" should not be checked
     When I fill in "input.combobox" autocompleter within the first ".abstractor_abstraction" with "100% - Normal; no complaints; no evidence of disease."
@@ -330,7 +370,7 @@ Feature: Editing encounter note
     When I follow "Cancel"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction" should not contain selector ".abstractor_abstraction_edit"
-    And I should see an ".edit_link" element
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
 
   @javascript
@@ -339,18 +379,16 @@ Feature: Editing encounter note
     And encounter notes with the following information exist
       | Note Text              |
       |Hello, your KPS is 100%.|
-    And I go to the last encounter note edit page
-    And I choose "Rejected" within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion"
-    And I wait for the ajax request to finish
-    And I click on ".edit_link" within the first ".abstractor_abstraction"
-    And I check "input#abstractor_abstraction_unknown" within the first ".abstractor_abstraction"
+    When I go to the last encounter note edit page
+    And I follow "edit" within ".has_karnofsky_performance_status"
+    And I check "unknown" within the first ".abstractor_abstraction"
     And I press "Save"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction" should not contain selector ".abstractor_abstraction_edit"
-    And I should see an ".edit_link" element
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "unknown"
-    And the "Rejected" radio button within ".has_karnofsky_performance_status" should be checked
-    When I click on ".edit_link" within the first ".abstractor_abstraction"
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status" should not be checked
+    When I follow "edit" within ".has_karnofsky_performance_status"
     Then "input#abstractor_abstraction_unknown" in the first ".abstractor_abstraction" should be checked
     And "select.combobox" in the first ".abstractor_abstraction" should not contain selector "option[selected='selected']"
     And "input#abstractor_abstraction_not_applicable" in the first ".abstractor_abstraction" should not be checked
@@ -362,33 +400,31 @@ Feature: Editing encounter note
       | Note Text                 |
       |Hello, you look good to me.|
     And I go to the last encounter note edit page
-    And I choose "Rejected" within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion"
-    And I wait for the ajax request to finish
-    And I click on ".edit_link" within the first ".abstractor_abstraction"
-    And I check "input#abstractor_abstraction_unknown" within the first ".abstractor_abstraction"
+    And I follow "edit" within ".has_karnofsky_performance_status"
+    And I check "unknown" within the first ".abstractor_abstraction"
     And I press "Save"
     And I wait for the ajax request to finish
-    Then the "Accepted" radio button within ".has_karnofsky_performance_status" should be checked
-    And I should not see an ".edit_link" element
+    Then the "Accepted" checkbox within ".has_karnofsky_performance_status" should be checked
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
 
   @javascript
+  @wip
   Scenario: User creating not applicable abstraction
     Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                  |
       |Hello, you look good to me.|
     And I go to the last encounter note edit page
-    And I choose "Rejected" within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion"
-    And I wait for the ajax request to finish
-    And I click on ".edit_link" within the first ".abstractor_abstraction"
-    And I check "input#abstractor_abstraction_not_applicable" within the first ".abstractor_abstraction"
+    And I follow "edit" within ".has_karnofsky_performance_status"
+    And I check "not applicable" within the first ".abstractor_abstraction"
     And I press "Save"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction" should not contain selector ".abstractor_abstraction_edit"
-    And I should see an ".edit_link" element
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "not applicable"
-    And the "Rejected" radio button within the last ".has_karnofsky_performance_status .edit_abstractor_suggestion" should be checked
-    When I click on ".edit_link" within the first ".abstractor_abstraction"
+    And the "Accepted" checkbox within the last ".has_karnofsky_performance_status .edit_abstractor_suggestion" should not be checked
+    And I follow "edit" within ".has_karnofsky_performance_status"
+    And I wait for the ajax request to finish
     Then "input#abstractor_abstraction_not_applicable" in the first ".abstractor_abstraction" should be checked
     Then "select.combobox" in the first ".abstractor_abstraction" should not contain selector "option[selected='selected']"
     And "input#abstractor_abstraction_unknown" in the first ".abstractor_abstraction" should not be checked
@@ -400,19 +436,19 @@ Feature: Editing encounter note
       | Note Text                 |
       |Hello, you look good to me.|
     And I go to the last encounter note edit page
-    And I choose "Rejected" within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion"
+    And I follow "edit" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
-    And I click on ".edit_link" within the first ".abstractor_abstraction"
     And I fill in "input.combobox" autocompleter within the first ".abstractor_abstraction" with "100% - Normal; no complaints; no evidence of disease."
     And I press "Save"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction" should not contain selector ".abstractor_abstraction_edit"
-    And I should see an ".edit_link" element
+    And I should see "edit" anywhere within ".has_karnofsky_performance_status"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "100% - Normal; no complaints; no evidence of disease."
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain text "History"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain text "[Not set]"
-    And the "Rejected" radio button within the last ".has_karnofsky_performance_status .edit_abstractor_suggestion" should be checked
-    When I click on ".edit_link" within the first ".abstractor_abstraction"
+    And the "Accepted" checkbox within the last ".has_karnofsky_performance_status .edit_abstractor_suggestion" should not be checked
+    When I follow "edit" within ".has_karnofsky_performance_status"
+    And I wait for the ajax request to finish
     Then "select.combobox" in the first ".abstractor_abstraction" should have "100% - Normal; no complaints; no evidence of disease." selected
     And "input#abstractor_abstraction_not_applicable" in the first ".abstractor_abstraction" should not be checked
     And "input#abstractor_abstraction_unknown" in the first ".abstractor_abstraction" should not be checked
@@ -430,13 +466,12 @@ Feature: Editing encounter note
       | Note Text                            |
       | Hello, you look good to me. KPS: 100 |
     And I go to the last encounter note edit page
-    And I choose "Rejected" within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion"
+    And I follow "edit" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
-    And I click on ".edit_link" within the first ".abstractor_abstraction"
     And I fill in "input.combobox" autocompleter within the first ".abstractor_abstraction" with "100% - Normal; no complaints; no evidence of disease."
     And I press "Save"
     And I wait for the ajax request to finish
-    And the "Accepted" radio button within the last ".has_karnofsky_performance_status .edit_abstractor_suggestion" should be checked
+    And the "Accepted" checkbox within the last ".has_karnofsky_performance_status .edit_abstractor_suggestion" should be checked
 
   @javascript
   Scenario: User setting the value of an abstraction schema with a date object type
@@ -445,11 +480,7 @@ Feature: Editing encounter note
       | Note Text                               |
       | Hello, I have no idea what is your KPS. |
     When I go to the last encounter note edit page
-    And I choose "Rejected" within the first ".has_karnofsky_performance_status_date .edit_abstractor_suggestion"
-    And I go to the last encounter note edit page
-    Then ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "[Not set]"
-    And I should see an ".edit_link" element
-    When I click on ".edit_link" within the first ".has_karnofsky_performance_status_date"
+    And I follow "edit" within ".has_karnofsky_performance_status_date"
     And I wait for the ajax request to finish
     And I fill in "abstractor_abstraction_value" with "2014-06-03" within ".has_karnofsky_performance_status_date"
     And I press "Save"
@@ -463,18 +494,17 @@ Feature: Editing encounter note
       | Note Text                               |
       | Hello, I have no idea what is your KPS. |
     When I go to the last encounter note edit page
-    Then the "Needs review" radio button within ".has_karnofsky_performance_status" should be checked
-    And the "Needs review" radio button within ".has_karnofsky_performance_status_date" should be checked
+    Then the "Accepted" checkbox within ".has_karnofsky_performance_status" should not be checked
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "[Not set]"
     When I do not confirm link "Not applicable all" in the first ".abstractor_abstractions"
-    Then the "Rejected" radio button within ".has_karnofsky_performance_status" should not be checked
-    And the "Rejected" radio button within ".has_karnofsky_performance_status_date" should not be checked
+    Then the "Accepted" checkbox within ".has_karnofsky_performance_status" should not be checked
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status_date" should not be checked
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should not contain text "not applicable"
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should not contain text "not applicable"
     When I confirm link "Not applicable all" in the first ".abstractor_abstractions"
-    Then the "Rejected" radio button within ".has_karnofsky_performance_status" should be checked
-    And the "Rejected" radio button within ".has_karnofsky_performance_status_date" should be checked
+    Then the "Accepted" checkbox within ".has_karnofsky_performance_status" should not be checked
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status_date" should not be checked
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "not applicable"
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "not applicable"
 
@@ -485,17 +515,16 @@ Feature: Editing encounter note
       | Note Text                               |
       | Hello, I have no idea what is your KPS. |
     When I go to the last encounter note edit page
-    Then the "Needs review" radio button within ".has_karnofsky_performance_status" should be checked
-    And the "Needs review" radio button within ".has_karnofsky_performance_status_date" should be checked
+    Then the "Accepted" checkbox within ".has_karnofsky_performance_status" should not be checked
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status_date" should not be checked
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "[Not set]"
     When I do not confirm link "Unknown all" in the first ".abstractor_abstractions"
-    Then the "Accepted" radio button within ".has_karnofsky_performance_status" should not be checked
-    And the "Rejected" radio button within ".has_karnofsky_performance_status_date" should not be checked
+    Then the "Accepted" checkbox within ".has_karnofsky_performance_status" should not be checked
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status_date" should not be checked
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should not contain text "unknown"
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should not contain text "unknown"
     When I confirm link "Unknown all" in the first ".abstractor_abstractions"
-    Then the "Accepted" radio button within ".has_karnofsky_performance_status" should be checked
-    And the "Rejected" radio button within ".has_karnofsky_performance_status_date" should be checked
+    Then the "Accepted" checkbox within ".has_karnofsky_performance_status" should be checked
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "unknown"
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "unknown"

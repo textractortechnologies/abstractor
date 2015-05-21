@@ -205,27 +205,27 @@ Then /^the "([^"]*)" field should have no error$/ do |field|
   end
 end
 
-Then /^the "([^"]*)" checkbox(?: within (.*))? should be checked$/ do |label, parent|
-  with_scope(parent) do
-    field_checked = find_field(label)['checked']
-    if field_checked.respond_to? :should
-      field_checked.should be_truthy
-    else
-      assert field_checked
-    end
-  end
-end
+# Then /^the "([^"]*)" checkbox(?: within (.*))? should be checked$/ do |label, parent|
+#   with_scope(parent) do
+#     field_checked = find_field(label)['checked']
+#     if field_checked.respond_to? :should
+#       field_checked.should be_truthy
+#     else
+#       assert field_checked
+#     end
+#   end
+# end
 
-Then /^the "([^"]*)" checkbox(?: within (.*))? should not be checked$/ do |label, parent|
-  with_scope(parent) do
-    field_checked = find_field(label)['checked']
-    if field_checked.respond_to? :should
-      field_checked.should be_falsey
-    else
-      assert !field_checked
-    end
-  end
-end
+# Then /^the "([^"]*)" checkbox(?: within (.*))? should not be checked$/ do |label, parent|
+#   with_scope(parent) do
+#     field_checked = find_field(label)['checked']
+#     if field_checked.respond_to? :should
+#       field_checked.should be_falsey
+#     else
+#       assert !field_checked
+#     end
+#   end
+# end
 
 Then /^(?:|I )should be on (.+)$/ do |page_name|
   current_path = URI.parse(current_url).path

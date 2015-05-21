@@ -24,21 +24,35 @@ module Abstractor
 
           base.send :validates_associated, :abstractor_subject
 
-          # base.send :attr_accessible, :about, :abstractor_subject, :abstractor_subject_id, :value, :about_type, :about_id, :unknown, :not_applicable, :deleted_at, :abstractor_indirect_sources_attributes
-
           # Hooks
-          base.send :after_save, :review_matching_suggestions
+          base.send :after_save, :review_suggestions
 
           base.send(:include, InstanceMethods)
           base.extend(ClassMethods)
         end
 
         module InstanceMethods
-          def review_matching_suggestions
-            accepted_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
+          def review_suggestions
             matching_abstractor_suggestions.each do |abstractor_suggestion|
-              abstractor_suggestion.abstractor_suggestion_status = accepted_status
+              abstractor_suggestion.accepted = true
               abstractor_suggestion.save!
+            end
+
+            abstractor_suggestions.each do |abstractor_suggestion|
+              if value && abstractor_suggestion.suggested_value && value != abstractor_suggestion.suggested_value
+                abstractor_suggestion.accepted = false
+                abstractor_suggestion.save!
+              end
+
+              if unknown && unknown != abstractor_suggestion.unknown
+                abstractor_suggestion.accepted = false
+                abstractor_suggestion.save!
+              end
+
+              if not_applicable && not_applicable != abstractor_suggestion.not_applicable
+                abstractor_suggestion.accepted = false
+                abstractor_suggestion.save!
+              end
             end
           end
 
@@ -96,7 +110,7 @@ module Abstractor
           #
           # @return [ActiveRecord::Relation] List of [Abstractor::AbstractorSuggestion].
           def unreviewed_abstractor_suggestions
-            abstractor_suggestions.select { |abstractor_suggestion| abstractor_suggestion.abstractor_suggestion_status.name == Abstractor::Enum::ABSTRACTOR_SUGGESTION_STATUS_NEEDS_REVIEW }
+            abstractor_suggestions.select { |abstractor_suggestion| abstractor_suggestion.accepted.nil? }
           end
 
           ##
@@ -123,8 +137,6 @@ module Abstractor
           def update_abstractor_abstraction_other_value(abstractor_abstractions, abstraction_other_value_type)
             raise(ArgumentError, "abstraction_value_type argument invalid") unless Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPES.include?(abstraction_other_value_type)
 
-            rejected_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
-            accepted_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
             case abstraction_other_value_type
             when Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN
               unknown = true
@@ -139,11 +151,11 @@ module Abstractor
                 abstractor_abstractions.each do |abstractor_abstraction|
                   abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
                     if unknown && abstractor_suggestion.unknown
-                      abstractor_suggestion.abstractor_suggestion_status = accepted_status
+                      abstractor_suggestion.accepted = true
                       abstractor_suggestion.save!
                     else
                       set_abstractor_abstraction(abstractor_abstraction, unknown, not_applicable)
-                      abstractor_suggestion.abstractor_suggestion_status = rejected_status
+                      abstractor_suggestion.accepted = false
                       abstractor_suggestion.save!
                     end
                   end

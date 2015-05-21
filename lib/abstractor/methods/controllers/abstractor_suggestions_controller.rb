@@ -46,7 +46,7 @@ module Abstractor
           end
 
           def abstractor_suggestion_params
-            params.require(:abstractor_suggestion).permit(:id, :abstractor_abstraction_id, :abstractor_suggestion_status_id, :suggested_value, :unknown, :not_applicable, :deleted_at, :_destroy)
+            params.require(:abstractor_suggestion).permit(:id, :abstractor_abstraction_id, :accepted, :suggested_value, :unknown, :not_applicable, :deleted_at, :_destroy)
           end
       end
     end

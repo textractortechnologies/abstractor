@@ -14,9 +14,6 @@ describe EncounterNote do
     @abstractor_subject_abstraction_schema_kps_date = Abstractor::AbstractorSubject.where(subject_type: EncounterNote.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_kps_date.id).first
     @source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_abstraction_schema_always_unknown, from_method: 'note_text', abstractor_abstraction_source_type: @source_type_nlp_suggestion, :abstractor_rule_type => unknown_rule)
-    @abstractor_suggestion_status_needs_review = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first
-    @abstractor_suggestion_status_accepted= Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
-    @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
     @value_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
     @name_value_rule = Abstractor::AbstractorRuleType.where(name: 'name/value').first
   end
@@ -93,7 +90,7 @@ describe EncounterNote do
 
       encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.accepted = true
         abstractor_suggestion.save
       end
 
@@ -445,13 +442,12 @@ describe EncounterNote do
     end
 
     #new suggestions upon re-abstraction
-    it "blanks out the current value of a abstractor abstraction if a new suggestion appears upon re-abstraction " do
+    it "blanks out the current value of a abstractor abstraction if a new suggestion appears upon re-abstraction ", focus: false do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')
       @encounter_note.abstract
 
       abstractor_suggestion = @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first
-      abstractor_suggestion_status = Abstractor::AbstractorSuggestionStatus.where(name: 'Accepted').first
-      abstractor_suggestion.abstractor_suggestion_status = abstractor_suggestion_status
+      abstractor_suggestion.accepted = true
       abstractor_suggestion.save
       expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).value).to eq('90% - Able to carry on normal activity; minor signs or symptoms of disease.')
       @encounter_note.note_text = 'The patient looks healthy.  KPS: 90.  Let me repeat.  KPS: 80'
@@ -509,7 +505,7 @@ describe EncounterNote do
       it "can report what has been reviewed", focus: false do
         @encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
           abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-          abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+          abstractor_suggestion.accepted = true
           abstractor_suggestion.save
         end
 
@@ -519,7 +515,7 @@ describe EncounterNote do
       it "can report what has been reviewed (ignoring soft deletd rows)", focus: false do
         @encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
           abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-          abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+          abstractor_suggestion.accepted = true
           abstractor_suggestion.save
         end
 
@@ -565,7 +561,7 @@ describe EncounterNote do
 
       it "can report what has been reviewed for an instance", focus: false do
         abstractor_suggestion = @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.accepted = true
         abstractor_suggestion.save
 
         expect(@encounter_note.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED).size).to eq(1)
@@ -581,7 +577,7 @@ describe EncounterNote do
 
       it "can report what has been reviewed for an instance (ignoring soft deleted rows)", focus: false do
         abstractor_suggestion = @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.accepted = true
         abstractor_suggestion.save
 
         expect(@encounter_note.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED).size).to eq(1)
@@ -600,7 +596,7 @@ describe EncounterNote do
 
       encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.accepted = true
         abstractor_suggestion.save
       end
 
@@ -614,7 +610,7 @@ describe EncounterNote do
 
       encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status =   @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
+        abstractor_suggestion.accepted = false
         abstractor_suggestion.save
         abstractor_abstraction.unknown = true
         abstractor_abstraction.save!
@@ -630,7 +626,7 @@ describe EncounterNote do
 
       encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status =   @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
+        abstractor_suggestion.accepted = false
         abstractor_suggestion.save
         abstractor_abstraction.not_applicable = true
         abstractor_abstraction.save!

@@ -14,9 +14,6 @@ describe RadiationTherapyPrescription do
     @abstractor_subject_abstraction_schema_has_anatomical_location = Abstractor::AbstractorSubject.where(subject_type: RadiationTherapyPrescription.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_has_anatomical_location.id).first
     @abstractor_subject_abstraction_schema_has_laterality = Abstractor::AbstractorSubject.where(subject_type: RadiationTherapyPrescription.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_has_laterality.id).first
     @abstractor_subject_abstraction_schema_has_radiation_therapy_prescription_date = Abstractor::AbstractorSubject.where(subject_type: RadiationTherapyPrescription.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_has_radiation_therapy_prescription_date.id).first
-    @abstractor_suggestion_status_accepted = Abstractor::AbstractorSuggestionStatus.where(name: 'Accepted').first
-    @abstractor_suggestion_status_accepted= Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
-    @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
   end
 
   before(:each) do
@@ -236,12 +233,12 @@ describe RadiationTherapyPrescription do
       end
 
       it "rejects all abstraction suggestion statuses", focus: false do
-        rejected_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
-        needs_review_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first
+        # rejected_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
+        # needs_review_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first
         abstractor_suggestions = @abstractor_abstraction_group.abstractor_abstractions.map(&:abstractor_suggestions).flatten
-        expect(abstractor_suggestions.map(&:abstractor_suggestion_status)).to eq([needs_review_status, needs_review_status, needs_review_status])
+        expect(abstractor_suggestions.map(&:accepted)).to eq([nil, nil, nil])
         Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
-        expect(abstractor_suggestions.each(&:reload).map(&:abstractor_suggestion_status)).to eq([rejected_status, rejected_status, rejected_status])
+        expect(abstractor_suggestions.each(&:reload).map(&:accepted)).to eq([false, false, false])
       end
 
       it "raises an error if passed an invalid argument", focus: false do
@@ -256,7 +253,7 @@ describe RadiationTherapyPrescription do
 
       radiation_therapy_prescription.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.accepted = true
         abstractor_suggestion.save
       end
 
@@ -280,7 +277,7 @@ describe RadiationTherapyPrescription do
 
       radiation_therapy_prescription.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_rejected
+        abstractor_suggestion.accepted = false
         abstractor_suggestion.save
         abstractor_abstraction.unknown = true
         abstractor_abstraction.save!
@@ -296,7 +293,7 @@ describe RadiationTherapyPrescription do
 
       radiation_therapy_prescription.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_rejected
+        abstractor_suggestion.accepted = false
         abstractor_suggestion.save
         abstractor_abstraction.not_applicable = true
         abstractor_abstraction.save!

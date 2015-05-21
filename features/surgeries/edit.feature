@@ -1,6 +1,5 @@
 Feature: Editing surgery
   User should be able to edit surgery information
-
   @javascript
   Scenario: User editing an abstraction with indirect sources
     Given abstraction schemas are set
@@ -42,7 +41,6 @@ Feature: Editing surgery
     And I go to the last surgery edit page
     And I click on ".edit_link" within the last ".abstractor_abstraction"
     Then ".indirect_source_list" in the first ".indirect_source" should have "456 (2014-01-02)" selected
-    And I wait 30 seconds
 
   @javascript
   Scenario: User editing an abstraction with a suggestion against a complex source
@@ -70,7 +68,5 @@ Feature: Editing surgery
     And ".ui-dialog-titlebar" should contain text "SurgicalProcedure description"
     And ".ui-dialog-content" should contain text "Left temporal lobe resection"
     When I go to the last surgery edit page
-    And I choose "Rejected" within ".has_anatomical_location"
-    And I wait for the ajax request to finish
     And I click on ".edit_link" within the first ".abstractor_abstraction"
     Then I should see 4 "span.abstractor_abstraction_source_tooltip_img" within the first ".edit_abstractor_abstraction"

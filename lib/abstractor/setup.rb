@@ -16,11 +16,6 @@ module Abstractor
       Abstractor::AbstractorRuleType.where(name:'value', description: 'search for value match').first_or_create
       Abstractor::AbstractorRuleType.where(name: 'unknown', description: 'do not try to abstract, always assign "unknown"').first_or_create
 
-      puts 'Setting up Abstractor::AbstractorSuggestionStatus'
-      Abstractor::AbstractorSuggestionStatus.where(name: 'Needs review').first_or_create
-      Abstractor::AbstractorSuggestionStatus.where(name: 'Accepted').first_or_create
-      Abstractor::AbstractorSuggestionStatus.where(name: 'Rejected').first_or_create
-
       puts 'Setting up Abstractor::AbstractorRelationType'
       Abstractor::AbstractorRelationType.where(name: 'member_of').first_or_create
       Abstractor::AbstractorRelationType.where(name: 'preceded_by').first_or_create

@@ -31,9 +31,6 @@ describe ImagingExam do
     @abstractor_abstraction_schema_diagnosis_duration = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_diagnosis_duration').first
     @abstractor_subject_abstraction_schema_diagnosis_duration_1 = Abstractor::AbstractorSubject.where(subject_type: ImagingExam.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_diagnosis_duration.id, namespace_type: 'Discerner::Search', namespace_id: 1).first
     @abstractor_subject_abstraction_schema_diagnosis_duration_2 = Abstractor::AbstractorSubject.where(subject_type: ImagingExam.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_diagnosis_duration.id, namespace_type: 'Discerner::Search', namespace_id: 2).first
-
-    @abstractor_suggestion_status_accepted= Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
-    @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
   end
 
   before(:each) do
@@ -170,7 +167,7 @@ describe ImagingExam do
     it "can report what has been reviewed (regardless of namespace)", focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
       abstractor_suggestion = @imaging_exam.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_dat).abstractor_suggestions.first
-      abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+      abstractor_suggestion.accepted = true
       abstractor_suggestion.save
 
       expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED).size).to eq(1)
@@ -179,7 +176,7 @@ describe ImagingExam do
     it "can report what has been reviewed in a namespace", focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
       abstractor_suggestion = @imaging_exam.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_dat).abstractor_suggestions.first
-      abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+      abstractor_suggestion.accepted = true
       abstractor_suggestion.save
 
       expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(1)
@@ -188,7 +185,7 @@ describe ImagingExam do
     it "does not report what has been reviewed in another namespace", focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
       abstractor_suggestion = @imaging_exam.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_dat).abstractor_suggestions.first
-      abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+      abstractor_suggestion.accepted = true
       abstractor_suggestion.save
 
       expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED, namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id).size).to eq(0)
@@ -210,7 +207,7 @@ describe ImagingExam do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
       @imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.accepted = true
         abstractor_suggestion.save
       end
 
@@ -280,7 +277,7 @@ describe ImagingExam do
 
       imaging_exam.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.accepted = true
         abstractor_suggestion.save
       end
 
@@ -294,7 +291,7 @@ describe ImagingExam do
 
       imaging_exam.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.accepted = true
         abstractor_suggestion.save
       end
 
@@ -314,7 +311,7 @@ describe ImagingExam do
 
       imaging_exam.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.accepted = true
         abstractor_suggestion.save
       end
 
@@ -341,7 +338,7 @@ describe ImagingExam do
 
       imaging_exam.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_rejected
+        abstractor_suggestion.accepted = false
         abstractor_suggestion.save
         abstractor_abstraction.unknown = true
         abstractor_abstraction.save!
@@ -358,7 +355,7 @@ describe ImagingExam do
 
       imaging_exam.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_rejected
+        abstractor_suggestion.accepted = false
         abstractor_suggestion.save
         abstractor_abstraction.not_applicable = true
         abstractor_abstraction.save!
@@ -376,7 +373,7 @@ describe ImagingExam do
 
       imaging_exam.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.accepted = true
         abstractor_suggestion.save
       end
 
@@ -395,7 +392,7 @@ describe ImagingExam do
 
       imaging_exam.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status =   @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
+        abstractor_suggestion.accepted = false
         abstractor_suggestion.save
         abstractor_abstraction.unknown = true
         abstractor_abstraction.save!
@@ -412,7 +409,7 @@ describe ImagingExam do
 
       imaging_exam.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
-        abstractor_suggestion.abstractor_suggestion_status =   @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
+        abstractor_suggestion.accepted = false
         abstractor_suggestion.save
         abstractor_abstraction.not_applicable = true
         abstractor_abstraction.save!

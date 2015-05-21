@@ -15,6 +15,17 @@ Then /^the "([^"]*)" radio button within(?: the (first|last))? "([^\"]*)" should
   }
 end
 
+Then /^the "([^"]*)" checkbox within(?: the (first|last))? "([^\"]*)" should be checked$/ do |label, position, scope_selector|
+  within_scope(get_scope(position, scope_selector)) {
+    field_checked = find_field(label)['checked']
+    if field_checked.respond_to? :should
+      field_checked.should be_truthy
+    else
+      assert field_checked
+    end
+  }
+end
+
 When /^(?:|I )choose "([^"]*)" within(?: the (first|last))? "(.*?)"$/ do |field, position, scope_selector|
   within_scope(get_scope(position, scope_selector)) {
     choose(field)
@@ -27,11 +38,11 @@ When /^(?:|I )fill in "([^"]*)" with "([^"]*)" within "(.*?)"$/ do |field, value
   end
 end
 
-When /^(?:|I )check "([^"]*)" within "(.*?)"$/ do |field, parent|
-  within(parent) do
-    check(field)
-  end
-end
+# When /^(?:|I )check "([^"]*)" within "(.*?)"$/ do |field, parent|
+#   within(parent) do
+#     check(field)
+#   end
+# end
 
 When(/^I select "(.*?)" from "(.*?)" within "(.*?)"$/) do |value, field, parent|
   within(parent) do
@@ -61,15 +72,13 @@ end
 
 When /^I uncheck "([^\"]*)" within(?: the (first|last))? "([^\"]*)"$/ do |selector, position, scope_selector|
   within_scope(get_scope(position, scope_selector)) {
-    all(selector).should_not be_empty
-    all(selector, :visible => true).each{ |e| e.click }
+    uncheck(selector)
   }
 end
 
 When /^I check "([^\"]*)" within(?: the (first|last))? "([^\"]*)"$/ do |selector, position, scope_selector|
   within_scope(get_scope(position, scope_selector)) {
-    all(selector).should_not be_empty
-    all(selector, :visible => true).each{ |e| e.click }
+    check(selector)
   }
 end
 
@@ -239,6 +248,17 @@ Then /^the "([^"]*)" radio button(?: within (.*))? should not be checked$/ do |l
       assert !field_checked
     end
   end
+end
+
+Then /^the "([^"]*)" checkbox within(?: the (first|last))? "([^\"]*)" should not be checked$/ do |label, position, scope_selector|
+  within_scope(get_scope(position, scope_selector)) {
+    field_checked = find_field(label)['checked']
+    if field_checked.respond_to? :should
+      field_checked.should be_falsey
+    else
+      assert !field_checked
+    end
+  }
 end
 
 Then /^(?:|I )should be on (.+)$/ do |page_name|
