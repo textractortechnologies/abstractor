@@ -287,7 +287,7 @@ module Abstractor
                       if abstractor_suggestion.abstractor_suggestion_sources.length > 1
                         new_abstractor_suggestion ||=  Abstractor::AbstractorSuggestion.create!(
                           abstractor_abstraction: new_abstractor_abstraction,
-                          abstractor_suggestion_status: Abstractor::AbstractorSuggestionStatus.where(name: 'Needs review').first,
+                          accepted: nil,
                           suggested_value: abstractor_suggestion.suggested_value,
                           unknown: abstractor_suggestion.unknown,
                           not_applicable: abstractor_suggestion.not_applicable
