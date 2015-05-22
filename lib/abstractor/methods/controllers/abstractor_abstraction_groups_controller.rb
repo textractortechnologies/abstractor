@@ -19,10 +19,22 @@ module Abstractor
 
           abstractor_subjects.each do |abstractor_subject|
             abstraction = abstractor_subject.abstractor_abstractions.build(about_id: params[:about_id], about_type: params[:about_type])
+            abstractor_subject.abstractor_abstractions.where(about_id: params[:about_id], about_type: params[:about_type]).each do |abstractor_abstraction|
+              if !abstractor_abstraction.abstractor_abstraction_group.removable?
+                abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
+                  suggestion_sources = []
+                  abstractor_suggestion.abstractor_suggestion_sources.each do |abstractor_suggestion_source|
+                    suggestion_sources << Abstractor::AbstractorSuggestionSource.new(match_value: abstractor_suggestion_source.match_value, sentence_match_value: abstractor_suggestion_source.sentence_match_value, source_id: abstractor_suggestion_source.source_id, source_method: abstractor_suggestion_source.source_method, source_type: abstractor_suggestion_source.source_type, custom_method: abstractor_suggestion_source.custom_method, custom_explanation: abstractor_suggestion_source.custom_explanation, section_name: abstractor_suggestion_source.section_name)
+                  end
+
+                  abstraction.abstractor_suggestions.build(suggested_value: abstractor_suggestion.suggested_value, unknown: abstractor_suggestion.unknown, not_applicable: abstractor_suggestion.not_applicable, accepted: nil, abstractor_object_value: abstractor_suggestion.abstractor_object_value, abstractor_suggestion_sources: suggestion_sources)
+                end
+              end
+            end
+
             abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name == 'indirect' }.each do |abstractor_abstraction_source|
               source = abstractor_subject.subject_type.constantize.find(params[:about_id]).send(abstractor_abstraction_source.from_method)
               abstraction.abstractor_indirect_sources.build(abstractor_abstraction_source: abstractor_abstraction_source, source_type: source[:source_type], source_method: source[:source_method])
-
             end
             @abstractor_abstraction_group.abstractor_abstractions << abstraction
           end

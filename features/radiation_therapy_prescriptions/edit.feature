@@ -91,12 +91,16 @@ Feature: Editing radiation therapy prescription
       | Site                                    |
       | treat the temporal lobe                 |
     When I go to the last radiation therapy prescription edit page
+    Then I should see 1 ".abstractor_abstraction_group" rows
     And I confirm link "Add Anatomical Location"
     And I wait for the ajax request to finish
     And ".abstractor_abstraction_actions" in the last ".abstractor_abstraction_group" should contain selector ".abstractor_group_delete_link"
     And ".abstractor_abstraction_actions" in the first ".abstractor_abstraction_group" should not contain selector ".abstractor_group_delete_link"
     And ".abstractor_abstraction_actions" in the last ".abstractor_abstraction_group" should contain selector ".abstractor_group_not_applicable_all_link"
     And ".abstractor_abstraction_actions" in the last ".abstractor_abstraction_group" should contain selector ".abstractor_group_unknown_all_link"
+    Then I should see 2 ".abstractor_abstraction_group" rows
+    And ".abstractor_suggestion_values" in the first ".has_anatomical_location" should contain text "temporal lobe"
+    And ".abstractor_suggestion_values" in the last ".has_anatomical_location" should contain text "temporal lobe"
 
   @javascript
   Scenario: User setting the value of an abstraction schema with a date object type in a group
