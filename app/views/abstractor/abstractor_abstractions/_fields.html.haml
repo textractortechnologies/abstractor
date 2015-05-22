@@ -1,7 +1,7 @@
 - abstractor_abstraction ||= @abstractor_abstraction
 - unless abstractor_abstraction.blank?
   - abstractor_abstraction_schema   = abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema
-  - abstractor_suggestions          = abstractor_abstraction.abstractor_suggestions.order(:id)
+  - abstractor_suggestions          = abstractor_abstraction.abstractor_suggestions.order(:suggested_value)
   - rejected_suggestions            = abstractor_suggestions.where(accepted: false)
   - about = abstractor_abstraction.about
 
