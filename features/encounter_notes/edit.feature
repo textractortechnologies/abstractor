@@ -374,6 +374,25 @@ Feature: Editing encounter note
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
 
   @javascript
+  Scenario: User clearing an abstraction
+    Given abstraction schemas are set
+    And encounter notes with the following information exist
+      | Note Text              |
+      |Hello, your KPS is 100%.|
+    When I go to the last encounter note edit page
+    And I check "Accepted" within ".has_karnofsky_performance_status"
+    And I wait for the ajax request to finish
+    Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "100% - Normal; no complaints; no evidence of disease."
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status" should be checked
+    When I follow "clear" within ".has_karnofsky_performance_status"
+    And I wait for the ajax request to finish
+    And the "Accepted" checkbox within ".has_karnofsky_performance_status" should not be checked
+    And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
+    When I go to the last encounter note edit page
+    Then the "Accepted" checkbox within ".has_karnofsky_performance_status" should not be checked
+    And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
+
+  @javascript
   Scenario: User creating unknown abstraction
     Given abstraction schemas are set
     And encounter notes with the following information exist
@@ -408,7 +427,6 @@ Feature: Editing encounter note
     And I should see "edit" anywhere within ".has_karnofsky_performance_status"
 
   @javascript
-  @wip
   Scenario: User creating not applicable abstraction
     Given abstraction schemas are set
     And encounter notes with the following information exist

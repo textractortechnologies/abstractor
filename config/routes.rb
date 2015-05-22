@@ -5,6 +5,9 @@ Abstractor::Engine.routes.draw do
     collection do
       put :update_all
     end
+    member do
+      put :clear
+    end
     resources :abstractor_suggestions
   end
 

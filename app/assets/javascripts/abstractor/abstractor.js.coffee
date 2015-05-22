@@ -1,5 +1,17 @@
 Abstractor = {}
 Abstractor.AbstractionUI = ->
+  $(document).on "click", ".abstractor_abstraction .clear_link", (e) ->
+    e.preventDefault()
+    that = this
+    $.ajax
+      type: 'POST'
+      data: { format: 'html', '_method': 'put', 'abstractor_abstraction': { } }
+      url: $(this).attr('href')
+      success: (data) ->
+        $(that).closest(".abstractor_abstraction").html(data)
+        return
+    return false
+
   $(document).on "click", ".abstractor_abstraction_value a.edit_link", (e) ->
     e.preventDefault()
     parent_div = $(this).closest(".abstractor_abstraction")

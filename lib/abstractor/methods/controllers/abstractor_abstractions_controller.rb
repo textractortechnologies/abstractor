@@ -3,7 +3,7 @@ module Abstractor
     module Controllers
       module AbstractorAbstractionsController
         def self.included(base)
-          base.send :before_filter, :set_abstractor_abstraction, :only => [:show, :edit, :update]
+          base.send :before_filter, :set_abstractor_abstraction, :only => [:show, :edit, :update, :clear]
         end
 
         def index
@@ -28,6 +28,22 @@ module Abstractor
             else
               format.html { render :action => "edit" }
             end
+          end
+        end
+
+        def clear
+          respond_to do |format|
+            Abstractor::AbstractorAbstraction.transaction do
+              @abstractor_abstraction.value = nil
+              @abstractor_abstraction.unknown = nil
+              @abstractor_abstraction.not_applicable = nil
+              @abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
+                abstractor_suggestion.accepted = nil
+                abstractor_suggestion.save!
+              end
+              @abstractor_abstraction.save!
+            end
+            format.html { render "abstractor/abstractor_abstractions/show", layout: false }
           end
         end
 
