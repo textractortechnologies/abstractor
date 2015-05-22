@@ -31,10 +31,10 @@ Feature: Editing radiation therapy prescription
       | Vague blather.                          |
     When I go to the last radiation therapy prescription edit page
     Then I should not see "Delete group"
-    And I should see "Add group"
-    When I do not confirm link "Add group"
+    And I should see "Add Anatomical Location"
+    When I do not confirm link "Add Anatomical Location"
     Then I should not see "Delete group"
-    When I confirm link "Add group"
+    When I confirm link "Add Anatomical Location"
     And I wait for the ajax request to finish
     And I should see "Delete group"
     And ".abstractor_abstraction_value" in the last ".abstractor_abstraction" should contain text "[Not set]"
@@ -48,7 +48,7 @@ Feature: Editing radiation therapy prescription
     When I confirm link "Delete group"
     And I wait for the ajax request to finish
     Then I should see 1 ".abstractor_abstraction_group" within ".abstractor_subject_groups"
-    Then I should see "Add group"
+    Then I should see "Add Anatomical Location"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
     And I should see "edit" anywhere within ".has_anatomical_location"
     And I should see "edit" anywhere within ".has_laterality"
@@ -65,7 +65,7 @@ Feature: Editing radiation therapy prescription
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
     And the "Accepted" checkbox within ".has_anatomical_location" should not be checked
     And I should see "edit" anywhere within ".has_anatomical_location"
-    And I should see "Add group"
+    And I should see "Add Anatomical Location"
     And I should not see "Delete group"
     And ".abstractor_suggestion_values" in the first ".has_anatomical_location" should contain text "unknown"
 
@@ -80,7 +80,7 @@ Feature: Editing radiation therapy prescription
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
     And the "Accepted" checkbox within ".has_anatomical_location" should not be checked
     And I should see "edit" anywhere within ".has_anatomical_location"
-    And I should see "Add group"
+    And I should see "Add Anatomical Location"
     And I should not see "Delete group"
     And ".abstractor_suggestion_values" in the first ".has_anatomical_location" should contain text "temporal lobe"
 
@@ -91,7 +91,7 @@ Feature: Editing radiation therapy prescription
       | Site                                    |
       | treat the temporal lobe                 |
     When I go to the last radiation therapy prescription edit page
-    And I confirm link "Add group"
+    And I confirm link "Add Anatomical Location"
     And I wait for the ajax request to finish
     And ".abstractor_abstraction_actions" in the last ".abstractor_abstraction_group" should contain selector ".abstractor_group_delete_link"
     And ".abstractor_abstraction_actions" in the first ".abstractor_abstraction_group" should not contain selector ".abstractor_group_delete_link"

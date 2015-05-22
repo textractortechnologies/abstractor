@@ -81,7 +81,7 @@ Feature: Editing imaging exam
     | Note Text                           | Patient ID | Date     | Accession Number | Namespace          |Namespace ID |
     | Hello, you look good to me.         |      1     | 1/1/2014 |  123             | Discerner::Search  |     1       |
   When I go to the namespace_type "Discerner::Search" and namespace_id 1 sent to the last imaging exam edit page
-  And I confirm link "Add group" in the last ".abstractor_subject_groups_container"
+  And I confirm link "Add Diagnosis" in the last ".abstractor_subject_groups_container"
   And I wait for the ajax request to finish
   Then I should see 2 ".has_diagnosis" within the last ".abstractor_subject_groups_container"
   And "fieldset" in the last ".abstractor_subject_groups_container" should contain text "Delete group"
@@ -93,7 +93,7 @@ Feature: Editing imaging exam
     | Note Text                           | Patient ID | Date     | Accession Number | Namespace          |Namespace ID |
     | Hello, you look good to me.         |      1     | 1/1/2014 |  123             | Discerner::Search  |     1       |
   When I go to the namespace_type "Discerner::Search" and namespace_id 1 sent to the last imaging exam edit page
-  And I confirm link "Add group" in the last ".abstractor_subject_groups_container"
+  And I confirm link "Add Diagnosis" in the last ".abstractor_subject_groups_container"
   And I wait for the ajax request to finish
   When I click on ".edit_link" within the last ".has_diagnosis"
   And I wait for the ajax request to finish
@@ -101,7 +101,6 @@ Feature: Editing imaging exam
   When I press "Save"
   And I go to the namespace_type "Discerner::Search" and namespace_id 2 sent to the last imaging exam edit page
   Then I should not see "Ataxia"
-
   When I go to the namespace_type "Discerner::Search" and namespace_id 1 sent to the last imaging exam edit page
   Then I should see "Ataxia"
 
@@ -114,12 +113,11 @@ Feature: Editing imaging exam
   When I go to the namespace_type "Discerner::Search" and namespace_id 3 sent to the last imaging exam edit page
   Then I should see "Score 1" within ".has_score_1"
   And I should see "Falls" within ".has_falls"
-  And "fieldset" in the first ".abstractor_subject_groups_container" should contain text "Add group"
-  And "fieldset" in the first ".abstractor_subject_groups_container" should not contain text "Delete group"
-  And "fieldset" in the last ".abstractor_subject_groups_container" should not contain text "Add group"
-  And "fieldset" in the last ".abstractor_subject_groups_container" should not contain text "Delete group"
-
-  When I confirm link "Add group" in the first ".abstractor_subject_groups_container"
+  And "fieldset" in the first ".abstractor_subject_groups_container" should contain text "Add Scores"
+  And "fieldset" in the first ".abstractor_subject_groups_container" should not contain text "Delete Scores"
+  And "fieldset" in the last ".abstractor_subject_groups_container" should not contain text "Add Scores"
+  And "fieldset" in the last ".abstractor_subject_groups_container" should not contain text "Delete Scores"
+  When I confirm link "Add Scores" in the first ".abstractor_subject_groups_container"
   And I wait for the ajax request to finish
   Then I should see 2 ".has_score_1" within the first ".abstractor_subject_groups_container"
   And the element ".abstractor_group_add_link" in the first ".abstractor_subject_groups_container" should not be visible
@@ -140,10 +138,9 @@ Feature: Editing imaging exam
     | Note Text                                                             | Patient ID | Date     | Accession Number | Namespace          |Namespace ID |
     | I like little my the best!\nfavorite moomin:\nThe groke is the bomb!  |      1     | 1/1/2014 |  123             | Discerner::Search  |     1       |
   When I go to the namespace_type "Discerner::Search" and namespace_id 1 sent to the last imaging exam edit page
-  And I confirm link "Add group" in the last ".abstractor_subject_groups_container"
+  And I confirm link "Add Diagnosis" in the last ".abstractor_subject_groups_container"
   And I wait for the ajax request to finish
   Then I should see 2 ".abstractor_abstraction_source_tooltip_img" within the last ".has_diagnosis"
-
   When I click within last ".has_diagnosis span.abstractor_abstraction_source_tooltip_img"
   Then I should see an ".ui-dialog_abstractor" element
   And ".ui-dialog-titlebar" should contain text "ImagingExam note_text favorite moomin"

@@ -31,7 +31,7 @@ Feature: Editing surgery
     And I click on ".edit_link" within the last ".abstractor_abstraction"
     Then ".indirect_source_list" in the first ".indirect_source" should have "123 (2014-01-01)" selected
     When I go to the last surgery edit page
-    When I confirm link "Add group"
+    When I confirm link "Add Surgery Anatomical Location"
     And I wait for the ajax request to finish
     And I click on ".edit_link" within the last ".abstractor_abstraction"
     And I select "456 (2014-01-02)" from ".indirect_source_list" in the first ".indirect_source"
