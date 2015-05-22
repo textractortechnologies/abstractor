@@ -338,7 +338,6 @@ Then /^"([^\"]*)"(?: in the(?: (first|last)?) "([^\"]*)")? should(?: (not))? hav
   }
 end
 
-
 Then /^"([^\"]*)"(?: in the(?: (first|last)?) "([^\"]*)")? should(?: (not))? be checked$/ do |selector, position, scope_selector, negation|
   within_scope(get_scope(position, scope_selector)) {
     selector = "#{selector}[checked='checked']"

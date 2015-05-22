@@ -30,22 +30,22 @@ Feature: Editing radiation therapy prescription
       | Site                                    |
       | Vague blather.                          |
     When I go to the last radiation therapy prescription edit page
-    Then I should not see "Delete group"
+    Then I should not see "Delete Anatomical Location"
     And I should see "Add Anatomical Location"
     When I do not confirm link "Add Anatomical Location"
-    Then I should not see "Delete group"
+    Then I should not see "Delete Anatomical Location"
     When I confirm link "Add Anatomical Location"
     And I wait for the ajax request to finish
-    And I should see "Delete group"
+    And I should see "Delete Anatomical Location"
     And ".abstractor_abstraction_value" in the last ".abstractor_abstraction" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the last ".abstractor_abstraction" should contain selector ".edit_link"
     When I go to the last radiation therapy prescription edit page
-    And I should see "Delete group"
+    And I should see "Delete Anatomical Location"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain selector ".edit_link"
-    When I do not confirm link "Delete group"
+    When I do not confirm link "Delete Anatomical Location"
     Then I should see 2 ".abstractor_abstraction_group" within ".abstractor_subject_groups"
-    When I confirm link "Delete group"
+    When I confirm link "Delete Anatomical Location"
     And I wait for the ajax request to finish
     Then I should see 1 ".abstractor_abstraction_group" within ".abstractor_subject_groups"
     Then I should see "Add Anatomical Location"
@@ -66,7 +66,7 @@ Feature: Editing radiation therapy prescription
     And the "Accepted" checkbox within ".has_anatomical_location" should not be checked
     And I should see "edit" anywhere within ".has_anatomical_location"
     And I should see "Add Anatomical Location"
-    And I should not see "Delete group"
+    And I should not see "Delete Anatomical Location"
     And ".abstractor_suggestion_values" in the first ".has_anatomical_location" should contain text "unknown"
 
   @javascript
@@ -81,7 +81,7 @@ Feature: Editing radiation therapy prescription
     And the "Accepted" checkbox within ".has_anatomical_location" should not be checked
     And I should see "edit" anywhere within ".has_anatomical_location"
     And I should see "Add Anatomical Location"
-    And I should not see "Delete group"
+    And I should not see "Delete Anatomical Location"
     And ".abstractor_suggestion_values" in the first ".has_anatomical_location" should contain text "temporal lobe"
 
   @javascript

@@ -84,7 +84,7 @@ Feature: Editing imaging exam
   And I confirm link "Add Diagnosis" in the last ".abstractor_subject_groups_container"
   And I wait for the ajax request to finish
   Then I should see 2 ".has_diagnosis" within the last ".abstractor_subject_groups_container"
-  And "fieldset" in the last ".abstractor_subject_groups_container" should contain text "Delete group"
+  And "fieldset" in the last ".abstractor_subject_groups_container" should contain text "Delete Diagnosis"
 
   @javascript
   Scenario: Editing groups in UI should edit only abstractions related to selected namespace
@@ -126,7 +126,7 @@ Feature: Editing imaging exam
   Then I should see 2 ".has_score_1" within the first ".abstractor_subject_groups_container"
   And the element ".abstractor_group_add_link" in the first ".abstractor_subject_groups_container" should not be visible
 
-  When I confirm link "Delete group" in the first ".abstractor_subject_groups_container"
+  When I confirm link "Delete Scores" in the first ".abstractor_subject_groups_container"
   And I wait for the ajax request to finish
   Then I should see 1 ".has_score_1" within the first ".abstractor_subject_groups_container"
   And the element ".abstractor_group_add_link" in the first ".abstractor_subject_groups_container" should be visible
