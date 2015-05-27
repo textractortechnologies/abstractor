@@ -7,9 +7,9 @@ module Abstractor
     def self.highlight(text, phrases, *args)
       options = args.extract_options!
       unless args.empty?
-        options[:highlighter] = args[0] || '<strong class="highlight">\1</strong>'
+        options[:highlighter] = args[0] || '<strong class="abstractor_highlight">\1</strong>'
       end
-      options.reverse_merge!(:highlighter => '<strong class="highlight">\1</strong>')
+      options.reverse_merge!(:highlighter => '<strong class="abstractor_highlight">\1</strong>')
 
       # text = sanitize(text) unless options[:sanitize] == false
       if text.blank? || phrases.blank?
@@ -35,6 +35,10 @@ module Abstractor
       end
 
       url
+    end
+
+    def self.generate_source_id(source)
+      "#{source[:source_type].to_s}_#{source[:source_id]}_#{source[:source_method]}"
     end
   end
 end

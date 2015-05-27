@@ -1,10 +1,69 @@
+.highlight {
+  background-color: #008cba;
+}
+
+.highlighted_suggestion {
+  background-color: #008cba;
+}
+
+.abstractor_sources_tabs {
+  position: relative;
+  min-height: 17rem; /* This part sucks */
+  clear: both;
+  margin: 5px 0;
+}
+.abstractor_source_tab {
+  float: left;
+}
+.abstractor_source_tab label {
+  background: #eee;
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-left: -1px;
+  position: relative;
+  left: 1px;
+}
+.abstractor_source_tab [type=radio] {
+  display: none;
+}
+.abstractor_source_tab_content {
+  position: absolute;
+  top: 43px;
+  left: 0;
+  background: white;
+  right: 0;
+  bottom: 0;
+  padding: 20px;
+
+}
+.abstractor_sources_tabs [type=radio]:checked ~ label {
+  background: white;
+  border-bottom: 1px solid white;
+  z-index: 2;
+}
+.abstractor_sources_tabs [type=radio]:checked ~ label ~ .content {
+  z-index: 1;
+}
+
+.abstractor_footer {
+  background: white;
+  position: fixed;
+  bottom: 0;
+  height: 21rem;
+  margin: 0 auto;
+  max-width: 62.5rem;
+  width: 100%;
+  overflow: auto;
+}
+
 .abstractor_abstractions {
   display: inline;
   float: left;
   margin-right: 10px;
   width: 958.33333px;
   margin-top: 1.5em;
-  margin-bottom: 1.5em;
+  margin-bottom: 500rem;
+  overflow: auto;
 }
 
 * html .abstractor_abstractions {
@@ -147,13 +206,14 @@
 .abstractor_abstractions fieldset .abstractor_abstraction_source_tooltip_img i {
   background: asset_url('abstractor/page.png') no-repeat;
   vertical-align: text-bottom;
-  padding: 2px 10px;
+  padding: 2px 9px;
+  margin-left: .15rem;
   vertical-align: middle;
 }
 
-.abstractor_abstractions fieldset .abstractor_abstraction_source_tooltip_img i.abstraction_text_link_match {
-  background: asset_url('abstractor/page_green.png') no-repeat;
-}
+//.abstractor_abstractions fieldset .abstractor_abstraction_source_tooltip_img i.abstraction_text_link_match {
+//  background: asset_url('abstractor/page_green.png') no-repeat;
+//}
 
 .abstractor_abstractions fieldset .hidden {
   display: none;

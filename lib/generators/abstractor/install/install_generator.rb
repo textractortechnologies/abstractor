@@ -47,6 +47,23 @@ module Abstractor
                        :after => "ActionController::Base\n")
     end
 
+    def add_abstractor_view_helpers
+      puts "Defining abstractor view helpers inside ApplicationHelper..."
+
+      abstractor_helper_methods = %Q{
+  def show_abstractor_group_all_links?
+    true
+  end
+
+  def show_abstractor_all_links?
+    true
+  end
+}
+      inject_into_file("#{Rails.root}/app/helpers/application_helper.rb",
+                       abstractor_helper_methods,
+                       after: "ApplicationHelper\n")
+    end
+
     def mount_engine
       puts "Mounting Abstractor::Engine at \"/\" in config/routes.rb..."
       insert_into_file("#{Rails.root}/config/routes.rb", :after => /routes.draw.do\n/) do

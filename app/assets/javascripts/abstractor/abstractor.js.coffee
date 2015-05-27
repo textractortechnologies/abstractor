@@ -64,19 +64,22 @@ Abstractor.AbstractionUI = ->
 
   $(document).on "click", ".abstractor_abstraction_source_tooltip_img", (evt) ->
     target = $(this).attr("rel")
-    html = $(target).html()
-    title = $(this).attr("title")
+    tab = $(target).find('.abstractor_source_tab')
+    if tab.length == 1
+      tab = $(tab).html().trim()
+      sentence_match_value = $(target).find('.sentence_match_value').html().trim()
+      match_value = $(target).find('.match_value').html().trim()
+      $('#' + tab + ' input[type=radio]').prop('checked', true)
+      if $(this).hasClass('highlighted_suggestion')
+        $(this).removeClass('highlighted_suggestion')
+        $('#' + tab + " .abstractor_source_tab_content .abstractor_highlight:containsNC('" + sentence_match_value + "')").unhighlight(match_value)
+      else
+        $('.highlighted_suggestion').removeClass('highlighted_suggestion')
+        $('#' + tab + ' .abstractor_source_tab_content').unhighlight()
+        $('#' + tab + " .abstractor_source_tab_content .abstractor_highlight:containsNC('" + sentence_match_value + "')").highlight(match_value)
+        $(this).addClass('highlighted_suggestion')
+
     evt.preventDefault()
-    $("#abstractor_abstraction_dialog_tooltip").dialog
-      maxHeight: 400
-      autoOpen: false
-      width: 600
-      zIndex: 40000
-      dialogClass: "ui-dialog_abstractor"
-    $("#abstractor_abstraction_dialog_tooltip").html html
-    $("#abstractor_abstraction_dialog_tooltip").dialog "option", "title", title
-    $("#abstractor_abstraction_dialog_tooltip").dialog "option", "width", ($(window).width() * 0.80)
-    $("#abstractor_abstraction_dialog_tooltip").dialog "open"
     return
 
   $(document).on "change", "select.indirect_source_list", ->
@@ -91,6 +94,7 @@ Abstractor.AbstractionUI = ->
 Abstractor.AbstractionSuggestionUI = ->
   $(document).on "change", ".abstractor_suggestion_status_selection", ->
     $(this).closest("form").submit()
+    $('.abstractor_footer').unhighlight()
     return
 
   $(document).on "ajax:success", "form.edit_abstractor_suggestion", (e, data, status, xhr) ->
