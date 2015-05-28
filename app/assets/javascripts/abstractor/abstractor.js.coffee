@@ -12,6 +12,20 @@ Abstractor.AbstractionUI = ->
         return
     return false
 
+  $(document).on "click", ".abstractor_abstractions .show_hide_abstractor_history_link", (e) ->
+    e.preventDefault()
+    if $(this).hasClass('show_abstractor_history')
+      $(this).removeClass('show_abstractor_history')
+      $(this).addClass('hide_abstractor_history')
+      $(this).closest(".abstractor_history").find('.abstactor_history_content').removeClass('hide')
+      $(this).html('(Hide)')
+    else
+      $(this).addClass('show_abstractor_history')
+      $(this).removeClass('hide_abstractor_history')
+      $(this).closest(".abstractor_history").find('.abstactor_history_content').addClass('hide')
+      $(this).html('(Show)')
+    return false
+
   $(document).on "click", ".abstractor_abstraction_value a.edit_link", (e) ->
     e.preventDefault()
     parent_div = $(this).closest(".abstractor_abstraction")
@@ -62,7 +76,8 @@ Abstractor.AbstractionUI = ->
     $(this).siblings("input[type='checkbox']").prop "checked", false
     return
 
-  $(document).on "click", ".abstractor_abstraction_source_tooltip_img", (evt) ->
+  $(document).on "click", ".abstractor_abstraction_source_tooltip_img", (e) ->
+    e.preventDefault()
     target = $(this).attr("rel")
     tab = $(target).find('.abstractor_source_tab')
     if tab.length == 1
@@ -78,8 +93,6 @@ Abstractor.AbstractionUI = ->
         $('#' + tab + ' .abstractor_source_tab_content').unhighlight()
         $('#' + tab + " .abstractor_source_tab_content .abstractor_highlight:containsNC('" + sentence_match_value + "')").highlight(match_value)
         $(this).addClass('highlighted_suggestion')
-
-    evt.preventDefault()
     return
 
   $(document).on "change", "select.indirect_source_list", ->

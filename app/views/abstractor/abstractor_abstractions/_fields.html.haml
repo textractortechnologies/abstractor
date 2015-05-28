@@ -15,7 +15,8 @@
         = link_to 'edit', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_abstraction_path(abstractor_abstraction)), class: 'icon_link edit_link'
         = link_to 'clear', Abstractor::UserInterface.abstractor_relative_path(abstractor.clear_abstractor_abstraction_path(abstractor_abstraction)), class:'icon_link clear_link'
       - versions = abstractor_abstraction.versions.sort{|a,b| b.created_at <=> a.created_at}.reject{|v| v.reify.blank? || v.reify.display_value =~ /not set/i}
-      = render partial: 'abstractor/abstractor_abstractions/abstraction_history', locals: { versions: versions }
+      .abstractor_history
+        = render partial: 'abstractor/abstractor_abstractions/abstraction_history', locals: { versions: versions }
     .abstractor_suggestions
       - if abstractor_suggestions.any?
         - abstractor_suggestions.each_with_index do |abstractor_suggestion, index|
