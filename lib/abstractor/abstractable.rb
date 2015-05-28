@@ -19,14 +19,16 @@ module Abstractor
         abstractor_suggestion_sources = []
         abstractor_abstractions.each do |abstractor_abstraction|
           abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
-            abstractor_suggestion_sources << abstractor_suggestion.abstractor_suggestion_sources
+            if abstractor_suggestion.abstractor_suggestion_sources.any?
+              abstractor_suggestion_sources.concat(abstractor_suggestion.abstractor_suggestion_sources)
+            end
           end
         end
-        abstractor_suggestion_sources.flatten!
+        abstractor_suggestion_sources.compact!
         sources = abstractor_suggestion_sources.map { |abstractor_suggestion_source| { source_type: abstractor_suggestion_source.source_type.constantize, source_id: abstractor_suggestion_source.source_id , source_method: abstractor_suggestion_source.source_method, section_name: abstractor_suggestion_source.section_name } }.uniq!
 
         sources.each do |source|
-          source[:abstractor_suggestion_sources] = abstractor_suggestion_sources.map { |abstractor_suggestion_source| { source_type: abstractor_suggestion_source.source_type.constantize, source_id: abstractor_suggestion_source.source_id , source_method: abstractor_suggestion_source.source_method, section_name: abstractor_suggestion_source.section_name, sentence_match_value: abstractor_suggestion_source.sentence_match_value } }.uniq!
+          source[:abstractor_suggestion_sources] = abstractor_suggestion_sources.map { |abstractor_suggestion_source| { source_type: abstractor_suggestion_source.source_type.constantize, source_id: abstractor_suggestion_source.source_id , source_method: abstractor_suggestion_source.source_method, section_name: abstractor_suggestion_source.section_name, sentence_match_value: abstractor_suggestion_source.sentence_match_value } }.uniq
         end
         sources
       end
