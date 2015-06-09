@@ -1,74 +1,58 @@
+.hide {
+  display: none;
+}
+
 .expand_collapse_abstractor_footer_link {
   float: right;
   margin-right: 2rem;
 }
-
 .highlight {
   background-color: #008cba;
 }
-
 .highlighted_suggestion {
   background-color: #008cba;
 }
-
+.abstractor_footer {
+  background: white;
+  position: fixed;
+  margin-left:50%;
+  height: 1000rem;
+  width: 50%;
+//Set per application
+//  top: 35%;
+}
 .abstractor_sources_tabs {
-  position: relative;
-  min-height: 17rem; /* This part sucks */
-  clear: both;
-  margin: 5px 0;
+  margin: 1rem 0;
 }
-.abstractor_source_tab {
-  float: left;
-}
+
 .abstractor_source_tab label {
   background: #eee;
-  padding: 10px;
-  border: 1px solid #ccc;
-  margin-left: -1px;
-  position: relative;
-  left: 1px;
+  padding: .75rem;
+  border: .1rem solid #ccc;
+  left: .5rem;
 }
 .abstractor_source_tab [type=radio] {
   display: none;
 }
 .abstractor_source_tab_content {
-  position: absolute;
-  top: 43px;
-  left: 0;
-  background: white;
-  right: 0;
-  bottom: 0;
-  padding: 20px;
-
+  padding: 1rem;
+  max-height: 900px;
+  overflow: auto;
 }
 .abstractor_sources_tabs [type=radio]:checked ~ label {
   background: white;
-  border-bottom: 1px solid white;
+  border-bottom: .1em solid white;
   z-index: 2;
 }
 .abstractor_sources_tabs [type=radio]:checked ~ label ~ .content {
   z-index: 1;
 }
 
-.abstractor_footer {
-  background: white;
-  position: fixed;
-  bottom: 0;
-  height: 21rem;
-  margin: 0 auto;
-  max-width: 62.5rem;
-  width: 100%;
-  overflow: auto;
-}
-
 .abstractor_abstractions {
   display: inline;
   float: left;
-  margin-right: 10px;
-  width: 958.33333px;
-  margin-top: 1.5em;
-  margin-bottom: 500rem;
-  overflow: auto;
+  width: 50%;
+  margin-top: 1.5rem;
 }
 
 * html .abstractor_abstractions {
@@ -77,7 +61,7 @@
 
 .abstractor_abstractions label, .abstractor_abstractions input {
   display: inline-block;
-  margin-bottom: 0.6em;
+  margin-bottom: 0.5rem;
   font-weight: normal !important;
 }
 
@@ -87,22 +71,22 @@
 
 .abstractor_abstractions .highlighted {
   background: #e6e6e6;
-  padding: 0.25em;
+  padding: 0.25rem;
 }
 
 .abstractor_abstractions fieldset {
-  border: 1px solid #969696;
-  margin: 0.75em 0;
-  padding: 0.75em 0.5em 0.4em 0.5em;
+  border: .1rem solid #969696;
+  margin: 0.75rem 0;
+  padding: 0.75rem 0.5rem 0.4rem 0.5rem;
 }
 
 .abstractor_abstractions fieldset input.combobox {
   vertical-align: bottom;
-  width: 12em !important;
+  width: 12rem !important;
 }
 
 .abstractor_abstractions fieldset .ui-button-icon-only {
-  margin-bottom: 0.6em;
+  margin-bottom: 0.6rem;
 }
 
 .abstractor_abstractions fieldset .ui-button-icon-only .ui-icon {
@@ -116,42 +100,34 @@
 }
 
 .abstractor_abstractions fieldset .abstractor_abstraction_schema_name,
-.abstractor_abstractions fieldset .abstractor_suggestion_status,
-.abstractor_abstractions fieldset .abstractor_suggestion_sources {
+.abstractor_abstractions fieldset .abstractor_abstraction_value {
+  float: left;
+  display: inline;
+  width: 25%;
+}
+
+.abstractor_abstractions fieldset .abstractor_suggestions {
+  float: left;
+  display: inline;
+  width: 50%;
+}
+
+.abstractor_abstractions fieldset .abstractor_suggestion_values,
+.abstractor_abstractions fieldset .abstractor_suggestion_status {
   display: inline;
   float: left;
-  margin-right: 10px;
-  width: 135.25px;
+  width: 50%;
 }
 
 .abstractor_abstractions fieldset .abstraction_edit_abstraction_actions {
   display: inline;
   float: left;
-  margin-right: 10px;
-  width: 183.66667px;
 }
-
-.abstractor_abstractions fieldset .abstractor_abstraction_value,
-.abstractor_abstractions fieldset .abstractor_suggestion_values {
-  display: inline;
-  float: left;
-  margin-right: 10px;
-  width: 232.08333px;
-}
-
 
 .abstractor_abstractions fieldset .abstraction_edit_abstraction_value {
   display: inline;
   float: left;
-  margin-right: 10px;
-  width: 328.91667px;
-}
-
-.abstractor_abstractions fieldset .abstractor_suggestions {
-  display: inline;
-  float: left;
-  margin-right: 10px;
-  width: 425.75px;
+  width: 50%;
 }
 
 * html .abstractor_abstractions fieldset .abstractor_abstraction_schema_name,
@@ -171,61 +147,52 @@
 
 .abstractor_abstractions fieldset .abstractor_abstraction_schema_name {
   font-weight: bold;
-  margin-bottom: 0.3em;
+  margin-bottom: 0.3rem;
 }
 
 .abstractor_abstractions fieldset .abstractor_abstraction_value {
-  margin-bottom: 0.5em;
+  margin-bottom: 0.5rem;
 }
 
 .abstractor_abstractions fieldset .abstractor_abstraction_value .version {
-  margin-top: .5em;
-  margin-bottom: .5em;
-  border-bottom: 1px #969696 dashed;
+  margin-top: .5rem;
+  margin-bottom: .5rem;
+  border-bottom: .1rem #969696 dashed;
 }
 
 .abstractor_abstractions fieldset .abstractor_abstraction_value .version .version_date {
-  margin-bottom: .5em;
+  margin-bottom: .5rem;
 }
 
 .abstractor_abstractions fieldset .abstractor_abstraction_value .version .version_value {
-  margin-bottom: .5em;
+  margin-bottom: .5rem;
 }
 
 .abstractor_abstractions fieldset .abstractor_abstraction_value .version .version_user {
-  margin-bottom: .5em;
+  margin-bottom: .5rem;
 }
 
 .abstractor_abstractions fieldset .editable_abstraction {
-  border-bottom: 1px #969696 dashed;
-  margin-right: .5em;
+  border-bottom: .1rem #969696 dashed;
 }
 
 .abstractor_abstractions .abstractor_abstraction_value .links {
   margin-top: .5rem;
 }
 
-.abstractor_abstractions fieldset .abstractor_abstraction_source_tooltip_img {
-  margin-left: 5px;
-}
 .abstractor_abstractions fieldset .abstractor_abstraction_source_tooltip_img i {
   background: asset_url('abstractor/page.png') no-repeat;
   vertical-align: text-bottom;
-  padding: 2px 9px;
-  margin-left: .15rem;
+  padding: .15rem .65rem;
   vertical-align: middle;
 }
-
-//.abstractor_abstractions fieldset .abstractor_abstraction_source_tooltip_img i.abstraction_text_link_match {
-//  background: asset_url('abstractor/page_green.png') no-repeat;
-//}
 
 .abstractor_abstractions fieldset .hidden {
   display: none;
 }
 
 .abstractor_abstractions fieldset .abstractor_abstraction_edit div {
-  padding: 2px 0;
+  padding: .15rem 0;
 }
 
 .abstractor_abstractions fieldset a.button {
@@ -240,59 +207,59 @@ ul.ui-autocomplete, .ui-dialog {
   z-index: 1000 !important;
 }
 .abstractor_bottom_border {
-  border-bottom: 1px solid #dddddd;
+  border-bottom: .1rem solid #dddddd;
   overflow: auto;
 }
 
-/* Tooltips */
-div.tooltip {
-  background-color: #e2ecf6;
-  border-bottom-color: #324686;
-  border-bottom-style: solid;
-  border-bottom-width: 1px;
-  border-left-color-ltr-source: physical;
-  border-left-color-rtl-source: physical;
-  border-left-color-value: #324686;
-  border-left-style-ltr-source: physical;
-  border-left-style-rtl-source: physical;
-  border-left-style-value: solid;
-  border-left-width-ltr-source: physical;
-  border-left-width-rtl-source: physical;
-  border-left-width-value: 1px;
-  border-right-color-ltr-source: physical;
-  border-right-color-rtl-source: physical;
-  border-right-color-value: #324686;
-  border-right-style-ltr-source: physical;
-  border-right-style-rtl-source: physical;
-  border-right-style-value: solid;
-  border-right-width-ltr-source: physical;
-  border-right-width-rtl-source: physical;
-  border-right-width-value: 1px;
-  border-top-color: #324686;
-  border-top-style: solid;
-  border-top-width: 1px;
-  margin-bottom: 0;
-  margin-left: 0;
-  margin-right: 0;
-  margin-top: 0;
-  max-width: 400px;
-  overflow-x: hidden;
-  overflow-y: hidden;
-  padding-bottom: 0;
-  padding-left: 0;
-  padding-right: 0;
-  padding-top: 0;
-}
+///* Tooltips */
+//div.tooltip {
+//  background-color: #e2ecf6;
+//  border-bottom-color: #324686;
+//  border-bottom-style: solid;
+//  border-bottom-width: 1px;
+//  border-left-color-ltr-source: physical;
+//  border-left-color-rtl-source: physical;
+//  border-left-color-value: #324686;
+//  border-left-style-ltr-source: physical;
+//  border-left-style-rtl-source: physical;
+//  border-left-style-value: solid;
+//  border-left-width-ltr-source: physical;
+//  border-left-width-rtl-source: physical;
+//  border-left-width-value: 1px;
+//  border-right-color-ltr-source: physical;
+//  border-right-color-rtl-source: physical;
+//  border-right-color-value: #324686;
+//  border-right-style-ltr-source: physical;
+//  border-right-style-rtl-source: physical;
+//  border-right-style-value: solid;
+//  border-right-width-ltr-source: physical;
+//  border-right-width-rtl-source: physical;
+//  border-right-width-value: 1px;
+//  border-top-color: #324686;
+//  border-top-style: solid;
+//  border-top-width: 1px;
+//  margin-bottom: 0;
+//  margin-left: 0;
+//  margin-right: 0;
+//  margin-top: 0;
+//  max-width: 400px;
+//  overflow-x: hidden;
+//  overflow-y: hidden;
+//  padding-bottom: 0;
+//  padding-left: 0;
+//  padding-right: 0;
+//  padding-top: 0;
+//}
+//
+//.tooltip {
+//  display: none;
+//}
 
-.tooltip {
-  display: none;
-}
-
-#dialog_tooltip {
-  font-size: 13px;
-  line-height: 1.5em;
-  max-height: 400px;
-}
+//#dialog_tooltip {
+//  font-size: 13px;
+//  line-height: 1.5em;
+//  max-height: 400px;
+//}
 
 span.tooltip_img {
   padding-top: 0.25em;
@@ -304,15 +271,15 @@ span.tooltip_img {
   font-style:italic
 }
 
-.abstractor_abstraction_actions  a{
-  float: right;
-}
-.abstractor_abstraction_actions a {
-  margin: .25em;
-}
+//.abstractor_abstraction_actions  a{
+//  float: right;
+//}
+//.abstractor_abstraction_actions a {
+//  margin: .25em;
+//}
 
 .abstractor_abstraction_edit .indirect_source_list {
-  margin-bottom: 1em;
+  margin-bottom: 1rem;
 }
 
 .indirect_sources label {
@@ -324,15 +291,15 @@ span.tooltip_img {
 }
 
 .indirect_source_text {
-   border: 1px solid #969696;
+   border: .1rem solid #969696;
 }
 
 .indirect_source {
-  margin-bottom: 1em;
+  margin-bottom: 1rem;
 }
 
 .abstractor_suggestion_values .custom_explanation {
-  margin-top: .5em;
+  margin-top: .5rem;
 }
 
 .abstractor_suggestion_values .custom_explanation label {
@@ -342,7 +309,11 @@ span.tooltip_img {
 .abstractor_abstractions_header,
 .abstractor_abstraction_group_member,
 .abstractor_abstraction_group_actions {
-  border-bottom: 1px solid #dddddd;
+  border-bottom: .1rem solid #dddddd;
   overflow: auto;
-  padding-bottom: 0.25em;
+  padding-bottom: .25rem;
+}
+
+.abstractor_subject_groups {
+  margin-bottom: 1rem;
 }

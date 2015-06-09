@@ -12,7 +12,6 @@
   = render partial: 'abstractor/abstractor_abstractions/ungrouped_abstractions_list', locals: { about: about, namespace_type: namespace_type, namespace_id: namespace_id}
 .abstractor_footer
   .abstractor_sources_tabs
-    = link_to 'Collapse', '', class: 'expand_collapse_abstractor_footer_link expand_abstractor_footer'
     - about.sources.each_with_index do |source, i|
       .abstractor_source_tab{ id: "#{Abstractor::UserInterface.generate_source_id(source)}" }
         = radio_button_tag "abstractor_source_tab", i,  name: "abstractor_source_tabs", checked: nil

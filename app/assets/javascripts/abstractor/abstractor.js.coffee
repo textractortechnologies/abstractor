@@ -27,22 +27,6 @@ Abstractor.AbstractionUI = ->
       $(this).html('(Show)')
     return false
 
-  $(document).on "click", ".abstractor_footer .expand_collapse_abstractor_footer_link", (e) ->
-    e.preventDefault()
-    if $(this).hasClass('expand_abstractor_footer')
-      $(this).removeClass('expand_abstractor_footer')
-      $(this).addClass('collapse_abstractor_footer')
-      $('.abstractor_footer').height('4rem')
-      $('.abstractor_footer').css('overflow', 'visible')
-      $(this).html('Expand')
-    else
-      $(this).addClass('expand_abstractor_footer')
-      $(this).removeClass('collapse_abstractor_footer')
-      $('.abstractor_footer').height('21rem')
-      $('.abstractor_footer').css('overflow', 'auto')
-      $(this).html('Collapse')
-    return false
-
   $(document).on "click", ".abstractor_abstraction_value a.edit_link", (e) ->
     e.preventDefault()
     parent_div = $(this).closest(".abstractor_abstraction")
