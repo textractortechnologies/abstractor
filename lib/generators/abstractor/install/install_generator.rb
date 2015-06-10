@@ -58,6 +58,10 @@ module Abstractor
   def show_abstractor_all_links?
     true
   end
+
+  def show_abstractor_headers?
+    false
+  end
 }
       inject_into_file("#{Rails.root}/app/helpers/application_helper.rb",
                        abstractor_helper_methods,

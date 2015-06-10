@@ -2,17 +2,18 @@
   - ungrouped_subjects = about.class.abstractor_subjects(grouped: false, namespace_type: namespace_type, namespace_id: namespace_id).order('abstractor_subjects.id')
   - if ungrouped_subjects.any?
     %fieldset
-      .abstractor_abstractions_header
-        .abstractor_abstraction_schema_name
-          %b Name
-        .abstractor_abstraction_value
-          %b Value
-        .abstractor_suggestions
-          .abstractor_suggestion_values
-            %b Suggestions
-          .abstractor_suggestion_status
-            %b Status
-      .clear
+      - if show_abstractor_headers?
+        .abstractor_abstractions_header
+          .abstractor_abstraction_schema_name
+            %b Name
+          .abstractor_abstraction_value
+            %b Value
+          .abstractor_suggestions
+            .abstractor_suggestion_values
+              %b Suggestions
+            .abstractor_suggestion_status
+              %b Status
+        .clear
       .abstractor_abstractions_body
         - ungrouped_subjects.each_with_index do |ungrouped_subject, index|
           - abstractor_abstractions = ungrouped_subject.abstractor_abstractions.not_deleted.where(:about_id => about.id)
