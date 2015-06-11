@@ -32,6 +32,12 @@ module Abstractor
         end
 
         module InstanceMethods
+          def clear
+            self.value = nil
+            self.unknown = nil
+            self.not_applicable = nil
+          end
+
           def review_suggestions
             matching_abstractor_suggestions.each do |abstractor_suggestion|
               abstractor_suggestion.accepted = true

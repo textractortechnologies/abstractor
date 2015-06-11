@@ -323,20 +323,22 @@ module Abstractor
               abstractor_suggestion.abstractor_suggestion_object_value = Abstractor::AbstractorSuggestionObjectValue.new(abstractor_object_value: abstractor_object_value) if abstractor_object_value
             end
 
-            abstractor_suggestion_source = abstractor_suggestion.detect_abstractor_suggestion_source(abstractor_abstraction_source, sentence_match_value, source_id, source_type, source_method, section_name)
-            if !abstractor_suggestion_source
-              Abstractor::AbstractorSuggestionSource.create(
-                                                abstractor_abstraction_source: abstractor_abstraction_source,
-                                                abstractor_suggestion: abstractor_suggestion,
-                                                match_value: match_value,
-                                                sentence_match_value: sentence_match_value,
-                                                source_id: source_id,
-                                                source_type: source_type,
-                                                source_method: source_method,
-                                                section_name: section_name,
-                                                custom_method: custom_method,
-                                                custom_explanation: custom_explanation
-                                               )
+            if abstractor_abstraction_source
+              abstractor_suggestion_source = abstractor_suggestion.detect_abstractor_suggestion_source(abstractor_abstraction_source, sentence_match_value, source_id, source_type, source_method, section_name)
+              if !abstractor_suggestion_source
+                Abstractor::AbstractorSuggestionSource.create(
+                                                  abstractor_abstraction_source: abstractor_abstraction_source,
+                                                  abstractor_suggestion: abstractor_suggestion,
+                                                  match_value: match_value,
+                                                  sentence_match_value: sentence_match_value,
+                                                  source_id: source_id,
+                                                  source_type: source_type,
+                                                  source_method: source_method,
+                                                  section_name: section_name,
+                                                  custom_method: custom_method,
+                                                  custom_explanation: custom_explanation
+                                                 )
+              end
             end
             abstractor_suggestion
           end

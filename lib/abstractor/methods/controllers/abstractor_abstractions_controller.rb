@@ -16,6 +16,7 @@ module Abstractor
         end
 
         def edit
+          @abstractor_abstraction.clear
           respond_to do |format|
             format.html { render :layout => false }
           end
@@ -23,10 +24,22 @@ module Abstractor
 
         def update
           respond_to do |format|
-            if @abstractor_abstraction.update_attributes(abstractor_abstraction_params)
-              format.html { redirect_to(abstractor_abstraction_path(@abstractor_abstraction)) }
-            else
-              format.html { render :action => "edit" }
+            begin
+              abstractor_suggestion = nil
+              Abstractor::AbstractorAbstraction.transaction do
+                abstractor_suggestion = @abstractor_abstraction.abstractor_subject.suggest(@abstractor_abstraction, nil, nil, nil, nil, nil, nil, nil, abstractor_abstraction_params[:value], abstractor_abstraction_params[:unknown].to_s.to_boolean, abstractor_abstraction_params[:not_applicable].to_s.to_boolean, nil, nil)
+                abstractor_suggestion.accepted = true
+                abstractor_suggestion.save!
+              end
+
+              if abstractor_suggestion
+                format.html { redirect_to(abstractor_abstraction_path(@abstractor_abstraction)) }
+              else
+                format.json { render json: "Error processing request to create abstractor suggestions: #{e}", status: :unprocessable_entity }
+              end
+
+            rescue => e
+              format.json { render json: "Error processing request to create abstractor suggestions: #{e}", status: :unprocessable_entity }
             end
           end
         end

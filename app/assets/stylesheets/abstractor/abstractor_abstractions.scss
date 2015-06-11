@@ -104,24 +104,29 @@
   margin: 0.1em 0 0.25em !important;
 }
 
-.abstractor_abstractions fieldset .abstractor_abstraction_schema_name,
-.abstractor_abstractions fieldset .abstractor_abstraction_value {
+.abstractor_abstractions fieldset .abstractor_abstraction_schema_name{
   float: left;
   display: inline;
-  width: 25%;
+  width: 30%;
 }
 
 .abstractor_abstractions fieldset .abstractor_suggestions {
   float: left;
   display: inline;
-  width: 50%;
+  width: 70%;
 }
 
-.abstractor_abstractions fieldset .abstractor_suggestion_values,
 .abstractor_abstractions fieldset .abstractor_suggestion_status {
   display: inline;
   float: left;
-  width: 50%;
+  width: 10%;
+}
+
+.abstractor_abstractions fieldset .abstractor_suggestion_values
+{
+  display: inline;
+  float: left;
+  width: 90%;
 }
 
 .abstractor_abstractions fieldset .abstraction_edit_abstraction_actions {
@@ -137,7 +142,6 @@
 
 * html .abstractor_abstractions fieldset .abstractor_abstraction_schema_name,
 * html .abstractor_abstractions fieldset .abstractor_suggestion_status,
-* html .abstractor_abstractions fieldset .abstractor_suggestion_sources,
 * html .abstractor_abstractions fieldset .abstraction_edit_abstraction_actions,
 * html .abstractor_abstractions fieldset .abstractor_abstraction_value,
 * html .abstractor_abstractions fieldset .abstractor_suggestion_values,
@@ -175,10 +179,6 @@
 
 .abstractor_abstractions fieldset .abstractor_abstraction_value .version .version_user {
   margin-bottom: .5rem;
-}
-
-.abstractor_abstractions fieldset .editable_abstraction {
-  border-bottom: .1rem #969696 dashed;
 }
 
 .abstractor_abstractions .abstractor_abstraction_value .links {
@@ -325,4 +325,15 @@ span.tooltip_img {
 
 .abstractor_abstraction_group_member {
   margin-bottom: 1rem;
+}
+
+.abstractor_abstraction_value .links {
+  text-align: right;
+}
+
+.abstractor_abstraction_value .links {
+  text-align: right;
+  .clear_link {
+    color: red;
+  }
 }
