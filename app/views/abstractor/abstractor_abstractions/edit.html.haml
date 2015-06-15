@@ -36,12 +36,13 @@
         &nbsp;
       - else
         = f.text_field :value
-      %br
-      = f.check_box :not_applicable
-      = f.label :not_applicable, 'not applicable'
-      &nbsp;
-      = f.check_box :unknown
-      = f.label :unknown, 'unknown'
+      - if show_abstractor_edit_other_values?
+        %br
+        = f.check_box :not_applicable
+        = f.label :not_applicable, 'not applicable'
+        &nbsp;
+        = f.check_box :unknown
+        = f.label :unknown, 'unknown'
     .abstraction_edit_abstraction_actions
       = f.submit 'Save'
       = link_to 'Cancel', abstractor_abstraction, :remote => true

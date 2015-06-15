@@ -26,18 +26,24 @@ module Abstractor
           respond_to do |format|
             begin
               abstractor_suggestion = nil
-              Abstractor::AbstractorAbstraction.transaction do
-                abstractor_suggestion = @abstractor_abstraction.abstractor_subject.suggest(@abstractor_abstraction, nil, nil, nil, nil, nil, nil, nil, abstractor_abstraction_params[:value], abstractor_abstraction_params[:unknown].to_s.to_boolean, abstractor_abstraction_params[:not_applicable].to_s.to_boolean, nil, nil)
-                abstractor_suggestion.accepted = true
-                abstractor_suggestion.save!
+              if !abstractor_abstraction_params[:value].blank?
+                Abstractor::AbstractorAbstraction.transaction do
+                  @abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
+                    if abstractor_suggestion.abstractor_suggestion_sources.not_deleted.empty?
+                      abstractor_suggestion.destroy
+                    end
+                  end
+                  abstractor_suggestion = @abstractor_abstraction.abstractor_subject.suggest(@abstractor_abstraction, nil, nil, nil, nil, nil, nil, nil, abstractor_abstraction_params[:value], abstractor_abstraction_params[:unknown].to_s.to_boolean, abstractor_abstraction_params[:not_applicable].to_s.to_boolean, nil, nil)
+                  abstractor_suggestion.accepted = true
+                  abstractor_suggestion.save!
+                end
               end
 
               if abstractor_suggestion
                 format.html { redirect_to(abstractor_abstraction_path(@abstractor_abstraction)) }
               else
-                format.json { render json: "Error processing request to create abstractor suggestions: #{e}", status: :unprocessable_entity }
+                format.json { render json: "Error processing request to create abstractor suggestion", status: :unprocessable_entity }
               end
-
             rescue => e
               format.json { render json: "Error processing request to create abstractor suggestions: #{e}", status: :unprocessable_entity }
             end
@@ -47,12 +53,14 @@ module Abstractor
         def clear
           respond_to do |format|
             Abstractor::AbstractorAbstraction.transaction do
-              @abstractor_abstraction.value = nil
-              @abstractor_abstraction.unknown = nil
-              @abstractor_abstraction.not_applicable = nil
+              @abstractor_abstraction.clear
               @abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
-                abstractor_suggestion.accepted = nil
-                abstractor_suggestion.save!
+                if abstractor_suggestion.abstractor_suggestion_sources.not_deleted.empty?
+                  abstractor_suggestion.destroy
+                else
+                  abstractor_suggestion.accepted = nil
+                  abstractor_suggestion.save!
+                end
               end
               @abstractor_abstraction.save!
             end
@@ -62,8 +70,30 @@ module Abstractor
 
         def update_all
           abstractor_abstraction_value = params[:abstractor_abstraction_value]
+          case abstractor_abstraction_value
+          when Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN
+            unknown = true
+            not_applicable = nil
+          when Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE
+            unknown = nil
+            not_applicable = true
+          end
+
           @about = params[:about_type].constantize.find(params[:about_id])
-          Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@about.abstractor_abstractions, abstractor_abstraction_value)
+          @about.abstractor_abstractions.each do |abstractor_abstraction|
+            Abstractor::AbstractorAbstraction.transaction do |variable|
+              abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
+                if abstractor_suggestion.abstractor_suggestion_sources.not_deleted.empty?
+                  abstractor_suggestion.destroy!
+                end
+              end
+
+              abstractor_suggestion = abstractor_abstraction.abstractor_subject.suggest(abstractor_abstraction, nil, nil, nil, nil, nil, nil, nil, nil, unknown, not_applicable, nil, nil)
+              abstractor_suggestion.accepted = true
+              abstractor_suggestion.save!
+            end
+          end
+
           respond_to do |format|
             format.html { redirect_to :back }
           end

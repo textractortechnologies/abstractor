@@ -8,11 +8,12 @@ bundle exec rails server
 http://0.0.0.0:3000/encounter_notes/1/edit
 
 
+require './lib/setup/setup/'
 Setup.radiation_therapy_prescription
 rtp = RadiationTherapyPrescription.create!(site_name: 'Looks like the left frontal lobe to me')
 rtp.abstract
 
-http://0.0.0.0:3000/radiation_therapy_prescriptions/17/edit
+http://0.0.0.0:3000/radiation_therapy_prescriptions/1/edit
 
 
 Abstractor::Setup.system

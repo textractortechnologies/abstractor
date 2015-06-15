@@ -57,7 +57,8 @@ module Abstractor
 
         def display_value
           if unknown
-            'unknown'          elsif not_applicable
+            'unknown'
+          elsif not_applicable
             'not applicable'
           else
             suggested_value

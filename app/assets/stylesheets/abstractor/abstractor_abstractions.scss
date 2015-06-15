@@ -108,6 +108,8 @@
   float: left;
   display: inline;
   width: 30%;
+  font-weight: bold;
+  margin-bottom: 0.3rem;
 }
 
 .abstractor_abstractions fieldset .abstractor_suggestions {
@@ -132,12 +134,13 @@
 .abstractor_abstractions fieldset .abstraction_edit_abstraction_actions {
   display: inline;
   float: left;
+  width: 25%;
 }
 
 .abstractor_abstractions fieldset .abstraction_edit_abstraction_value {
   display: inline;
   float: left;
-  width: 50%;
+  width: 45%;
 }
 
 * html .abstractor_abstractions fieldset .abstractor_abstraction_schema_name,
@@ -154,10 +157,6 @@
   clear: both;
 }
 
-.abstractor_abstractions fieldset .abstractor_abstraction_schema_name {
-  font-weight: bold;
-  margin-bottom: 0.3rem;
-}
 
 .abstractor_abstractions fieldset .abstractor_abstraction_value {
   margin-bottom: 0.5rem;
@@ -328,11 +327,7 @@ span.tooltip_img {
 }
 
 .abstractor_abstraction_value .links {
-  text-align: right;
-}
-
-.abstractor_abstraction_value .links {
-  text-align: right;
+  display: inline-block;
   .clear_link {
     color: red;
   }

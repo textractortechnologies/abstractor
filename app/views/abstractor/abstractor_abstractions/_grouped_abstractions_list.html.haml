@@ -13,13 +13,9 @@
           .abstractor_abstractions_header
             .abstractor_abstraction_schema_name
               %b Name
-            .abstractor_abstraction_value
-              %b Value
             .abstractor_suggestions
               .abstractor_suggestion_values
                 %b Suggestions
-              .abstractor_suggestion_status
-                %b Status
           .clear
         .abstractor_abstractions_body.abstractor_subject_groups
           - abstractor_abstraction_groups = about.abstractor_abstraction_groups_by_namespace(namespace_type: namespace_type, namespace_id: namespace_id, abstractor_subject_group_id: abstractor_subject_group.id)
