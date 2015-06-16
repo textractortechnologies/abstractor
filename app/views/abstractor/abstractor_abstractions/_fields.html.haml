@@ -57,6 +57,7 @@
             %div{ id: "abstraction_text_#{dom_id}", class: 'tooltip'}
               = simple_format(abstractor_text)
       .abstractor_abstraction_value
+        .clear
         .links
           = link_to 'Add', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_abstraction_path(abstractor_abstraction)), class: 'edit_link'
           |
