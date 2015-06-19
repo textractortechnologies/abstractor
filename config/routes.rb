@@ -1,5 +1,9 @@
 Abstractor::Engine.routes.draw do
-  resources :abstractor_abstraction_groups, only: [:create, :update, :destroy]
+  resources :abstractor_abstraction_groups do
+    member do
+      put :update_wokflow_status
+    end
+  end
 
   resources :abstractor_abstractions do
     collection do

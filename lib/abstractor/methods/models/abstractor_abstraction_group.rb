@@ -36,6 +36,14 @@ module Abstractor
             subtype == s
           end
 
+          def fully_set?
+            !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| abstractor_abstraction.value.blank?  }
+          end
+
+          def submitted?
+            !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| abstractor_abstraction.value.blank? || !abstractor_abstraction.submitted?  }
+          end
+
           private
             def update_abstractor_abstraction_group_members
               return unless deleted?

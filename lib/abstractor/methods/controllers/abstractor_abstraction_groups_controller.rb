@@ -4,7 +4,7 @@ module Abstractor
       module AbstractorAbstractionGroupsController
         def self.included(base)
           base.send :helper, :all
-          base.send :before_filter, :set_abstractor_abstraction_group, only: [:destroy, :update]
+          base.send :before_filter, :set_abstractor_abstraction_group, only: [:destroy, :update, :update_wokflow_status]
         end
 
         def create
@@ -60,6 +60,14 @@ module Abstractor
         def update
           abstractor_abstraction_value = params[:abstractor_abstraction_value]
           Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, abstractor_abstraction_value)
+          respond_to do |format|
+            format.html { render action: "edit", layout: false }
+          end
+        end
+
+        def update_wokflow_status
+          abstraction_workflow_status = params[:abstraction_workflow_status]
+          Abstractor::AbstractorAbstraction.update_abstractor_abstraction_workflow_status(@abstractor_abstraction_group.abstractor_abstractions, abstraction_workflow_status)
           respond_to do |format|
             format.html { render action: "edit", layout: false }
           end

@@ -32,6 +32,10 @@ module Abstractor
         end
 
         module InstanceMethods
+          def submitted?
+            workflow_status == Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+          end
+
           def clear
             self.value = nil
             self.unknown = nil
@@ -136,9 +140,26 @@ module Abstractor
 
         module ClassMethods
           ##
+          # Updates all abstractor abstractions passed in to a workflow status of 'pending' or 'submitted'.
+          #
+          # @param [Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING, Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED] abstraction_workflow_status controls whether to update all abstractor abstractions in the group to 'pending' or 'submitted'
+          # @return [void]
+          def update_abstractor_abstraction_workflow_status(abstractor_abstractions, abstraction_workflow_status)
+            raise(ArgumentError, "abstraction_workflow_status argument invalid") unless Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUSES.include?(abstraction_workflow_status)
+            Abstractor::AbstractorAbstraction.transaction do
+              if abstraction_workflow_status
+                abstractor_abstractions.each do |abstractor_abstraction|
+                  abstractor_abstraction.workflow_status = abstraction_workflow_status
+                  abstractor_abstraction.save!
+                end
+              end
+            end
+          end
+
+          ##
           # Updates all abstractor abstractions passed in to 'not applicable' or 'unknown'.
           #
-          # @param [Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE] abstraction_other_value_type contorls whether to update all abstractor abstractions in the group to 'unknown' or 'not applicable'
+          # @param [Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE] abstraction_other_value_type controls whether to update all abstractor abstractions in the group to 'unknown' or 'not applicable'
           # @return [void]
           def update_abstractor_abstraction_other_value(abstractor_abstractions, abstraction_other_value_type)
             raise(ArgumentError, "abstraction_value_type argument invalid") unless Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPES.include?(abstraction_other_value_type)

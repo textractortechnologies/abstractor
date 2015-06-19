@@ -1,4 +1,3 @@
-
 Abstractor = {}
 Abstractor.AbstractionUI = ->
   $(document).on "click", ".abstractor_abstraction .clear_link", (e) ->
@@ -9,7 +8,20 @@ Abstractor.AbstractionUI = ->
       data: { format: 'html', '_method': 'put', 'abstractor_abstraction': { } }
       url: $(this).attr('href')
       success: (data) ->
+        abstractor_abstraction_group = $(that).closest('.abstractor_abstraction_group')
         $(that).closest(".abstractor_abstraction").html(data)
+        abstractor_abstractions = $(abstractor_abstraction_group).find('.abstractor_abstraction')
+        set_abstractions = $(abstractor_abstraction_group).find('.abstractor_abstraction input:checkbox:checked').map(->
+          $(this).val()
+        ).get()
+        if abstractor_abstractions.length == set_abstractions.length
+          $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').removeClass('abstractor_group_update_workflow_status_link_disabled')
+          $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').addClass('abstractor_group_update_workflow_status_link_enabled')
+          $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').prop('disabled', false)
+        else
+          $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').removeClass('abstractor_group_update_workflow_status_link_enabled')
+          $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').addClass('abstractor_group_update_workflow_status_link_disabled')
+          $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').prop('disabled', true)
         return
     return false
 
@@ -44,10 +56,23 @@ Abstractor.AbstractionUI = ->
     return
 
   $(document).on "ajax:success", "form.edit_abstractor_abstraction", (e, data, status, xhr) ->
+    abstractor_abstraction_group = $(this).closest('.abstractor_abstraction_group')
     parent_div = $(this).closest(".abstractor_abstraction")
     parent_div.html xhr.responseText
-
     parent_div.removeClass "highlighted"
+
+    abstractor_abstractions = $(abstractor_abstraction_group).find('.abstractor_abstraction')
+    set_abstractions = $(abstractor_abstraction_group).find('.abstractor_abstraction input:checkbox:checked').map(->
+      $(this).val()
+    ).get()
+    if abstractor_abstractions.length == set_abstractions.length
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').removeClass('abstractor_group_update_workflow_status_link_disabled')
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').addClass('abstractor_group_update_workflow_status_link_enabled')
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').prop('disabled', false)
+    else
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').removeClass('abstractor_group_update_workflow_status_link_enabled')
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').addClass('abstractor_group_update_workflow_status_link_disabled')
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').prop('disabled', true)
     return
 
   $(document).on "click", ".edit_abstractor_abstraction input[type='radio']", ->
@@ -112,7 +137,22 @@ Abstractor.AbstractionSuggestionUI = ->
     return
 
   $(document).on "ajax:success", "form.edit_abstractor_suggestion", (e, data, status, xhr) ->
+    abstractor_abstraction_group = $(this).closest('.abstractor_abstraction_group')
     $(this).closest(".abstractor_abstraction").html xhr.responseText
+    abstractor_abstractions = $(abstractor_abstraction_group).find('.abstractor_abstraction')
+    set_abstractions = $(abstractor_abstraction_group).find('.abstractor_abstraction input:checkbox:checked').map(->
+      $(this).val()
+    ).get()
+    if abstractor_abstractions.length == set_abstractions.length
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').removeClass('abstractor_group_update_workflow_status_link_disabled')
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').addClass('abstractor_group_update_workflow_status_link_enabled')
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').prop('disabled', false)
+    else
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').removeClass('abstractor_group_update_workflow_status_link_enabled')
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').addClass('abstractor_group_update_workflow_status_link_disabled')
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').prop('disabled', true)
+    return
+
     return
   return
 
@@ -147,6 +187,12 @@ Abstractor.AbstractionGroupUI = ->
     parent_div = $(this).closest(".abstractor_abstraction_group")
     parent_div.html xhr.responseText
     return
+
+  $(document).on 'ajax:success', '.abstraction_workflow_status_form', (e, data, status, xhr) ->
+    parent_div = $(this).closest(".abstractor_abstraction_group")
+    parent_div.html xhr.responseText
+    return
+
   return
 
 new Abstractor.AbstractionUI()

@@ -1,5 +1,5 @@
 .hide {
-  display: none;
+  display: none !important;
 }
 
 .expand_collapse_abstractor_footer_link {
@@ -313,9 +313,15 @@ span.tooltip_img {
 .abstractor_abstractions_header,
 .abstractor_abstraction_group_member,
 .abstractor_abstraction_group_actions {
-  border-bottom: .1rem solid #dddddd;
   overflow: auto;
   padding-bottom: .25rem;
+}
+
+.abstractor_abstractions_header,
+.abstractor_abstraction_group_member
+{
+  border-bottom: .1rem solid #dddddd;
+  padding: .5rem;
 }
 
 .abstractor_subject_groups {
