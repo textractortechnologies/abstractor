@@ -75,9 +75,9 @@ module Abstractor
       def abstractor_abstraction_groups_by_namespace(options = {})
         options = { namespace_type: nil, namespace_id: nil }.merge(options)
         if options[:namespace_type] || options[:namespace_id]
-          groups = abstractor_abstraction_groups.find(abstractor_abstractions_by_namespace(options).joins(:abstractor_abstraction_group).includes(:abstractor_abstraction_group).map{|s| s.abstractor_abstraction_group.id})
+          groups = abstractor_abstraction_groups.find(abstractor_abstractions_by_namespace(options).joins(:abstractor_abstraction_group).includes(:abstractor_abstraction_group).order('abstractor_abstraction_groups.id ASC').map{|s| s.abstractor_abstraction_group.id })
         else
-          groups = abstractor_abstraction_groups.not_deleted
+          groups = abstractor_abstraction_groups.not_deleted.order('id ASC')
         end
         if options[:abstractor_subject_group_id]
           groups.select{|g| g.abstractor_subject_group_id == options[:abstractor_subject_group_id]}
