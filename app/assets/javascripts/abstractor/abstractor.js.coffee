@@ -119,7 +119,7 @@ Abstractor.AbstractionUI = ->
         $('#' + tab + ' .abstractor_source_tab_content').unhighlight()
         $('#' + tab + " .abstractor_source_tab_content .abstractor_highlight:containsNC('" + sentence_match_value + "')").highlight(match_value)
         $(this).addClass('highlighted_suggestion')
-        $('.abstractor_source_tab_content').scrollTo($('.abstractor_highlight'))
+        $('.abstractor_source_tab_content').scrollTo($('.abstractor_highlight .highlight'))
     return
 
   $(document).on "change", "select.indirect_source_list", ->
