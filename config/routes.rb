@@ -8,6 +8,8 @@ Abstractor::Engine.routes.draw do
   resources :abstractor_abstractions do
     collection do
       put :update_all
+      put :discard
+      put :undiscard
     end
     member do
       put :clear

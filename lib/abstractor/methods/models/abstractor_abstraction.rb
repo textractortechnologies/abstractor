@@ -32,6 +32,10 @@ module Abstractor
         end
 
         module InstanceMethods
+          def discarded?
+            workflow_status == Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+          end
+
           def submitted?
             workflow_status == Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
           end
@@ -40,6 +44,21 @@ module Abstractor
             self.value = nil
             self.unknown = nil
             self.not_applicable = nil
+          end
+
+          def clear!
+            Abstractor::AbstractorAbstraction.transaction do
+              self.clear
+              self.save!
+              self.abstractor_suggestions.each do |abstractor_suggestion|
+                if abstractor_suggestion.abstractor_suggestion_sources.not_deleted.empty?
+                  abstractor_suggestion.destroy
+                else
+                  abstractor_suggestion.accepted = nil
+                  abstractor_suggestion.save!
+                end
+              end
+            end
           end
 
           def review_suggestions

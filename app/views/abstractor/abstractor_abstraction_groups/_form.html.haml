@@ -2,20 +2,19 @@
 - namespace_id ||= @namespace_id
 
 - abstractor_abstraction_group ||= @abstractor_abstraction_group
-- submitted = abstractor_abstraction_group.submitted?
 .abstractor_abstraction_group
-  .abstractor_abstraction_group_member{class: "#{ submitted ? 'submitted': '' }"}
+  .abstractor_abstraction_group_member{class: "workflow_status_#{abstractor_abstraction_group.workflow_status}"}
     - abstractor_abstractions = abstractor_abstraction_group.abstractor_abstractions.not_deleted.joins(:abstractor_subject => :abstractor_subject_group_member)
     - unless namespace_type.blank? || namespace_id.blank?
       - abstractor_abstractions = abstractor_abstractions.where(abstractor_subjects: { namespace_type: namespace_type, namespace_id: namespace_id})
     - abstractor_abstractions.order('abstractor_subject_group_members.display_order').each_with_index do |abstractor_abstraction, index|
       %div{ class: "abstractor_abstraction #{Abstractor::Utility.dehumanize(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema.predicate)} #{'abstractor_bottom_border' if index < abstractor_abstractions.length - 1}" }
-        = render :partial => 'abstractor/abstractor_abstractions/fields', :locals => { abstractor_abstraction: abstractor_abstraction, read_only: submitted }
+        = render :partial => 'abstractor/abstractor_abstractions/fields', :locals => { abstractor_abstraction: abstractor_abstraction, read_only: abstractor_abstraction_group.read_only? }
     .abstractor_abstraction_group_actions.abstractor_abstraction_actions
       - if show_abstractor_group_all_links?
         = link_to 'Not applicable group ', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_group_path(abstractor_abstraction_group, abstractor_abstraction_value: 'not applicable')), data: { confirm: 'Are you sure?'} , method: :put, class: "abstractor_group_not_applicable_all_link", remote: true
         = link_to 'Unknown group ', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_group_path(abstractor_abstraction_group, abstractor_abstraction_value: 'unknown')), data: { confirm: 'Are you sure?'}, method: :put, class: 'abstractor_group_unknown_all_link', remote: true
-      - if abstractor_abstraction_group.abstractor_subject_group.enable_workflow_status
+      - if abstractor_abstraction_group.abstractor_subject_group.enable_workflow_status && !abstractor_abstraction_group.discarded?
         - pending_button_name = abstractor_abstraction_group.abstractor_subject_group.workflow_status_pend
         - submit_button_name = abstractor_abstraction_group.abstractor_subject_group.workflow_status_submit
         - if abstractor_abstraction_group.fully_set?

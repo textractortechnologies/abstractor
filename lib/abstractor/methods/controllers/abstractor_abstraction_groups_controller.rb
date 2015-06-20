@@ -18,7 +18,7 @@ module Abstractor
           end
 
           abstractor_subjects.each do |abstractor_subject|
-            abstraction = abstractor_subject.abstractor_abstractions.build(about_id: params[:about_id], about_type: params[:about_type])
+            abstraction = abstractor_subject.abstractor_abstractions.build(about_id: params[:about_id], about_type: params[:about_type], workflow_status: Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING)
             abstractor_subject.abstractor_abstractions.where(about_id: params[:about_id], about_type: params[:about_type]).each do |abstractor_abstraction|
               if !abstractor_abstraction.abstractor_abstraction_group.removable?
                 abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|

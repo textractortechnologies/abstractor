@@ -40,8 +40,20 @@ module Abstractor
             !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| abstractor_abstraction.value.blank?  }
           end
 
+          def discarded?
+            !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| !abstractor_abstraction.discarded? }
+          end
+
           def submitted?
-            !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| abstractor_abstraction.value.blank? || !abstractor_abstraction.submitted?  }
+            !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| !abstractor_abstraction.submitted? }
+          end
+
+          def workflow_status
+            Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUSES[Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUSES.index(abstractor_abstractions.not_deleted.map(&:workflow_status).uniq!.join)]
+          end
+
+          def read_only?
+            !(workflow_status == Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING)
           end
 
           private

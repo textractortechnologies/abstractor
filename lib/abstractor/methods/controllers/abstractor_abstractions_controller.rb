@@ -16,7 +16,7 @@ module Abstractor
         end
 
         def edit
-          @abstractor_abstraction.clear
+          @abstractor_abstraction.clear!
           respond_to do |format|
             format.html { render :layout => false }
           end
@@ -53,16 +53,7 @@ module Abstractor
         def clear
           respond_to do |format|
             Abstractor::AbstractorAbstraction.transaction do
-              @abstractor_abstraction.clear
-              @abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
-                if abstractor_suggestion.abstractor_suggestion_sources.not_deleted.empty?
-                  abstractor_suggestion.destroy
-                else
-                  abstractor_suggestion.accepted = nil
-                  abstractor_suggestion.save!
-                end
-              end
-              @abstractor_abstraction.save!
+              @abstractor_abstraction.clear!
             end
             format.html { render "abstractor/abstractor_abstractions/show", layout: false }
           end
@@ -80,8 +71,9 @@ module Abstractor
           end
 
           @about = params[:about_type].constantize.find(params[:about_id])
-          @about.abstractor_abstractions.each do |abstractor_abstraction|
-            Abstractor::AbstractorAbstraction.transaction do |variable|
+          abstractor_abstractions = @about.abstractor_abstractions
+          Abstractor::AbstractorAbstraction.transaction do
+            abstractor_abstractions.each do |abstractor_abstraction|
               abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
                 if abstractor_suggestion.abstractor_suggestion_sources.not_deleted.empty?
                   abstractor_suggestion.destroy!
@@ -91,6 +83,37 @@ module Abstractor
               abstractor_suggestion = abstractor_abstraction.abstractor_subject.suggest(abstractor_abstraction, nil, nil, nil, nil, nil, nil, nil, nil, unknown, not_applicable, nil, nil)
               abstractor_suggestion.accepted = true
               abstractor_suggestion.save!
+            end
+          end
+
+          respond_to do |format|
+            format.html { redirect_to :back }
+          end
+        end
+
+        def discard
+          @about = params[:about_type].constantize.find(params[:about_id])
+          abstractor_abstractions = @about.abstractor_abstractions
+          Abstractor::AbstractorAbstraction.transaction do
+            abstractor_abstractions.each do |abstractor_abstraction|
+              abstractor_abstraction.clear!
+              abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+              abstractor_abstraction.save!
+            end
+          end
+
+          respond_to do |format|
+            format.html { redirect_to :back }
+          end
+        end
+
+        def undiscard
+          @about = params[:about_type].constantize.find(params[:about_id])
+          abstractor_abstractions = @about.abstractor_abstractions
+          Abstractor::AbstractorAbstraction.transaction do
+            abstractor_abstractions.each do |abstractor_abstraction|
+              abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING
+              abstractor_abstraction.save!
             end
           end
 
