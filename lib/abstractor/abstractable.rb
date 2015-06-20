@@ -122,7 +122,7 @@ module Abstractor
         options = { namespace_type: abstractor_subject.namespace_type, namespace_id: abstractor_subject.namespace_id }
         if abstractor_abstraction = detect_abstractor_abstraction(abstractor_subject)
         else
-          abstractor_abstraction = Abstractor::AbstractorAbstraction.create!(abstractor_subject: abstractor_subject, about: self)
+          abstractor_abstraction = Abstractor::AbstractorAbstraction.create!(abstractor_subject: abstractor_subject, about: self, workflow_status: Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING)
 
           if abstractor_subject.groupable?
             abstractor_abstraction_group = find_or_initialize_abstractor_abstraction_group(abstractor_subject.abstractor_subject_group, options)
@@ -357,6 +357,52 @@ module Abstractor
     end
 
     module ClassMethods
+      ##
+      # Returns all abstractable entities filtered by the parameter abstraction_workflow_status:
+      #
+      # * 'pending': Filter abstractable entites having at least one abstraction with a workflow status of of 'pending'
+      # * 'submitted': Filter abstractable entites having all abstractions with a workflow status of 'submitted'
+      # * 'discarded': Filter abstractable entites having all abstractions with a workflow status of 'discarded'
+      # * 'submitted or discarded': Filter abstractable entites having all abstractions with a workflow status of either 'submitted' or  'discarded'
+      #
+      # @param [String] abstraction_workflow_status Filter abstactable entities based on abstraction workflow status.
+      # @param [Hash] options The options to filter the entities returned.
+      # @option options [String] :namespace_type The type parameter of the namespace to filter the entities.
+      # @option options [Integer] :namespace_id The instance parameter of the namespace to filter the entities.
+      # @option options [List of Integer, List of ActiveRecord::Relation] :abstractor_abstraction_schemas The list of abstractor abstraction schemas to filter upon.  Defaults to all abstractor abstraction schemas if not specified.
+      # @return [ActiveRecord::Relation] List of abstractable entities.
+      def by_abstraction_workflow_status(abstraction_workflow_status, options = {})
+        options = { namespace_type: nil, namespace_id: nil }.merge(options)
+        options = { abstractor_abstraction_schemas: abstractor_abstraction_schemas }.merge(options)
+        if options[:namespace_type] || options[:namespace_id]
+          case abstraction_workflow_status
+          when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status = ?)", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING])
+          when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+            where(["NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status != ?)", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED])
+          when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+            where(["NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status != ?)", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED])
+          when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED_OR_DISCARDED
+            where(["NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status NOT IN(?))", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], [ABSTRACTION_WORKFLOW_STATUS_SUBMITTED, Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED]])
+          else
+            where(["NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id)", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas]])
+          end
+        else
+          case abstraction_workflow_status
+          when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status = ?)", options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING])
+          when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+            where(["NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status != ?)", options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED])
+          when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+            where(["NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status != ?)", options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED])
+          when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED_OR_DISCARDED
+            where(["NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status NOT IN(?))", options[:abstractor_abstraction_schemas], [Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED, Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED]])
+          else
+            where(nil)
+          end
+        end
+      end
+
       ##
       # Returns all abstractable entities filtered by the parameter abstractor_suggestion_type:
       #
