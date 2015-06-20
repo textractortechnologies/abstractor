@@ -74,6 +74,3 @@ Install the paper\_trail gem (if it is not already installed in your application
 
 * bundle exec rails g paper_trail:install
 * bundle exec rake db:migrate
-
-moomin
-little my
