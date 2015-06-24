@@ -57,12 +57,17 @@ module Abstractor
       # @option options [ActiveRecord::Relation] List of [Abstractor::AbstractorAbstraction].
       # @return [ActiveRecord::Relation] List of [Abstractor::AbstractorAbstraction].
       def abstractor_abstractions_by_abstraction_schemas(options = {})
-        options = { abstractor_abstraction_schema_ids: [], abstractor_abstractions: abstractor_abstractions.not_deleted }.merge(options)
+        options = { abstractor_abstraction_schema_ids: [], abstractor_abstractions: abstractor_abstractions.not_deleted, abstractor_abstraction_group: nil }.merge(options)
         if options[:abstractor_abstraction_schema_ids].any?
-          options[:abstractor_abstractions].joins(:abstractor_subject).where(abstractor_subjects: { abstractor_abstraction_schema_id: options[:abstractor_abstraction_schema_ids]})
+          abstractions = options[:abstractor_abstractions].joins(:abstractor_subject).where(abstractor_subjects: { abstractor_abstraction_schema_id: options[:abstractor_abstraction_schema_ids]})
         else
-          options[:abstractor_abstractions]
+          abstractions = options[:abstractor_abstractions]
         end
+
+        if options[:abstractor_abstraction_group]
+          abstractions.to_a.reject! { |abstraction| abstraction.abstractor_abstraction_group !=  options[:abstractor_abstraction_group]  }
+        end
+        abstractions
       end
 
       ##
