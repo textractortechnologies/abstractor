@@ -29,8 +29,8 @@
             - pending_disabled_class = 'abstractor_group_update_workflow_status_link_disabled hide'
             - submitted_disabled_class = 'abstractor_group_update_workflow_status_link_enabled'
         - else
-          - pending_disabled = false
-          - submitted_disabled = false
+          - pending_disabled = true
+          - submitted_disabled = true
           - pending_disabled_class = 'abstractor_group_update_workflow_status_link_disabled hide'
           - submitted_disabled_class = 'abstractor_group_update_workflow_status_link_disabled'
         = button_to pending_button_name, Abstractor::UserInterface.abstractor_relative_path(abstractor.update_wokflow_status_abstractor_abstraction_group_path(abstractor_abstraction_group)), data: { confirm: 'Are you sure?' }, method: :put, class: "abstractor_group_update_workflow_status_link #{pending_disabled_class}", remote: true, params: { abstraction_workflow_status: Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING }, disabled: pending_disabled, form_class: 'abstraction_workflow_status_form'
