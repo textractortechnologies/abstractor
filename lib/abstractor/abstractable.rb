@@ -15,6 +15,10 @@ module Abstractor
     end
 
     module InstanceMethods
+      def discarded?
+        !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| !abstractor_abstraction.discarded? }
+      end
+
       def sources
         abstractor_suggestion_sources = []
         abstractor_abstractions.each do |abstractor_abstraction|
