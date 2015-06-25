@@ -163,12 +163,13 @@ module Abstractor
           #
           # @param [Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING, Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED] abstraction_workflow_status controls whether to update all abstractor abstractions in the group to 'pending' or 'submitted'
           # @return [void]
-          def update_abstractor_abstraction_workflow_status(abstractor_abstractions, abstraction_workflow_status)
+          def update_abstractor_abstraction_workflow_status(abstractor_abstractions, abstraction_workflow_status, whodunnit)
             raise(ArgumentError, "abstraction_workflow_status argument invalid") unless Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUSES.include?(abstraction_workflow_status)
             Abstractor::AbstractorAbstraction.transaction do
               if abstraction_workflow_status
                 abstractor_abstractions.each do |abstractor_abstraction|
                   abstractor_abstraction.workflow_status = abstraction_workflow_status
+                  abstractor_abstraction.workflow_status_whodunnit = whodunnit
                   abstractor_abstraction.save!
                 end
               end

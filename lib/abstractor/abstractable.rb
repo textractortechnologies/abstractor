@@ -366,6 +366,14 @@ module Abstractor
     end
 
     module ClassMethods
+      def workflow_status_whodunnit_list(options = {})
+        options = { namespace_type: nil, namespace_id: nil }.merge(options)
+        if options[:namespace_type] || options[:namespace_id]
+          Abstractor::AbstractorAbstraction.joins(:abstractor_subject).where(about_type: self.to_s, abstractor_subject: { namespace_type: options[:namespace_type], namespace_id: options[:namespace_id]}).where.not(workflow_status_whodunnit: nil).select('DISTINCT workflow_status_whodunnit')
+        else
+          Abstractor::AbstractorAbstraction.where(about_type: self.to_s).where.not(workflow_status_whodunnit: nil).select('DISTINCT workflow_status_whodunnit')
+        end
+      end
       ##
       # Returns all abstractable entities filtered by the parameter abstraction_workflow_status:
       #
@@ -381,33 +389,33 @@ module Abstractor
       # @option options [List of Integer, List of ActiveRecord::Relation] :abstractor_abstraction_schemas The list of abstractor abstraction schemas to filter upon.  Defaults to all abstractor abstraction schemas if not specified.
       # @return [ActiveRecord::Relation] List of abstractable entities.
       def by_abstraction_workflow_status(abstraction_workflow_status, options = {})
-        options = { namespace_type: nil, namespace_id: nil }.merge(options)
+        options = { namespace_type: nil, namespace_id: nil, workflow_status_whodunnit: nil }.merge(options)
         options = { abstractor_abstraction_schemas: abstractor_abstraction_schemas }.merge(options)
         if options[:namespace_type] || options[:namespace_id]
           case abstraction_workflow_status
           when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING
             where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status = ?)", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING])
           when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
-            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status != ?)", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED])
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status = ? AND aa.workflow_status_whodunnit = COALESCE(?, workflow_status_whodunnit))", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED, options[:workflow_status_whodunnit]])
           when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
-            where(["NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status != ?)", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED])
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status = ? AND aa.workflow_status_whodunnit = COALESCE(?, workflow_status_whodunnit))", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED, options[:workflow_status_whodunnit]])
           when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED_OR_DISCARDED
-            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status IN(?))", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], [Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED, Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED]])
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status IN(?) AND aa.workflow_status_whodunnit = COALESCE(?, workflow_status_whodunnit))", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], [Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED, Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED], options[:workflow_status_whodunnit]])
           else
-            where(["NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id)", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas]])
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status_whodunnit = COALESCE(?, workflow_status_whodunnit))", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], options[:workflow_status_whodunnit]])
           end
         else
           case abstraction_workflow_status
           when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING
             where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status = ?)", options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING])
           when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
-            where(["NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status != ?)", options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED])
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status = ? AND aa.workflow_status_whodunnit = COALESCE(?, workflow_status_whodunnit))", options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED, options[:workflow_status_whodunnit]])
           when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
-            where(["NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status != ?)", options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED])
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status = ? AND aa.workflow_status_whodunnit = COALESCE(?, workflow_status_whodunnit))", options[:abstractor_abstraction_schemas], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED, options[:workflow_status_whodunnit]])
           when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED_OR_DISCARDED
-            where(["NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status NOT IN(?))", options[:abstractor_abstraction_schemas], [Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED, Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED]])
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status IN(?) AND aa.workflow_status_whodunnit = COALESCE(?, workflow_status_whodunnit))", options[:abstractor_abstraction_schemas], [Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED, Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED], options[:workflow_status_whodunnit]])
           else
-            where(nil)
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status_whodunnit = COALESCE(?, workflow_status_whodunnit))", options[:abstractor_abstraction_schemas], options[:workflow_status_whodunnit]])
           end
         end
       end

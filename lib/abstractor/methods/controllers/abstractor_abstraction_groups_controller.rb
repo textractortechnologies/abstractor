@@ -67,7 +67,7 @@ module Abstractor
 
         def update_wokflow_status
           abstraction_workflow_status = params[:abstraction_workflow_status]
-          Abstractor::AbstractorAbstraction.update_abstractor_abstraction_workflow_status(@abstractor_abstraction_group.abstractor_abstractions, abstraction_workflow_status)
+          Abstractor::AbstractorAbstraction.update_abstractor_abstraction_workflow_status(@abstractor_abstraction_group.abstractor_abstractions.not_deleted, abstraction_workflow_status, abstractor_user)
           respond_to do |format|
             format.html { render action: "edit", layout: false }
           end

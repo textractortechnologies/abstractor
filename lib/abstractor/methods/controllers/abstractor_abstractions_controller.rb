@@ -93,14 +93,7 @@ module Abstractor
 
         def discard
           @about = params[:about_type].constantize.find(params[:about_id])
-          abstractor_abstractions = @about.abstractor_abstractions
-          Abstractor::AbstractorAbstraction.transaction do
-            abstractor_abstractions.each do |abstractor_abstraction|
-              abstractor_abstraction.clear!
-              abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
-              abstractor_abstraction.save!
-            end
-          end
+          Abstractor::AbstractorAbstraction.update_abstractor_abstraction_workflow_status(@about.abstractor_abstractions.not_deleted, Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED, abstractor_user)
 
           respond_to do |format|
             format.html { redirect_to :back }
@@ -109,13 +102,7 @@ module Abstractor
 
         def undiscard
           @about = params[:about_type].constantize.find(params[:about_id])
-          abstractor_abstractions = @about.abstractor_abstractions
-          Abstractor::AbstractorAbstraction.transaction do
-            abstractor_abstractions.each do |abstractor_abstraction|
-              abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING
-              abstractor_abstraction.save!
-            end
-          end
+          Abstractor::AbstractorAbstraction.update_abstractor_abstraction_workflow_status(@about.abstractor_abstractions.not_deleted, Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING, nil)
 
           respond_to do |format|
             format.html { redirect_to :back }
