@@ -415,7 +415,7 @@ module Abstractor
           when Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED_OR_DISCARDED
             where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status IN(?) AND aa.workflow_status_whodunnit = COALESCE(?, workflow_status_whodunnit))", options[:abstractor_abstraction_schemas], [Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED, Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED], options[:workflow_status_whodunnit]])
           else
-            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND aa.workflow_status_whodunnit = COALESCE(?, workflow_status_whodunnit))", options[:abstractor_abstraction_schemas], options[:workflow_status_whodunnit]])
+            where(nil)
           end
         end
       end
