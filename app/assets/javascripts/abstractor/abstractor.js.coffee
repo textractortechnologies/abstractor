@@ -41,6 +41,7 @@ Abstractor.AbstractionUI = ->
 
   $(document).on "click", ".abstractor_abstraction_value a.edit_link", (e) ->
     e.preventDefault()
+    abstractor_abstraction_group = $(this).closest('.abstractor_abstraction_group')
     parent_div = $(this).closest(".abstractor_abstraction")
     parent_div.load $(this).attr("href"), ->
       parent_div.find(".combobox").combobox watermark: "a value"
@@ -49,6 +50,9 @@ Abstractor.AbstractionUI = ->
         dateFormat: "yy-mm-dd"
         changeMonth: true
         changeYear: true
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').removeClass('abstractor_group_update_workflow_status_link_enabled')
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').addClass('abstractor_group_update_workflow_status_link_disabled')
+      $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').prop('disabled', true)
 
       return
 
