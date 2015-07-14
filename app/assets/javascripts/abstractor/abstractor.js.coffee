@@ -127,8 +127,8 @@ Abstractor.AbstractionUI = ->
           $(this).find('.match_value').each (index) ->
             match_value = $(this).html().trim()
             $('#' + tab + " .abstractor_source_tab_content .abstractor_highlight:regex('" + sentence_match_value + "')").highlight(match_value)
-            return
             $('.abstractor_source_tab_content').scrollTo($('.abstractor_highlight .highlight'))
+            return
         else
           $(this).find('.match_value').each (index) ->
             match_value = $(this).html().trim()
