@@ -16,7 +16,7 @@ module Abstractor
           base.send :has_many, :abstractor_abstraction_source_section_name_variants
 
           def base.abstractor_text(source)
-            text = source[:source_type].find(source[:source_id]).send(source[:source_method])
+            text = source[:source_type].to_s.constantize.find(source[:source_id]).send(source[:source_method])
             if !source[:section_name].blank?
               abstractor_section = Abstractor::AbstractorSection.where(source_type: source[:source_type], source_method: source[:source_method], name: source[:section_name]).first
               if text =~ prepare_section_regular_expression(abstractor_section)

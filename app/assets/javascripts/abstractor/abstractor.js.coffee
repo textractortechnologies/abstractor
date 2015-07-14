@@ -112,18 +112,29 @@ Abstractor.AbstractionUI = ->
     tab = $(target).find('.abstractor_source_tab')
     if tab.length == 1
       tab = $(tab).html().trim()
-      sentence_match_value = _.unescape($(target).find('.sentence_match_value').html().trim()).replace(/[.^$*+?()[{\\|\]-]/g, '\\$&')
-      match_value = $(target).find('.match_value').html().trim()
       $('#' + tab + ' input[type=radio]').prop('checked', true)
+      $('#' + tab + ' .abstractor_source_tab_content').unhighlight()
       if $(this).hasClass('highlighted_suggestion')
+        highlight = false
         $(this).removeClass('highlighted_suggestion')
-        $('#' + tab + " .abstractor_source_tab_content .abstractor_highlight:regex('" + sentence_match_value + "')").unhighlight(match_value)
       else
+        highlight = true
         $('.highlighted_suggestion').removeClass('highlighted_suggestion')
-        $('#' + tab + ' .abstractor_source_tab_content').unhighlight()
-        $('#' + tab + " .abstractor_source_tab_content .abstractor_highlight:regex('" + sentence_match_value + "')").highlight(match_value)
         $(this).addClass('highlighted_suggestion')
-        $('.abstractor_source_tab_content').scrollTo($('.abstractor_highlight .highlight'))
+      $(target).find('.sentence').each (index) ->
+        sentence_match_value = _.unescape($(this).find('.sentence_match_value').html().trim()).replace(/[.^$*+?()[{\\|\]-]/g, '\\$&')
+        if highlight
+          $(this).find('.match_value').each (index) ->
+            match_value = $(this).html().trim()
+            $('#' + tab + " .abstractor_source_tab_content .abstractor_highlight:regex('" + sentence_match_value + "')").highlight(match_value)
+            return
+            $('.abstractor_source_tab_content').scrollTo($('.abstractor_highlight .highlight'))
+        else
+          $(this).find('.match_value').each (index) ->
+            match_value = $(this).html().trim()
+            $('#' + tab + " .abstractor_source_tab_content .abstractor_highlight:regex('" + sentence_match_value + "')").unhighlight(match_value)
+            return
+        return
     return
 
   $(document).on "change", "select.indirect_source_list", ->
