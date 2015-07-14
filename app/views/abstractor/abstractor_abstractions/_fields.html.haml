@@ -60,7 +60,7 @@
         .clear
         .links
           - unless read_only
-            = link_to 'Add', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_abstraction_path(abstractor_abstraction)), class: 'edit_link'
+            = link_to 'Edit', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_abstraction_path(abstractor_abstraction)), class: 'edit_link'
             |
             = link_to 'Clear', Abstractor::UserInterface.abstractor_relative_path(abstractor.clear_abstractor_abstraction_path(abstractor_abstraction)), class: 'clear_link'
         - versions = abstractor_abstraction.versions.sort{|a,b| b.created_at <=> a.created_at}.reject{|v| v.reify.blank? || v.reify.display_value =~ /not set/i}
