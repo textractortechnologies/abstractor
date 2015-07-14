@@ -96,7 +96,7 @@ module Abstractor
           Abstractor::AbstractorAbstraction.update_abstractor_abstraction_workflow_status(@about.abstractor_abstractions.not_deleted, Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED, abstractor_user)
 
           respond_to do |format|
-            format.html { redirect_to :back }
+            format.html { redirect_to discard_redirect_to(params, @about) }
           end
         end
 
@@ -105,7 +105,7 @@ module Abstractor
           Abstractor::AbstractorAbstraction.update_abstractor_abstraction_workflow_status(@about.abstractor_abstractions.not_deleted, Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING, nil)
 
           respond_to do |format|
-            format.html { redirect_to :back }
+            format.html { redirect_to undiscard_redirect_to(params, @about) }
           end
         end
 

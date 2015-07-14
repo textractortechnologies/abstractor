@@ -30,7 +30,7 @@ module Abstractor
     end
 
     ## shameless steal from forem git://github.com/radar/forem.git
-    def add_abstractor_user_method
+    def add_abstractor_application_controller
       current_user_helper = options["current-user-helper"].presence ||
                             ask("What is the current_user helper called in your app? [current_user]").presence ||
                             'current_user if defined?(current_user)'
@@ -41,6 +41,14 @@ module Abstractor
     #{current_user_helper}
   end
   helper_method :abstractor_user
+
+  def discard_redirect_to(params, about)
+    :back
+  end
+
+  def undiscard_redirect_to(params, about)
+    :back
+  end
 }
       inject_into_file("#{Rails.root}/app/controllers/application_controller.rb",
                        abstractor_user_method,
