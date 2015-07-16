@@ -109,6 +109,15 @@ module Abstractor
           end
         end
 
+        def update_wokflow_status
+          @about = params[:about_type].constantize.find(params[:about_id])
+          abstraction_workflow_status = params[:abstraction_workflow_status]
+          Abstractor::AbstractorAbstraction.update_abstractor_abstraction_workflow_status(@about.abstractor_abstractions.not_deleted, abstraction_workflow_status, abstractor_user)
+          respond_to do |format|
+            format.html { redirect_to update_workflow_status_redirect_to(params, @about) }
+          end
+        end
+
         private
           def set_abstractor_abstraction
             @abstractor_abstraction = Abstractor::AbstractorAbstraction.find(params[:id])

@@ -49,6 +49,10 @@ module Abstractor
   def undiscard_redirect_to(params, about)
     :back
   end
+
+  def update_workflow_status_redirect_to(params, about)
+    :back
+  end
 }
       inject_into_file("#{Rails.root}/app/controllers/application_controller.rb",
                        abstractor_user_method,
@@ -77,6 +81,10 @@ module Abstractor
 
   def show_abstractor_edit_other_values?
     false
+  end
+
+  def show_abstractor_group_workflow_status_links?
+    true
   end
 }
       inject_into_file("#{Rails.root}/app/helpers/application_helper.rb",

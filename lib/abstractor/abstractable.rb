@@ -15,6 +15,14 @@ module Abstractor
     end
 
     module InstanceMethods
+      def fully_set?
+        !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| abstractor_abstraction.value.blank?  }
+      end
+
+      def submitted?
+        !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| !abstractor_abstraction.submitted? }
+      end
+
       def discarded?
         !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| !abstractor_abstraction.discarded? }
       end

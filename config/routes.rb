@@ -10,6 +10,7 @@ Abstractor::Engine.routes.draw do
       put :update_all
       put :discard
       put :undiscard
+      put :update_wokflow_status
     end
     member do
       put :clear
