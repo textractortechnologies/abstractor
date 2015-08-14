@@ -133,10 +133,11 @@ Abstractor.AbstractionUI = ->
         $(this).addClass('highlighted_suggestion')
       $(target).find('.sentence').each (index) ->
         sentence_match_value = _.unescape($(this).find('.sentence_match_value').html().trim()).replace(/[.^$*+?()[{\\|\]-]/g, '\\$&')
+        hashed_sentence = $(this).find('.sentence_match_value .hashed_sentence').html().trim()
         if highlight
           $(this).find('.match_value').each (index) ->
             match_value = $(this).html().trim()
-            $('#' + tab + " .abstractor_source_tab_content .abstractor_highlight:regex('" + sentence_match_value + "')").highlight(match_value)
+            $('#' + tab + " .abstractor_source_tab_content ." + hashed_sentence).highlight(match_value)
             $('.abstractor_source_tab_content').scrollTo($('.abstractor_highlight .highlight'))
             return
         else

@@ -36,9 +36,11 @@
                           .sentence
                             .sentence_match_value
                               = ERB::Util.html_escape(sentence[:sentence])
+                              .hashed_sentence
+                                = hashed_sentence = sentence[:sentence].hash
                             - sentence[:match_values].each do |match_value|
                               .match_value
-                                = ERB::Util.html_escape(match_value)
+                                = ERB::Util.html_escape(match_value.gsub(/(?:\n\r?|\r\n?)/, ' '))
                 - abstractor_suggestion.abstractor_suggestion_sources.custom.each do |abstractor_suggestion_source|
                   .custom_explanation
                     %label
