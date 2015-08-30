@@ -16,7 +16,7 @@
       - when 'number'
         = f.number_field :value
       - when 'radio button list'
-        - values = abstraction_schema.abstractor_object_values.order('abstractor_abstraction_schema_object_values.display_order, abstractor_object_values.vocabulary_code, abstractor_object_values.value')
+        - values = abstraction_schema.abstractor_object_values.not_deleted.order('abstractor_abstraction_schema_object_values.display_order, abstractor_object_values.vocabulary_code, abstractor_object_values.value')
         -  values.each do |value|
           = f.radio_button :value, value.value
           = f.label :value, value.value, value: value.value
