@@ -1,9 +1,15 @@
-toggleWorkflowStatus = ->
+allAnswered = ->
   abstractor_abstractions = $('.abstractor_abstraction')
   set_abstractions = $('.abstractor_abstractions').find('.abstractor_abstraction input:checkbox:checked').map(->
     $(this).val()
   ).get()
   if abstractor_abstractions.length == set_abstractions.length
+    return true
+  else
+    return false
+
+toggleWorkflowStatus = ->
+  if allAnswered()
     $('.abstractor_update_workflow_status_link').removeClass('abstractor_update_workflow_status_link_disabled')
     $('.abstractor_update_workflow_status_link').addClass('abstractor_update_workflow_status_link_enabled')
     $('.abstractor_update_workflow_status_link').prop('disabled', false)
@@ -11,7 +17,6 @@ toggleWorkflowStatus = ->
     $('.abstractor_update_workflow_status_link').removeClass('abstractor_update_workflow_status_link_enabled')
     $('.abstractor_update_workflow_status_link').addClass('abstractor_update_workflow_status_link_disabled')
     $('.abstractor_update_workflow_status_link').prop('disabled', true)
-
 
 toggleGroupWorkflowStatus = (abstractor_abstraction_group) ->
   abstractor_abstractions = $(abstractor_abstraction_group).find('.abstractor_abstraction')
@@ -155,6 +160,14 @@ Abstractor.AbstractionUI = ->
     $(this).siblings("." + source_type + "_" + value).removeClass "hidden"
     return
 
+  $(document).on "click", '.abstractor_update_workflow_status_link', (e) ->
+    if !allAnswered()
+      toggleWorkflowStatus()
+      alert('Validaiton Error: please set a value for all data points.')
+      e.preventDefault()
+      return false
+    else
+      return true
   return
 
 Abstractor.AbstractionSuggestionUI = ->
