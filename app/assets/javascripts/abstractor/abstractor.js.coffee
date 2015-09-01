@@ -163,7 +163,7 @@ Abstractor.AbstractionUI = ->
   $(document).on "click", '.abstractor_update_workflow_status_link', (e) ->
     if !allAnswered()
       toggleWorkflowStatus()
-      alert('Validaiton Error: please set a value for all data points.')
+      alert('Validaiton Error: please set a value for all data points before submission.')
       e.preventDefault()
       return false
     else
