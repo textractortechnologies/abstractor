@@ -114,6 +114,8 @@ module Abstractor
           abstraction_workflow_status = params[:abstraction_workflow_status]
           respond_to do |format|
             if abstraction_workflow_status == Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED && !@about.fully_set?
+              flash[:abstractor_errors] = []
+              flash[:abstractor_errors] << 'Validation Error: please set a value for all data points before submission.'
               format.html { redirect_to :back }
             else
               Abstractor::AbstractorAbstraction.update_abstractor_abstraction_workflow_status(@about.abstractor_abstractions.not_deleted, abstraction_workflow_status, abstractor_user)
