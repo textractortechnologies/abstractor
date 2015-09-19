@@ -16,6 +16,8 @@ module Abstractor
           base.send :has_one, :abstractor_abstraction_group_member
           base.send :has_one, :abstractor_abstraction_group, :through => :abstractor_abstraction_group_member
           base.send :has_one, :abstractor_abstraction_schema, :through => :abstractor_subject
+          base.send :has_one, :abstractor_abstraction_object_value
+          base.send :has_one, :abstractor_object_value, :through => :abstractor_abstraction_object_value
 
           base.send :accepts_nested_attributes_for, :abstractor_suggestions
           base.send :accepts_nested_attributes_for, :abstractor_indirect_sources
@@ -26,6 +28,7 @@ module Abstractor
 
           # Hooks
           base.send :after_save, :review_suggestions
+          base.send :before_save, :set_abstractor_object_value
 
           base.send(:include, InstanceMethods)
           base.extend(ClassMethods)
@@ -81,6 +84,15 @@ module Abstractor
               if not_applicable && not_applicable != abstractor_suggestion.not_applicable
                 abstractor_suggestion.accepted = false
                 abstractor_suggestion.save!
+              end
+            end
+          end
+
+          def set_abstractor_object_value
+            if value
+              aov = Abstractor::AbstractorObjectValue.joins(:abstractor_abstraction_schema_object_values).where('abstractor_abstraction_schema_object_values.abstractor_abstraction_schema_id = ? AND abstractor_object_values.value = ? AND abstractor_object_values.deleted_at IS NULL', abstractor_abstraction_schema.id, value).first
+              if aov != abstractor_object_value
+                self.abstractor_object_value = aov
               end
             end
           end
