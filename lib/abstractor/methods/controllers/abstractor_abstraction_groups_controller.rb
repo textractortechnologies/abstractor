@@ -46,11 +46,7 @@ module Abstractor
         end
 
         def destroy
-          if @abstractor_abstraction_group.soft_delete!
-            flash[:notice] = "Group was successfully deleted."
-          else
-            flash[:error] = "Group could not be deactivated: #{abstractor_abstraction_group.errors.full_messages.join(',')}"
-          end
+          @abstractor_abstraction_group.soft_delete!
           respond_to do |format|
             format.js   { head :no_content }
             format.json { head :no_content }
