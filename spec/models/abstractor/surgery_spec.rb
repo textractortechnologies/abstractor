@@ -3,6 +3,7 @@ require './test/dummy/lib/setup/setup/'
 describe Surgery do
   before(:each) do
     Abstractor::Setup.system
+    Setup.sites
     Setup.surgery
     @abstractor_abstraction_schema_imaging_confirmed_extent_of_resection = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_imaging_confirmed_extent_of_resection').first
     @abstractor_subject_abstraction_schema_imaging_confirmed_extent_of_resection = Abstractor::AbstractorSubject.where(subject_type: Surgery.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_imaging_confirmed_extent_of_resection.id).first
@@ -13,7 +14,6 @@ describe Surgery do
 
   before(:each) do
     @surgery = FactoryGirl.create(:surgery)
-
   end
 
   it "creates a 'has_imaging_confirmed_extent_of_resection' abstraction for an abstractor abstracton source type 'indirect'", focus: false do
@@ -48,6 +48,41 @@ describe Surgery do
     expect(@surgery.reload.abstractor_abstractions.map { |abstractor_abstraction| abstractor_abstraction.abstractor_indirect_sources }.flatten.compact.size).to eq(2)
     @surgery.remove_abstractions
     expect(Abstractor::AbstractorIndirectSource.count).to eq(0)
+  end
+
+  it 'can generate a unique set of sources across all its abstractions against complex sources', focus: false do
+    surgery = FactoryGirl.create(:surgery)
+    surgical_procedure = FactoryGirl.create(:surgical_procedure, surg_case_id: surgery.surg_case_id, description: 'The meninges has cancer.', modifier: 'The brain lung has cancer.')
+    surgery.reload.abstract
+
+    sources = [{:source_type=>
+       SurgicalProcedure,
+      :source_id=>1,
+      :source_method=>"modifier",
+      :section_name=>nil,
+      :abstractor_suggestion_sources=>
+       [{:source_type=>
+          SurgicalProcedure,
+         :source_id=>1,
+         :source_method=>"modifier",
+         :section_name=>nil,
+         :sentence_match_value=>"the brain lung has cancer."}
+       ]},
+     {:source_type=>
+       SurgicalProcedure,
+      :source_id=>1,
+      :source_method=>"description",
+      :section_name=>nil,
+      :abstractor_suggestion_sources=>
+       [{:source_type=>
+          SurgicalProcedure,
+         :source_id=>1,
+         :source_method=>"description",
+         :section_name=>nil,
+         :sentence_match_value=>"the meninges has cancer."}
+      ]}]
+
+    expect(surgery.reload.sources).to match_array(sources)
   end
 
   describe "updating all abstraction group members (including abstractions without suggestions)" do

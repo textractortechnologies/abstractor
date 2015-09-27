@@ -642,6 +642,37 @@ describe EncounterNote do
       expect(pivot).to eq([{ id: encounter_note.id, note_text: encounter_note.note_text, has_karnofsky_performance_status: nil }])
     end
 
+    it 'can generate a unique set of sources across all its abstractions', focus: false do
+      sources = [{:source_type=>
+          EncounterNote,
+         :source_id=>1,
+         :source_method=>"note_text",
+         :section_name=>nil,
+         :abstractor_suggestion_sources=>
+          [{:source_type=>
+             EncounterNote,
+            :source_id=>1,
+            :source_method=>"note_text",
+            :section_name=>nil,
+            :sentence_match_value=>"karnofsky performance status: 90"},
+           {:source_type=>
+             EncounterNote,
+            :source_id=>1,
+            :source_method=>"note_text",
+            :section_name=>nil,
+            :sentence_match_value=>"karnofsky performance status: 90."},
+           {:source_type=>
+             EncounterNote,
+            :source_id=>1,
+            :source_method=>"note_text",
+            :section_name=>nil,
+            :sentence_match_value=>nil}]}]
+
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+      encounter_note.abstract
+      expect(encounter_note.reload.sources).to eq(sources)
+    end
+
     describe 'grouped abstractions' do
       before(:each) do
         @family_subject_group  = Abstractor::AbstractorSubjectGroup.where(name: 'Family history of movement disorder', subtype: Abstractor::Enum::ABSTRACTOR_GROUP_SENTINENTAL_SUBTYPE).first_or_create

@@ -27,20 +27,54 @@ module Abstractor
         !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| !abstractor_abstraction.discarded? }
       end
 
-      def sources
+      ##
+      # Returns all suggestion sources for the abstractable entity.
+      #
+      # @param [Hash] options the options to filter the list of suggstion sources to a namespace.
+      # @option options [String] :namespace_type The type parameter of the namespace.
+      # @option options [Integer] :namespace_id The instance parameter of the namespace.
+      # @return [ActiveRecord::Relation] List of [Abstractor::AbstractorSuggestionSource].
+      def abstractor_suggestion_sources(options = {})
+        options = { namespace_type: nil, namespace_id: nil }.merge(options)
         abstractor_suggestion_sources = []
-        abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstractions_by_namespace(options).each do |abstractor_abstraction|
           abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
             if abstractor_suggestion.abstractor_suggestion_sources.any?
               abstractor_suggestion_sources.concat(abstractor_suggestion.abstractor_suggestion_sources)
             end
           end
         end
-        abstractor_suggestion_sources.compact!
-        sources = abstractor_suggestion_sources.map { |abstractor_suggestion_source| { source_type: abstractor_suggestion_source.source_type.constantize, source_id: abstractor_suggestion_source.source_id , source_method: abstractor_suggestion_source.source_method, section_name: abstractor_suggestion_source.section_name } }.uniq!
 
+        abstractor_suggestion_sources = abstractor_suggestion_sources.compact
+        abstractor_suggestion_sources
+      end
+
+      ##
+      # Returns all sources for the abstractable entity.  The method provides a higher-level view across
+      # an abstractable entity's abstractions: a of list of textual sources mapped to the sentence matches contained therin.
+      #
+      # @param [Hash] options the options to filter the list of abstractions to a namespace.
+      # @option options [String] :namespace_type The type parameter of the namespace.
+      # @option options [Integer] :namespace_id The instance parameter of the namespace.
+      # @return [Array] List of [Hash].
+      def sources(options = {})
+        options = { namespace_type: nil, namespace_id: nil }.merge(options)
+        sources = abstractor_suggestion_sources(options).map { |abstractor_suggestion_source| { source_type: abstractor_suggestion_source.source_type.constantize, source_id: abstractor_suggestion_source.source_id , source_method: abstractor_suggestion_source.source_method, section_name: abstractor_suggestion_source.section_name } }.uniq
         sources.each do |source|
-          source[:abstractor_suggestion_sources] = abstractor_suggestion_sources.map { |abstractor_suggestion_source| { source_type: abstractor_suggestion_source.source_type.constantize, source_id: abstractor_suggestion_source.source_id , source_method: abstractor_suggestion_source.source_method, section_name: abstractor_suggestion_source.section_name, sentence_match_value: abstractor_suggestion_source.sentence_match_value } }.uniq
+          source[:abstractor_suggestion_sources] = abstractor_suggestion_sources.select do |abstractor_suggestion_source|
+            source[:source_type] == abstractor_suggestion_source.source_type.constantize &&
+            source[:source_id] == abstractor_suggestion_source.source_id &&
+            source[:source_method] == abstractor_suggestion_source.source_method &&
+            source[:section_name] == abstractor_suggestion_source.section_name
+          end.map do |abstractor_suggestion_source|
+            {
+              source_type: abstractor_suggestion_source.source_type.constantize,
+              source_id: abstractor_suggestion_source.source_id,
+              source_method: abstractor_suggestion_source.source_method,
+              section_name: abstractor_suggestion_source.section_name,
+              sentence_match_value: abstractor_suggestion_source.sentence_match_value
+            }
+          end.uniq
         end
         sources
       end

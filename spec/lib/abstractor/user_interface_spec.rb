@@ -14,4 +14,12 @@ describe Abstractor::UserInterface do
     allow(Dummy::Application.config.action_controller).to receive(:relative_url_root).and_return(nil)
     expect(Abstractor::UserInterface.abstractor_relative_path('/encounter_notes')).to eq('/encounter_notes')
   end
+
+  it 'generates a source id', focus: false do
+    source = {}
+    source[:source_type] = 'Moomin'
+    source[:source_id] = 1
+    source[:source_method] = 'note_text'
+    expect(Abstractor::UserInterface.generate_source_id(source)).to eq("Moomin_1_note_text")
+  end
 end
