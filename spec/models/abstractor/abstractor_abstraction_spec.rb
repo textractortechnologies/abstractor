@@ -43,4 +43,22 @@
      @abstractor_abstraction.save!
      expect(@abstractor_abstraction.reload.detect_abstractor_indirect_source(@abstractor_abstraction_source)).to_not be_nil
    end
+
+   it 'clears itself of a value', focus: false do
+     @abstractor_abstraction.value = 'moomin'
+     @abstractor_abstraction.clear
+     expect(@abstractor_abstraction.value).to eq(nil)
+   end
+
+   it 'clears itself of an unknown value', focus: false do
+     @abstractor_abstraction.unknown = true
+     @abstractor_abstraction.clear
+     expect(@abstractor_abstraction.unknown).to eq(nil)
+   end
+
+   it 'clears itself of a not applicable value', focus: true do
+     @abstractor_abstraction.not_applicable = true
+     @abstractor_abstraction.clear
+     expect(@abstractor_abstraction.not_applicable).to eq(nil)
+   end
  end

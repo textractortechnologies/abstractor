@@ -52,9 +52,7 @@ module Abstractor
 
         def clear
           respond_to do |format|
-            Abstractor::AbstractorAbstraction.transaction do
-              @abstractor_abstraction.clear!
-            end
+            @abstractor_abstraction.clear!
             format.html { render "abstractor/abstractor_abstractions/show", layout: false }
           end
         end
