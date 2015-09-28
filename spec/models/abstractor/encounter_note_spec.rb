@@ -457,6 +457,21 @@ describe EncounterNote do
       expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).value).to be_nil
     end
 
+    it "can create suggestions without a suggestion source", focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+      @encounter_note.abstract
+      object_value_90 = Abstractor::AbstractorObjectValue.where(value: '90% - Able to carry on normal activity; minor signs or symptoms of disease.').first
+      abstractor_abstraction = @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)
+      expect(abstractor_abstraction.abstractor_suggestions.size).to eq(1)
+      expect(abstractor_abstraction.abstractor_suggestions.map { |abstractor_suggestion| abstractor_suggestion.abstractor_suggestion_sources }.flatten.size).to eq(2)
+      expect(abstractor_abstraction.abstractor_suggestions.map { |abstractor_suggestion| abstractor_suggestion.abstractor_object_value }.flatten).to match_array([object_value_90])
+      object_value_80 = Abstractor::AbstractorObjectValue.where(value: '80% - Normal activity with effort; some signs or symptoms of disease.').first
+      abstractor_abstraction.abstractor_subject.suggest(abstractor_abstraction, nil, nil, nil, nil, nil, nil, nil, object_value_80.value, nil, nil, nil, nil)
+      expect(abstractor_abstraction.reload.abstractor_suggestions.size).to eq(2)
+      expect(abstractor_abstraction.abstractor_suggestions.map { |abstractor_suggestion| abstractor_suggestion.abstractor_suggestion_sources }.flatten.size).to eq(2)
+      expect(abstractor_abstraction.abstractor_suggestions.map { |abstractor_suggestion| abstractor_suggestion.abstractor_object_value }.flatten).to match_array([object_value_90, object_value_80])
+    end
+
     describe "querying by abstractor abstraction status" do
       before(:each) do
         @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')

@@ -303,16 +303,32 @@ module Abstractor
             end
           end
 
+          ##
+          # Whether the suggested value is an Abstractor::AbstractorObjectValue or not.
+          #
+          # @return [Boolean]
+          def abstractor_object_value?(suggested_value)
+            suggested_value.instance_of?(Abstractor::AbstractorObjectValue)
+          end
+
           def suggest(abstractor_abstraction, abstractor_abstraction_source, match_value, sentence_match_value, source_id, source_type, source_method, section_name, suggested_value, unknown, not_applicable, custom_method, custom_explanation)
             match_value.strip! unless match_value.nil?
             sentence_match_value.strip! unless sentence_match_value.nil?
-            if abstractor_object_value?(suggested_value)
-              abstractor_object_value = suggested_value
-              suggested_value = suggested_value.value
+
+            if abstractor_abstraction_schema.object_type_list?
+              if abstractor_object_value?(suggested_value)
+                abstractor_object_value = suggested_value
+              else
+                abstractor_object_value = abstractor_abstraction_schema.abstractor_object_values.not_deleted.where(value: suggested_value).first
+              end
+              if abstractor_object_value
+                suggested_value = abstractor_object_value.value
+              end
             end
+
             abstractor_suggestion = abstractor_abstraction.detect_abstractor_suggestion(suggested_value, unknown, not_applicable)
             if !abstractor_suggestion
-              abstractor_suggestion = Abstractor::AbstractorSuggestion.create(
+              abstractor_suggestion = Abstractor::AbstractorSuggestion.create!(
                                                                   abstractor_abstraction: abstractor_abstraction,
                                                                   accepted: nil,
                                                                   suggested_value: suggested_value,
@@ -320,7 +336,10 @@ module Abstractor
                                                                   not_applicable: not_applicable
                                                                   )
 
-              abstractor_suggestion.abstractor_suggestion_object_value = Abstractor::AbstractorSuggestionObjectValue.new(abstractor_object_value: abstractor_object_value) if abstractor_object_value
+              if abstractor_object_value
+                abstractor_suggestion.abstractor_suggestion_object_value = Abstractor::AbstractorSuggestionObjectValue.new(abstractor_object_value: abstractor_object_value)
+                abstractor_suggestion.save!
+              end
             end
 
             if abstractor_abstraction_source
@@ -341,10 +360,6 @@ module Abstractor
               end
             end
             abstractor_suggestion
-          end
-
-          def abstractor_object_value?(suggested_value)
-            suggested_value.instance_of?(Abstractor::AbstractorObjectValue)
           end
 
           def create_unknown_abstractor_suggestion_name_only(about, abstractor_abstraction, abstractor_abstraction_source)

@@ -56,7 +56,7 @@
      expect(@abstractor_abstraction.unknown).to eq(nil)
    end
 
-   it 'clears itself of a not applicable value', focus: true do
+   it 'clears itself of a not applicable value', focus: false do
      @abstractor_abstraction.not_applicable = true
      @abstractor_abstraction.clear
      expect(@abstractor_abstraction.not_applicable).to eq(nil)

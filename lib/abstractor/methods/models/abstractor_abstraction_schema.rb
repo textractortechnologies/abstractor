@@ -18,8 +18,25 @@ module Abstractor
         end
 
         # Instance Methods
+        ##
+        # All of the different ways of referring to the predicate.
+        #
+        # @return [Array<String>]
         def predicate_variants
           [preferred_name].concat(abstractor_abstraction_schema_predicate_variants.map(&:value))
+        end
+
+        ##
+        # Whether or not it is a list.
+        #
+        # @return [Boolean]
+        def object_type_list?
+          case abstractor_object_type.value
+          when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST, Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_RADIO_BUTTON_LIST
+            true
+          else
+            false
+          end
         end
       end
     end

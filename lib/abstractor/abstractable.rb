@@ -205,7 +205,7 @@ module Abstractor
       # @param [Integer] abstractor_subject_group_id the id of abstractor_subject_group of interest.
       # @option options [String]  :namespace_type the type parameter of the namespace.
       # @option options [Integer] :namespace_id the instance parameter of the namespace.
-      # @return [boolean]
+      # @return [Boolean]
       def abstractor_subject_group_complete?(abstractor_subject_group_id, options = {})
         abstractor_subject_group = Abstractor::AbstractorSubjectGroup.find(abstractor_subject_group_id)
         if abstractor_subject_group.cardinality.blank?
