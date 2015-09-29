@@ -17,7 +17,7 @@ describe Abstractor::AbstractorAbstractionSchema do
     expect(abstractor_abstraction_schema.object_type_list?).to be_truthy
   end
 
-  it 'knows if it is not an object type list', focus: true do
+  it 'knows if it is not an object type list', focus: false do
     abstractor_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_DATE).first
     abstractor_abstraction_schema = FactoryGirl.create(:abstractor_abstraction_schema, predicate: 'has_some_property', display_name: 'some_property', abstractor_object_type: abstractor_object_type, preferred_name: 'property')
     expect(abstractor_abstraction_schema.object_type_list?).to be_falsey

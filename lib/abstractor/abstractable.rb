@@ -465,10 +465,10 @@ module Abstractor
       ##
       # Returns all abstractable entities filtered by the parameter abstractor_suggestion_type:
       #
-      # * 'unknown': Filter abstractable entites having at least one suggestion withat a suggested value of 'unknown'
-      # * 'suggested': Filter abstractable entites having at least one suggestion with an acutal value
+      # * 'unknown': Filter abstractable entites having at least one suggestion with a suggested value of 'unknown'
+      # * 'suggested': Filter abstractable entites having at least one suggestion with an actual value
       #
-      # @param [String] abstractor_suggestion_type Filter abstactable entities that have a least one 'unknwon' or at least one 'not unknown' suggestion
+      # @param [String] abstractor_suggestion_type Filter abstactable entities that have a least one 'unknwon' or at least one 'suggested' suggestion
       # @param [Hash] options The options to filter the entities returned.
       # @option options [String] :namespace_type The type parameter of the namespace to filter the entities.
       # @option options [Integer] :namespace_id The instance parameter of the namespace to filter the entities.
