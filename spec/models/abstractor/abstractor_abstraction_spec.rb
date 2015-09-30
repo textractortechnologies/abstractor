@@ -8,6 +8,8 @@
      @abstractor_subject = FactoryGirl.build(:abstractor_subject, subject_type: 'Foo')
      abstractor_abstraction_schema.abstractor_subjects << @abstractor_subject
      @abstractor_abstraction = FactoryGirl.create(:abstractor_abstraction, abstractor_subject: abstractor_abstraction_schema.abstractor_subjects.first, about_id: 1, unknown: nil)
+     @abstractor_abstraction_2 = FactoryGirl.create(:abstractor_abstraction, abstractor_subject: abstractor_abstraction_schema.abstractor_subjects.first, about_id: 1, unknown: nil)
+     @abstractor_abstraction_3 = FactoryGirl.create(:abstractor_abstraction, abstractor_subject: abstractor_abstraction_schema.abstractor_subjects.first, about_id: 1, unknown: nil)
      @abstractor_suggestion_bar = FactoryGirl.create(:abstractor_suggestion, abstractor_abstraction: @abstractor_abstraction, accepted: nil, suggested_value: 'bar')
      @abstractor_suggestion_boo = FactoryGirl.create(:abstractor_suggestion, abstractor_abstraction: @abstractor_abstraction, accepted: nil, suggested_value: 'boo')
      @abstractor_suggestion_foo = FactoryGirl.create(:abstractor_suggestion, abstractor_abstraction: @abstractor_abstraction, accepted: false , suggested_value: 'foo')
@@ -60,5 +62,28 @@
      @abstractor_abstraction.not_applicable = true
      @abstractor_abstraction.clear
      expect(@abstractor_abstraction.not_applicable).to eq(nil)
+   end
+
+   it "knows if it has a 'submitted' workflow_status", focus: false do
+     @abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+     @abstractor_abstraction.save!
+     expect(@abstractor_abstraction.submitted?).to be_truthy
+   end
+
+   it "knows if it does not have a 'submitted' workflow_status", focus: false do
+     expect(@abstractor_abstraction.submitted?).to be_falsey
+   end
+
+   it 'updates the workflow status of abstractions', focus: false do
+     expect(@abstractor_abstraction.workflow_status).to be_nil
+     expect(@abstractor_abstraction_2.workflow_status).to be_nil
+     expect(@abstractor_abstraction_3.workflow_status).to be_nil
+     Abstractor::AbstractorAbstraction.update_abstractor_abstraction_workflow_status([@abstractor_abstraction, @abstractor_abstraction_2], Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED, 'moomin')
+     expect(@abstractor_abstraction.reload.workflow_status).to eq(Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED)
+     expect(@abstractor_abstraction_2.reload.workflow_status).to eq(Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED)
+     expect(@abstractor_abstraction_3.reload.workflow_status).to be_nil
+     expect(@abstractor_abstraction.reload.workflow_status_whodunnit).to eq('moomin')
+     expect(@abstractor_abstraction_2.reload.workflow_status_whodunnit).to eq('moomin')
+     expect(@abstractor_abstraction_3.reload.workflow_status_whodunnit).to be_nil
    end
  end

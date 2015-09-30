@@ -39,6 +39,10 @@ module Abstractor
             workflow_status == Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
           end
 
+          ##
+          # Whether or not it has a submitted workflow status.
+          #
+          # @return [Boolean]
           def submitted?
             workflow_status == Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
           end
