@@ -3,7 +3,7 @@
 
 - abstractor_abstraction_group ||= @abstractor_abstraction_group
 .abstractor_abstraction_group
-  .abstractor_abstraction_group_member{class: "workflow_status_#{abstractor_abstraction_group.workflow_status}"}
+  .abstractor_abstraction_group_member{class: "workflow_status_#{abstractor_abstraction_group.workflow_status.join('_')}"}
     - abstractor_abstractions = abstractor_abstraction_group.abstractor_abstractions.not_deleted.joins(:abstractor_subject => :abstractor_subject_group_member)
     - unless namespace_type.blank? || namespace_id.blank?
       - abstractor_abstractions = abstractor_abstractions.where(abstractor_subjects: { namespace_type: namespace_type, namespace_id: namespace_id})

@@ -35,6 +35,10 @@ module Abstractor
         end
 
         module InstanceMethods
+          ##
+          # Whether or not it has a discarded workflow status.
+          #
+          # @return [Boolean]
           def discarded?
             workflow_status == Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
           end
@@ -47,12 +51,21 @@ module Abstractor
             workflow_status == Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
           end
 
+          ##
+          # Clears out all the value of the abstraction.
+          #
+          # @return [void]
           def clear
             self.value = nil
             self.unknown = nil
             self.not_applicable = nil
           end
 
+          ##
+          # Clears out all the value of the abstraction.  And saves it.
+          # Sets any suggestions to not be accepted and destroys user-contributed suggestions.
+          #
+          # @return [void]
           def clear!
             Abstractor::AbstractorAbstraction.transaction do
               self.clear

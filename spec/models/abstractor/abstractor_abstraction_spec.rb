@@ -13,6 +13,7 @@
      @abstractor_suggestion_bar = FactoryGirl.create(:abstractor_suggestion, abstractor_abstraction: @abstractor_abstraction, accepted: nil, suggested_value: 'bar')
      @abstractor_suggestion_boo = FactoryGirl.create(:abstractor_suggestion, abstractor_abstraction: @abstractor_abstraction, accepted: nil, suggested_value: 'boo')
      @abstractor_suggestion_foo = FactoryGirl.create(:abstractor_suggestion, abstractor_abstraction: @abstractor_abstraction, accepted: false , suggested_value: 'foo')
+     FactoryGirl.create(:abstractor_suggestion_source, abstractor_suggestion: @abstractor_suggestion_foo)
      @abstractor_abstraction_source = FactoryGirl.create(:abstractor_abstraction_source, abstractor_subject: @abstractor_subject)
    end
 
@@ -64,14 +65,60 @@
      expect(@abstractor_abstraction.not_applicable).to eq(nil)
    end
 
+   it 'clears itself of a value and saves', focus: false do
+     @abstractor_abstraction.value = 'moomin'
+     @abstractor_abstraction.clear!
+     expect(@abstractor_abstraction.reload.value).to eq(nil)
+   end
+
+   it 'clears itself of an unknown value and saves', focus: false do
+     @abstractor_abstraction.unknown = true
+     @abstractor_abstraction.clear
+     expect(@abstractor_abstraction.reload.unknown).to eq(nil)
+   end
+
+   it 'clears itself of a not applicable value and saves', focus: false do
+     @abstractor_abstraction.not_applicable = true
+     @abstractor_abstraction.clear
+     expect(@abstractor_abstraction.reload.not_applicable).to eq(nil)
+   end
+
    it "knows if it has a 'submitted' workflow_status", focus: false do
      @abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
      @abstractor_abstraction.save!
      expect(@abstractor_abstraction.submitted?).to be_truthy
    end
 
+   it 'clears itself of a value and saves and destroys a user-contributed suggestion', focus: false do
+     @abstractor_suggestion_boo.accepted = true
+     @abstractor_suggestion_boo.save!
+     expect(@abstractor_abstraction.reload.value).to eq('boo')
+     @abstractor_abstraction.clear!
+     expect(@abstractor_abstraction.reload.value).to eq(nil)
+     expect(Abstractor::AbstractorSuggestion.where(id: @abstractor_suggestion_boo.id).first).to eq(nil)
+   end
+
+   it 'clears itself of a value and saves and sets to not accepted suggestions with sources', focus: false do
+     @abstractor_suggestion_foo.accepted = true
+     @abstractor_suggestion_foo.save!
+     expect(@abstractor_abstraction.reload.value).to eq('foo')
+     @abstractor_abstraction.clear!
+     expect(@abstractor_abstraction.reload.value).to eq(nil)
+     expect(@abstractor_suggestion_foo.reload.accepted).to be_nil
+   end
+
    it "knows if it does not have a 'submitted' workflow_status", focus: false do
      expect(@abstractor_abstraction.submitted?).to be_falsey
+   end
+
+   it "knows if it has a 'discarded' workflow_status", focus: false do
+     @abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+     @abstractor_abstraction.save!
+     expect(@abstractor_abstraction.discarded?).to be_truthy
+   end
+
+   it "knows if it does not have a 'discarded' workflow_status", focus: false do
+     expect(@abstractor_abstraction.discarded?).to be_falsey
    end
 
    it 'updates the workflow status of abstractions', focus: false do

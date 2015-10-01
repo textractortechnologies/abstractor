@@ -36,24 +36,44 @@ module Abstractor
             subtype == s
           end
 
+          ##
+          # Whether or not is fully set: all of its abstrations have a vlue set.
+          #
+          # @return [Boolean]
           def fully_set?
             !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| abstractor_abstraction.value.blank?  }
           end
 
+          ##
+          # Whether or not it has a 'discarded' workflow status.
+          #
+          # @return [Boolean]
           def discarded?
             !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| !abstractor_abstraction.discarded? }
           end
 
+          ##
+          # Whether or not it has 'submitted' workflow status.
+          #
+          # @return [Boolean]
           def submitted?
             !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| !abstractor_abstraction.submitted? }
           end
 
+          ##
+          # The
+          #
+          # @return [String]
           def workflow_status
-            Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUSES[Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUSES.index(abstractor_abstractions.not_deleted.map(&:workflow_status).uniq!.join)]
+            (Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUSES & abstractor_abstractions.not_deleted.map(&:workflow_status).uniq)
           end
 
+          ##
+          # Whether or not it should be considered 'read only'
+          #
+          # @return [Boolean]
           def read_only?
-            !(workflow_status == Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING)
+            !(workflow_status.join == Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING)
           end
 
           private

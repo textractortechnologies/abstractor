@@ -20,6 +20,118 @@ describe Abstractor::AbstractorAbstractionGroup do
     expect(abstractor_abstraction_group.errors.full_messages).to include 'Must have at least one abstractor_abstraction_group_member'
   end
 
+  it "knows if it has a 'discarded' workflow_status", focus: false do
+    abstraction_1 = @abstractor_subject.abstractor_abstractions.build(about_id: 1, about_type: ImagingExam.to_s)
+    abstraction_1.save!
+
+    abstraction_2 = @abstractor_subject.abstractor_abstractions.build(about_id: 1, about_type: ImagingExam.to_s)
+    abstraction_2.save!
+
+    abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.new(abstractor_subject_group_id: @subject_group.id, about_type: @imaging_exam.class.to_s, about_id: @imaging_exam.id)
+    abstractor_abstraction_group.abstractor_abstractions << abstraction_1
+    abstractor_abstraction_group.abstractor_abstractions << abstraction_2
+    abstractor_abstraction_group.save!
+
+    abstraction_1.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+    abstraction_1.save!
+
+    expect(abstractor_abstraction_group.discarded?).to be_falsey
+
+    abstraction_2.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+    abstraction_2.save!
+    expect(abstractor_abstraction_group.discarded?).to be_truthy
+  end
+
+  it "knows if it has a 'submitted' workflow_status", focus: false do
+    abstraction_1 = @abstractor_subject.abstractor_abstractions.build(about_id: 1, about_type: ImagingExam.to_s)
+    abstraction_1.save!
+
+    abstraction_2 = @abstractor_subject.abstractor_abstractions.build(about_id: 1, about_type: ImagingExam.to_s)
+    abstraction_2.save!
+
+    abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.new(abstractor_subject_group_id: @subject_group.id, about_type: @imaging_exam.class.to_s, about_id: @imaging_exam.id)
+    abstractor_abstraction_group.abstractor_abstractions << abstraction_1
+    abstractor_abstraction_group.abstractor_abstractions << abstraction_2
+    abstractor_abstraction_group.save!
+
+    abstraction_1.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+    abstraction_1.save!
+
+    expect(abstractor_abstraction_group.submitted?).to be_falsey
+
+    abstraction_2.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+    abstraction_2.save!
+    expect(abstractor_abstraction_group.submitted?).to be_truthy
+  end
+
+  it "knows if it is 'fully set'", focus: false do
+    abstraction_1 = @abstractor_subject.abstractor_abstractions.build(about_id: 1, about_type: ImagingExam.to_s)
+    abstraction_1.save!
+
+    abstraction_2 = @abstractor_subject.abstractor_abstractions.build(about_id: 1, about_type: ImagingExam.to_s)
+    abstraction_2.save!
+
+    abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.new(abstractor_subject_group_id: @subject_group.id, about_type: @imaging_exam.class.to_s, about_id: @imaging_exam.id)
+    abstractor_abstraction_group.abstractor_abstractions << abstraction_1
+    abstractor_abstraction_group.abstractor_abstractions << abstraction_2
+    abstractor_abstraction_group.save!
+
+    abstraction_1.value = 'moomin'
+    abstraction_1.save!
+
+    expect(abstractor_abstraction_group.fully_set?).to be_falsey
+
+    abstraction_2.value = 'moomin'
+    abstraction_2.save!
+
+    expect(abstractor_abstraction_group.fully_set?).to be_truthy
+  end
+
+  it "knows its workflow_status", focus: false do
+    abstraction_1 = @abstractor_subject.abstractor_abstractions.build(about_id: 1, about_type: ImagingExam.to_s, workflow_status: Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING)
+    abstraction_1.save!
+
+    abstraction_2 = @abstractor_subject.abstractor_abstractions.build(about_id: 1, about_type: ImagingExam.to_s, workflow_status: Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING)
+    abstraction_2.save!
+
+    abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.new(abstractor_subject_group_id: @subject_group.id, about_type: @imaging_exam.class.to_s, about_id: @imaging_exam.id)
+    abstractor_abstraction_group.abstractor_abstractions << abstraction_1
+    abstractor_abstraction_group.abstractor_abstractions << abstraction_2
+    abstractor_abstraction_group.save!
+
+    abstraction_1.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+    abstraction_1.save!
+
+    expect(abstractor_abstraction_group.workflow_status).to match_array(['pending','submitted'])
+
+    abstraction_2.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+    abstraction_2.save!
+    expect(abstractor_abstraction_group.workflow_status).to match_array(['submitted'])
+  end
+
+  it "knows it is 'read only'", focus: false do
+    abstraction_1 = @abstractor_subject.abstractor_abstractions.build(about_id: 1, about_type: ImagingExam.to_s, workflow_status: Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING)
+    abstraction_1.save!
+
+    abstraction_2 = @abstractor_subject.abstractor_abstractions.build(about_id: 1, about_type: ImagingExam.to_s, workflow_status: Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING)
+    abstraction_2.save!
+
+    abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.new(abstractor_subject_group_id: @subject_group.id, about_type: @imaging_exam.class.to_s, about_id: @imaging_exam.id)
+    abstractor_abstraction_group.abstractor_abstractions << abstraction_1
+    abstractor_abstraction_group.abstractor_abstractions << abstraction_2
+    abstractor_abstraction_group.save!
+
+    expect(abstractor_abstraction_group.read_only?).to be_falsey
+
+    abstraction_2.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+    abstraction_2.save!
+    expect(abstractor_abstraction_group.read_only?).to be_truthy
+  end
+
+  # it "knows if it does not have a 'discarded' workflow_status", focus: false do
+  #   expect(@abstractor_abstraction.discarded?).to be_falsey
+  # end
+
   # it "is not valid if members belong to different namespaces" do
   #   abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.new(abstractor_subject_group_id: @subject_group.id, about_type: ImagingExam.to_s, about_id: 1)
   #   abstractor_abstraction_group.abstractor_abstractions << @abstraction
