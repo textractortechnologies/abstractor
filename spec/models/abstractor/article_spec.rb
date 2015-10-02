@@ -7,7 +7,7 @@ describe Article do
     v_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
     source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
     @favorite_baseball_team_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_favorite_baseball_team', display_name: 'Favorite baseball team', abstractor_object_type: list_object_type, preferred_name: 'Favorite baseball team')
-    abstractor_subject = Abstractor::AbstractorSubject.create(subject_type: 'Article', abstractor_abstraction_schema: @favorite_baseball_team_abstractor_abstraction_schema)
+    abstractor_subject = Abstractor::AbstractorSubject.create(subject_type: 'Article', abstractor_abstraction_schema: @favorite_baseball_team_abstractor_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 2)
     @abstractor_object_value_white_sox = Abstractor::AbstractorObjectValue.create(value: 'White Sox')
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: @favorite_baseball_team_abstractor_abstraction_schema, abstractor_object_value: @abstractor_object_value_white_sox)
     @abstractor_object_value_cubs = Abstractor::AbstractorObjectValue.create(value: 'Cubs')
@@ -246,6 +246,168 @@ describe Article do
       expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, namespace_type: 'Discerner::Search', namespace_id: 1, abstractor_abstraction_schemas: [@favorite_philosopher_abstractor_abstraction_schema])).to be_empty
       expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, namespace_type: 'Discerner::Search', namespace_id: 1, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
       expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, namespace_type: 'Discerner::Search', namespace_id: 1, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
+    end
+  end
+
+  describe "querying by workflow status" do
+    before(:each) do
+      Abstractor::Setup.system
+      list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+      v_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
+      source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
+      @favorite_philosopher_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_favorite_philosopher', display_name: 'Favorite philosopher', abstractor_object_type: list_object_type, preferred_name: 'Favorite philosopher')
+      abstractor_subject = Abstractor::AbstractorSubject.create(subject_type: 'Article', abstractor_abstraction_schema: @favorite_philosopher_abstractor_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 1)
+      @abstractor_object_value_rorty = Abstractor::AbstractorObjectValue.create(value: 'Rorty')
+      Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: @favorite_philosopher_abstractor_abstraction_schema, abstractor_object_value: @abstractor_object_value_rorty)
+      @abstractor_object_value_wittgenstein = Abstractor::AbstractorObjectValue.create(value: 'Wittgenstein')
+      Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: @favorite_philosopher_abstractor_abstraction_schema, abstractor_object_value: @abstractor_object_value_wittgenstein)
+      @abstractor_object_value_dennet = Abstractor::AbstractorObjectValue.create(value: 'Dennet')
+      Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: @favorite_philosopher_abstractor_abstraction_schema, abstractor_object_value: @abstractor_object_value_dennet)
+      Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', abstractor_rule_type: v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
+    end
+
+    it "can report what has a 'pending' workflow status", focus: false do
+      article = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article.abstract
+
+      article_2 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_2.abstract
+      article_2.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+        abstractor_abstraction.save!
+      end
+
+      expect(Article.by_abstraction_workflow_status(Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING)).to eq([article])
+
+      article_3 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_3.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+
+      article_4 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_4.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
+
+      options = { namespace_type: 'Discerner::Search', namespace_id: 2 }
+      expect(Article.by_abstraction_workflow_status(Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING, options)).to eq([article, article_4])
+    end
+
+    it "can report what has a 'submitted' workflow status", focus: false do
+      article = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article.abstract
+      article.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+        abstractor_abstraction.workflow_status_whodunnit = 'little my'
+        abstractor_abstraction.save!
+      end
+
+      article_2 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_2.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+
+      expect(Article.by_abstraction_workflow_status(Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED)).to eq([article])
+
+      article_3 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_3.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+      article_3.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+        abstractor_abstraction.workflow_status_whodunnit = 'moominpapa'
+        abstractor_abstraction.save!
+      end
+
+      article_4 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_4.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
+
+      article_4.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+        abstractor_abstraction.workflow_status_whodunnit = 'moominpapa'
+        abstractor_abstraction.save!
+      end
+
+      options = { workflow_status_whodunnit: 'moominpapa' }
+      expect(Article.by_abstraction_workflow_status(Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED, options)).to eq([article_3, article_4])
+
+      options = { workflow_status_whodunnit: 'moominpapa', namespace_type: 'Discerner::Search', namespace_id: 2 }
+      expect(Article.by_abstraction_workflow_status(Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED, options)).to eq([article_4])
+    end
+
+    it "can report what has a 'discarded' workflow status", focus: false do
+      article = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article.abstract
+      article.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+        abstractor_abstraction.workflow_status_whodunnit = 'little my'
+        abstractor_abstraction.save!
+      end
+
+      article_2 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_2.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+
+      expect(Article.by_abstraction_workflow_status(Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED)).to eq([article])
+
+      article_3 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_3.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+      article_3.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+        abstractor_abstraction.workflow_status_whodunnit = 'moominpapa'
+        abstractor_abstraction.save!
+      end
+
+      article_4 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_4.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
+
+      article_4.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+        abstractor_abstraction.workflow_status_whodunnit = 'moominpapa'
+        abstractor_abstraction.save!
+      end
+
+      options = { workflow_status_whodunnit: 'moominpapa' }
+      expect(Article.by_abstraction_workflow_status(Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED, options)).to eq([article_3, article_4])
+
+      options = { workflow_status_whodunnit: 'moominpapa', namespace_type: 'Discerner::Search', namespace_id: 2 }
+      expect(Article.by_abstraction_workflow_status(Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED, options)).to eq([article_4])
+    end
+
+    it "can report what has a 'submitted or discarded' workflow status", focus: false do
+      article = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article.abstract
+      article.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+        abstractor_abstraction.workflow_status_whodunnit = 'little my'
+        abstractor_abstraction.save!
+      end
+
+      article_2 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_2.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+      article_2.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+        abstractor_abstraction.workflow_status_whodunnit = 'little my'
+        abstractor_abstraction.save!
+      end
+
+      article_3 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_3.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+
+      expect(Article.by_abstraction_workflow_status(Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED_OR_DISCARDED)).to match_array([article, article_2])
+
+      article_4 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_4.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
+      article_4.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+        abstractor_abstraction.workflow_status_whodunnit = 'moominpapa'
+        abstractor_abstraction.save!
+      end
+
+      article_5 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_5.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+      article_5.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+        abstractor_abstraction.workflow_status_whodunnit = 'moominpapa'
+        abstractor_abstraction.save!
+      end
+
+      options = { workflow_status_whodunnit: 'moominpapa' }
+      expect(Article.by_abstraction_workflow_status(Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED_OR_DISCARDED, options)).to eq([article_4, article_5])
+
+      options = { workflow_status_whodunnit: 'moominpapa', namespace_type: 'Discerner::Search', namespace_id: 2 }
+      expect(Article.by_abstraction_workflow_status(Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED_OR_DISCARDED, options)).to eq([article_4])
     end
   end
 end

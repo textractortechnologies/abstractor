@@ -53,6 +53,13 @@ describe EncounterNote do
       expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)).to_not be_nil
     end
 
+    it "creates a 'has_karnofsky_performance_status' abstraction with a workflow status of 'pending", focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
+      @encounter_note.abstract
+
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).workflow_status).to eq(Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING)
+    end
+
     it "does not create another 'has_karnofsky_performance_status' abstraction upon re-abstraction", focus: false do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 90.')
       @encounter_note.abstract
