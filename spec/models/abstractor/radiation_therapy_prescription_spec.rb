@@ -14,6 +14,7 @@ describe RadiationTherapyPrescription do
     @abstractor_subject_abstraction_schema_has_anatomical_location = Abstractor::AbstractorSubject.where(subject_type: RadiationTherapyPrescription.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_has_anatomical_location.id).first
     @abstractor_subject_abstraction_schema_has_laterality = Abstractor::AbstractorSubject.where(subject_type: RadiationTherapyPrescription.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_has_laterality.id).first
     @abstractor_subject_abstraction_schema_has_radiation_therapy_prescription_date = Abstractor::AbstractorSubject.where(subject_type: RadiationTherapyPrescription.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_has_radiation_therapy_prescription_date.id).first
+    @anatomical_location_subject_group  = Abstractor::AbstractorSubjectGroup.where(name: 'Anatomical Location').first
   end
 
   before(:each) do
@@ -352,6 +353,66 @@ describe RadiationTherapyPrescription do
       it "can report its ungrouped abstractor subjects", focus: false do
         expect(RadiationTherapyPrescription.abstractor_abstraction_schemas(grouped: false).size).to eq(1)
       end
+    end
+
+    it 'creates an abstraction group', focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
+      radiation_therapy_prescription.abstract
+
+      expect(radiation_therapy_prescription.reload.abstractor_abstraction_groups.size).to eq(1)
+
+      Abstractor::AbstractorAbstractionGroup.create_abstractor_abstraction_group(@anatomical_location_subject_group.id, 'RadiationTherapyPrescription', radiation_therapy_prescription.id, nil, nil)
+      expect(radiation_therapy_prescription.reload.abstractor_abstraction_groups.size).to eq(2)
+    end
+
+    it 'creates an abstraction group', focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
+      radiation_therapy_prescription.abstract
+
+      expect(radiation_therapy_prescription.reload.abstractor_abstraction_groups.size).to eq(1)
+
+      Abstractor::AbstractorAbstractionGroup.create_abstractor_abstraction_group(@anatomical_location_subject_group.id, 'RadiationTherapyPrescription', radiation_therapy_prescription.id, nil, nil)
+      expect(radiation_therapy_prescription.reload.abstractor_abstraction_groups.size).to eq(2)
+    end
+
+    it 'copies suggestions from the iniital group when creating an abstraction group', focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
+      radiation_therapy_prescription.abstract
+
+      expect(radiation_therapy_prescription.reload.abstractor_abstraction_groups.size).to eq(1)
+
+      Abstractor::AbstractorAbstractionGroup.create_abstractor_abstraction_group(@anatomical_location_subject_group.id, 'RadiationTherapyPrescription', radiation_therapy_prescription.id, nil, nil)
+      expect(radiation_therapy_prescription.reload.abstractor_abstraction_groups.size).to eq(2)
+
+      suggestions_1 = radiation_therapy_prescription.abstractor_abstraction_groups.first.abstractor_abstractions.map(&:abstractor_suggestions).flatten
+      suggestions_2 = radiation_therapy_prescription.abstractor_abstraction_groups.last.abstractor_abstractions.map(&:abstractor_suggestions).flatten
+      expect(suggestions_1.size).to eq(suggestions_2.size)
+      expect(suggestions_1.map(&:suggested_value)).to match_array(suggestions_2.map(&:suggested_value))
+    end
+
+    it 'finds abstractions by abstraction schema', focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
+      radiation_therapy_prescription.abstract
+
+      abstractor_abstractions = radiation_therapy_prescription.abstractor_abstractions.select { |abstractor_abstraction| abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema == @abstractor_abstraction_schema_has_anatomical_location }
+      expect(radiation_therapy_prescription.reload.abstractor_abstractions_by_abstraction_schemas(abstractor_abstraction_schema_ids: [@abstractor_abstraction_schema_has_anatomical_location.id])).to_not be_empty
+      expect(radiation_therapy_prescription.reload.abstractor_abstractions_by_abstraction_schemas(abstractor_abstraction_schema_ids: [@abstractor_abstraction_schema_has_anatomical_location.id])).to eq(abstractor_abstractions)
+    end
+
+    it 'finds abstractions by abstraction schema within an abstraction group', focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
+      radiation_therapy_prescription.abstract
+
+      Abstractor::AbstractorAbstractionGroup.create_abstractor_abstraction_group(@anatomical_location_subject_group.id, 'RadiationTherapyPrescription', radiation_therapy_prescription.id, nil, nil)
+      expect(radiation_therapy_prescription.reload.abstractor_abstraction_groups.size).to eq(2)
+
+      abstractor_abstractions_group_1 = radiation_therapy_prescription.abstractor_abstraction_groups.first.abstractor_abstractions.select { |abstractor_abstraction| abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema == @abstractor_abstraction_schema_has_anatomical_location }
+      abstractor_abstractions_group_2 = radiation_therapy_prescription.abstractor_abstraction_groups.last.abstractor_abstractions.select { |abstractor_abstraction| abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema == @abstractor_abstraction_schema_has_anatomical_location }
+      expect(abstractor_abstractions_group_1).to_not be_empty
+      expect(abstractor_abstractions_group_2).to_not be_empty
+      expect(abstractor_abstractions_group_1).to_not eq (abstractor_abstractions_group_2)
+      expect(radiation_therapy_prescription.reload.abstractor_abstractions_by_abstraction_schemas(abstractor_abstraction_schema_ids: [@abstractor_abstraction_schema_has_anatomical_location.id], abstractor_abstraction_group: radiation_therapy_prescription.abstractor_abstraction_groups.first)).to eq(abstractor_abstractions_group_1)
+      expect(radiation_therapy_prescription.reload.abstractor_abstractions_by_abstraction_schemas(abstractor_abstraction_schema_ids: [@abstractor_abstraction_schema_has_anatomical_location.id], abstractor_abstraction_group: radiation_therapy_prescription.abstractor_abstraction_groups.last)).to eq(abstractor_abstractions_group_2)
     end
   end
 end

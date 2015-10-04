@@ -100,7 +100,7 @@ module Abstractor
       #
       # @param [Hash] options the options to filter the list of abstractions to a namespace.
       # @option options [Array] :abstractor_abstraction_schema_ids List of [Abstractor::AbstractorAbstractionSchema] ids
-      # @option options [ActiveRecord::Relation] List of [Abstractor::AbstractorAbstraction].
+      # @option options [Abstractor::AbstractorAbstraction] :abstractor_abstraction_group Instance of an abstraction group.
       # @return [ActiveRecord::Relation] List of [Abstractor::AbstractorAbstraction].
       def abstractor_abstractions_by_abstraction_schemas(options = {})
         options = { abstractor_abstraction_schema_ids: [], abstractor_abstractions: abstractor_abstractions.not_deleted, abstractor_abstraction_group: nil }.merge(options)
