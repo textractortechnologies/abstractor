@@ -23,6 +23,10 @@ module Abstractor
         !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| !abstractor_abstraction.submitted? }
       end
 
+      ##
+      # Whether or not the abstrabable entity has a 'discarded' workflow status.
+      #
+      # @return [Boolean]
       def discarded?
         !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| !abstractor_abstraction.discarded? }
       end
