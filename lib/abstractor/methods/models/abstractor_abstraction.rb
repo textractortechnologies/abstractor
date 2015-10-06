@@ -111,6 +111,10 @@ module Abstractor
               if aov != abstractor_object_value
                 self.abstractor_object_value = aov
               end
+            else
+              if abstractor_abstraction_object_value
+                abstractor_abstraction_object_value.destroy
+              end
             end
           end
 

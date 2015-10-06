@@ -590,8 +590,8 @@ describe EncounterNote do
     end
 
     it 'normalizes abstractor suggestion sentences for overlapping matching values', focus: false do
-      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks not so healthy.  I think 20 kps 20 is correct.')
-      @encounter_note.abstract
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks not so healthy.  I think 20 kps 20 is correct.')
+      encounter_note.abstract
 
       expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
       normalizaiton = [{
@@ -602,7 +602,38 @@ describe EncounterNote do
             sentences: [ { sentence: "kps: 20", match_values: ["kps: 20"]}, { sentence: "kps: 20.", match_values: ["kps: 20."]}]
       }]
 
-      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.normalize_abstractor_suggestion_sentences).to eq([])
+      expect(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.normalize_abstractor_suggestion_sentences).to eq([])
+    end
+
+    it 'creates a relationship to it accpeted object value', focus: false do
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks not so healthy.  I think 20 kps 20 is correct.')
+      encounter_note.abstract
+      abstractor_abstraction = encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)
+      expect(abstractor_abstraction.abstractor_object_value).to be_nil
+      abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
+        abstractor_suggestion.accepted = true
+        abstractor_suggestion.save!
+      end
+      expect(abstractor_abstraction.reload.abstractor_object_value).to_not be_nil
+    end
+
+    it 'removes the relationship to its unaccpeted object value', focus: false do
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks not so healthy.  I think 20 kps 20 is correct.')
+      encounter_note.abstract
+      abstractor_abstraction = encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)
+      expect(abstractor_abstraction.abstractor_object_value).to be_nil
+      abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
+        abstractor_suggestion.accepted = true
+        abstractor_suggestion.save!
+      end
+
+      expect(abstractor_abstraction.reload.abstractor_object_value).to_not be_nil
+
+      abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
+        abstractor_suggestion.accepted = false
+        abstractor_suggestion.save!
+      end
+      expect(abstract or_abstraction.reload.abstractor_object_value).to be_nil
     end
 
     describe "querying by abstractor abstraction status" do
