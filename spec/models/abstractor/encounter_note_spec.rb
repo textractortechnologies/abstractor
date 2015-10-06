@@ -500,6 +500,37 @@ describe EncounterNote do
       expect(@encounter_note.reload.discarded?).to be_falsey
     end
 
+    it 'knows a list of users who have updated its workflow status', focus: true do
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+      encounter_note.abstract
+
+      encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+        abstractor_abstraction.workflow_status_whodunnit = 'moomin'
+        abstractor_abstraction.save!
+      end
+
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+      encounter_note.abstract
+
+      encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+        abstractor_abstraction.workflow_status_whodunnit = 'littley my'
+        abstractor_abstraction.save!
+      end
+
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+      encounter_note.abstract
+
+      encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+        abstractor_abstraction.workflow_status_whodunnit = 'littley my'
+        abstractor_abstraction.save!
+      end
+
+      expect(EncounterNote.workflow_status_whodunnit_list).to eq(["littley my", "moomin"])
+    end
+
     describe "querying by abstractor abstraction status" do
       before(:each) do
         @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')

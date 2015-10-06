@@ -412,12 +412,19 @@ module Abstractor
     end
 
     module ClassMethods
+      ##
+      # Returns a list of users who have updated the workflow status of the abstracrtable entity.
+      #
+      # @param [Hash] options The options to filter the entities returned.
+      # @option options [String] :namespace_type The type parameter of the namespace to filter the entities.
+      # @option options [Integer] :namespace_id The instance parameter of the namespace to filter the entities.
+      # @return [String] List of users who have updated the workflow status of the abstractabe entity.
       def workflow_status_whodunnit_list(options = {})
         options = { namespace_type: nil, namespace_id: nil }.merge(options)
         if options[:namespace_type] || options[:namespace_id]
           Abstractor::AbstractorAbstraction.joins(:abstractor_subject).where(about_type: self.to_s, abstractor_subject: { namespace_type: options[:namespace_type], namespace_id: options[:namespace_id]}).where.not(workflow_status_whodunnit: nil).select('DISTINCT workflow_status_whodunnit')
         else
-          Abstractor::AbstractorAbstraction.where(about_type: self.to_s).where.not(workflow_status_whodunnit: nil).select('DISTINCT workflow_status_whodunnit')
+          Abstractor::AbstractorAbstraction.where(about_type: self.to_s).where.not(workflow_status_whodunnit: nil).select('DISTINCT workflow_status_whodunnit').all.map(&:workflow_status_whodunnit).sort
         end
       end
       ##
