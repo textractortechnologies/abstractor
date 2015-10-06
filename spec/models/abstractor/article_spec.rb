@@ -266,6 +266,29 @@ describe Article do
       Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', abstractor_rule_type: v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
     end
 
+
+    it "can report against all workflow statuses", focus: false do
+      article = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article.abstract
+
+      article_2 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_2.abstract
+      article_2.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+        abstractor_abstraction.save!
+      end
+
+      article_3 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article_3.abstract
+      article_3.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+        abstractor_abstraction.save!
+      end
+
+      expect(Article.by_abstraction_workflow_status('All')).to eq([article, article_2,  article_3])
+      expect(Article.by_abstraction_workflow_status(nil)).to eq([article, article_2,  article_3])
+    end
+
     it "can report what has a 'pending' workflow status", focus: false do
       article = FactoryGirl.create(:article, note_text: 'gobbledy gook')
       article.abstract
