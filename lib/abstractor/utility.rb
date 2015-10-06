@@ -5,7 +5,7 @@ module Abstractor
       result.downcase.gsub(/ +/,'_')
     end
 
-    def self.uniquify_non_overlapping_match_values(match_values)
+    def self.uniquify_overlapping_match_values(match_values)
       match_values.sort! { |a,b| b.size <=> a.size }
 
       normalized_match_values = []

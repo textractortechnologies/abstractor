@@ -531,6 +531,38 @@ describe EncounterNote do
       expect(EncounterNote.workflow_status_whodunnit_list).to eq(["littley my", "moomin"])
     end
 
+    it 'normalizes abstractor suggestion sentences', focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks not so healthy.  kps: 20.')
+      @encounter_note.abstract
+
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
+      normalizaiton = [{
+            source_type: "EncounterNote",
+            source_method: "note_text",
+            source_id: 1,
+            section_name: nil,
+            sentences: [ { sentence: "kps: 20", match_values: ["kps: 20"]}, { sentence: "kps: 20.", match_values: ["kps: 20."]}]
+      }]
+
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.normalize_abstractor_suggestion_sentences).to eq(normalizaiton)
+    end
+
+    it 'normalizes abstractor suggestion sentences for overlapping matching values', focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks not so healthy.  I think 20 kps 20 is correct.')
+      @encounter_note.abstract
+
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
+      normalizaiton = [{
+            source_type: "EncounterNote",
+            source_method: "note_text",
+            source_id: 1,
+            section_name: nil,
+            sentences: [ { sentence: "kps: 20", match_values: ["kps: 20"]}, { sentence: "kps: 20.", match_values: ["kps: 20."]}]
+      }]
+
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.normalize_abstractor_suggestion_sentences).to eq([])
+    end
+
     describe "querying by abstractor abstraction status" do
       before(:each) do
         @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')

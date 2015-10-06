@@ -86,7 +86,7 @@ module Abstractor
             suggestion_sources = abstractor_suggestion_sources.select { |abstractor_suggestion_source| abstractor_suggestion_source.source_type == source[:source_type] &&  abstractor_suggestion_source.source_method == source[:source_method] && abstractor_suggestion_source.source_id == source[:source_id] }
             suggestion_sources.map(&:sentence_match_value).compact.uniq.each do |sentence_match_value|
               match_values = suggestion_sources.select { |suggestion_source| suggestion_source.sentence_match_value == sentence_match_value }.map(&:match_value)
-              non_overlapping_match_values = Abstractor::Utility.uniquify_non_overlapping_match_values(match_values)
+              non_overlapping_match_values = Abstractor::Utility.uniquify_overlapping_match_values(match_values)
               source[:sentences] << { sentence: sentence_match_value, match_values: non_overlapping_match_values }
             end
             normalization << source
