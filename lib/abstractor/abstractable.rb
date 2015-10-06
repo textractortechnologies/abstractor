@@ -15,16 +15,24 @@ module Abstractor
     end
 
     module InstanceMethods
+      ##
+      # Whether or not the abstrabable entity 'fully set'.  Every non-deleted abstraction has a non-blank value.
+      #
+      # @return [Boolean]
       def fully_set?
         !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| abstractor_abstraction.value.blank?  }
       end
 
+      ##
+      # Whether or not the abstrabable entity has a 'submitted' workflow status.  Every non-deleted abstraction must be 'submitted'.
+      #
+      # @return [Boolean]
       def submitted?
         !abstractor_abstractions.not_deleted.any? { |abstractor_abstraction| !abstractor_abstraction.submitted? }
       end
 
       ##
-      # Whether or not the abstrabable entity has a 'discarded' workflow status.
+      # Whether or not the abstrabable entity has a 'discarded' workflow status.  Every non-deleted abstraction must be 'discarded'.
       #
       # @return [Boolean]
       def discarded?

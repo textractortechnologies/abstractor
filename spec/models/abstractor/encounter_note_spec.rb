@@ -500,6 +500,48 @@ describe EncounterNote do
       expect(@encounter_note.reload.discarded?).to be_falsey
     end
 
+    it "knows if it has a 'submitted' workflow_status", focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+      @encounter_note.abstract
+
+      @encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+        abstractor_abstraction.save!
+      end
+
+      expect(@encounter_note.reload.discarded?).to be_truthy
+    end
+
+    it "knows if it does not have a 'submitted' workflow_status", focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+      @encounter_note.abstract
+
+      @encounter_note.reload.abstractor_abstractions.first.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+
+      expect(@encounter_note.reload.discarded?).to be_falsey
+    end
+
+    it "knows if it is 'fully set'", focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+      @encounter_note.abstract
+
+      @encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.value = 'moomin'
+        abstractor_abstraction.save!
+      end
+
+      expect(@encounter_note.reload.fully_set?).to be_truthy
+    end
+
+    it "knows if it is not 'fully set'", focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+      @encounter_note.abstract
+
+      @encounter_note.reload.abstractor_abstractions.first.value ='moomin'
+
+      expect(@encounter_note.reload.fully_set?).to be_falsey
+    end
+
     it 'knows a list of users who have updated its workflow status', focus: false do
       encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
       encounter_note.abstract
