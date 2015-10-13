@@ -19,6 +19,4 @@ Feature: Editing pathology case
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction" should not contain selector ".abstractor_abstraction_edit"
     And I should see an ".edit_link" element
-    And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "101"
-    And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain text "History"
-    And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain text "[Not set]"
+    Then the "101" checkbox within ".has_surgery" should be checked

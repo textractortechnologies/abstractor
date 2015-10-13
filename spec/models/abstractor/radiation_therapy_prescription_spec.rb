@@ -229,7 +229,7 @@ describe RadiationTherapyPrescription do
         expect(abstractor_abstraction_group.abstractor_abstractions.map{ |aa| aa.versions.size }).to eq([1,1,1])
         Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(abstractor_abstraction_group.reload.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN)
         Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(abstractor_abstraction_group.reload.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
-        expect(abstractor_abstraction_group.abstractor_abstractions.map{ |aa| aa.versions.size }).to eq([3,3,3])
+        expect(abstractor_abstraction_group.abstractor_abstractions.map{ |aa| aa.versions.size }).to eq([4,4,4])
         PaperTrail.enabled = false
       end
 

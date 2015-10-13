@@ -109,10 +109,9 @@ module Abstractor
           # @return [Abstractor::] List of [Abstractor::AbstractorAbstraction].
           def create_abstractor_abstraction_group(abstractor_subject_group_id, about_type, about_id, namespace_type, namespace_id)
             abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.new(abstractor_subject_group_id: abstractor_subject_group_id, about_type: about_type, about_id: about_id)
-
             abstractor_subjects = abstractor_abstraction_group.abstractor_subject_group.abstractor_subjects
             unless namespace_type.blank? || namespace_id.blank?
-              abstractor_subjects = abstractor_subjects.where(namespace_type: @namespace_type, namespace_id: @namespace_id)
+              abstractor_subjects = abstractor_subjects.where(namespace_type: namespace_type, namespace_id: namespace_id)
             end
 
             abstractor_subjects.each do |abstractor_subject|

@@ -15,17 +15,6 @@ Then /^the "([^"]*)" radio button within(?: the (first|last))? "([^\"]*)" should
   }
 end
 
-Then /^the "([^"]*)" checkbox within(?: the (first|last))? "([^\"]*)" should be checked$/ do |label, position, scope_selector|
-  within_scope(get_scope(position, scope_selector)) {
-    field_checked = find_field(label)['checked']
-    if field_checked.respond_to? :should
-      field_checked.should be_truthy
-    else
-      assert field_checked
-    end
-  }
-end
-
 When /^(?:|I )choose "([^"]*)" within(?: the (first|last))? "(.*?)"$/ do |field, position, scope_selector|
   within_scope(get_scope(position, scope_selector)) {
     choose(field)
@@ -67,18 +56,6 @@ When /^I enter "([^\"]*)" into "([^\"]*)" within(?: the (first|last))? "([^\"]*)
   within_scope(get_scope(position, scope_selector)) {
     all(selector).should_not be_empty
     all(selector, :visible => true).each{ |e| e.set(value) }
-  }
-end
-
-When /^I uncheck "([^\"]*)" within(?: the (first|last))? "([^\"]*)"$/ do |selector, position, scope_selector|
-  within_scope(get_scope(position, scope_selector)) {
-    uncheck(selector)
-  }
-end
-
-When /^I check "([^\"]*)" within(?: the (first|last))? "([^\"]*)"$/ do |selector, position, scope_selector|
-  within_scope(get_scope(position, scope_selector)) {
-    check(selector)
   }
 end
 
@@ -250,14 +227,15 @@ Then /^the "([^"]*)" radio button(?: within (.*))? should not be checked$/ do |l
   end
 end
 
-Then /^the "([^"]*)" checkbox within(?: the (first|last))? "([^\"]*)" should not be checked$/ do |label, position, scope_selector|
+
+Then /^the "([^"]*)" checkbox within(?: the (first|last))? "([^\"]*)" should( not)? be present$/ do |label, position, scope_selector, negate|
   within_scope(get_scope(position, scope_selector)) {
-    field_checked = find_field(label)['checked']
-    if field_checked.respond_to? :should
-      field_checked.should be_falsey
-    else
-      assert !field_checked
+    expectation = negate ? :should_not : :should
+    begin
+      field = find_field(label)
+    rescue Capybara::ElementNotFound
     end
+    field.send(expectation, be_present)
   }
 end
 
@@ -405,12 +383,57 @@ Given /^abstraction schemas are set$/ do
   Setup.imaging_exam
 end
 
-Then(/^I should see "(.*?)" anywhere within "(.*?)"$/) do |text, selector|
-  elements = all(selector).select {|element| element.text.scan(text).any? }.compact
-  expect(elements.any?).to be_truthy
+Then(/^I should see "(.*?)" anywhere within(?: the (first|last))? "(.*?)"$/) do |text, position, selector|
+  position ||= 'first'
+  expect(all(selector).send(position).text.scan(text).any?).to be_truthy
 end
 
-Then(/^I should not see "(.*?)" anywhere within "(.*?)"$/) do |text, selector|
-  elements = all(selector).select {|element| element.text.scan(text).any? }.compact
-  expect(elements.any?).to be_falsy
+Then(/^I should not see "(.*?)" anywhere within(?: the (first|last))? "(.*?)"$/) do |text, position, selector|
+  position ||= 'first'
+  expect(all(selector).send(position).text.scan(text).any?).to be_falsy
+end
+
+When /^I check "([^\"]*)" within(?: the (first|last))? "([^\"]*)"$/ do |selector, position, scope_selector|
+  within_scope(get_scope(position, scope_selector)) {
+    check(selector)
+  }
+end
+
+When /^I uncheck "([^\"]*)" within(?: the (first|last))? "([^\"]*)"$/ do |selector, position, scope_selector|
+  within_scope(get_scope(position, scope_selector)) {
+    uncheck(selector)
+  }
+end
+
+When /^I check "([^\"]*)" within(?: the (first|last))? "([^\"]*)" containing text "([^\"]*)"$/ do |selector, position, scope_selector, text|
+  within_scope(get_scope(position, scope_selector)) {
+    begin
+      if have_content(text)
+        check(selector)
+      end
+    rescue Capybara::ElementNotFound
+    end
+  }
+end
+
+Then /^the "([^"]*)" checkbox within(?: the (first|last))? "([^\"]*)" should be checked$/ do |label, position, scope_selector|
+  within_scope(get_scope(position, scope_selector)) {
+    field_checked = find_field(label)['checked']
+    if field_checked.respond_to? :should
+      field_checked.should be_truthy
+    else
+      assert field_checked
+    end
+  }
+end
+
+Then /^the "([^"]*)" checkbox within(?: the (first|last))? "([^\"]*)" should not be checked$/ do |label, position, scope_selector|
+  within_scope(get_scope(position, scope_selector)) {
+    field_checked = find_field(label)['checked']
+    if field_checked.respond_to? :should
+      field_checked.should be_falsey
+    else
+      assert !field_checked
+    end
+  }
 end

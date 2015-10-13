@@ -230,21 +230,14 @@ module Abstractor
               if abstraction_other_value_type
                 abstractor_abstractions.each do |abstractor_abstraction|
                   abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
-                    if unknown && abstractor_suggestion.unknown
-                      abstractor_suggestion.accepted = true
-                      abstractor_suggestion.save!
-                    else
-                      set_abstractor_abstraction(abstractor_abstraction, unknown, not_applicable)
-                      abstractor_suggestion.accepted = false
-                      abstractor_suggestion.save!
+                    if abstractor_suggestion.abstractor_suggestion_sources.not_deleted.empty?
+                      abstractor_suggestion.destroy
                     end
                   end
 
-                  if abstractor_abstraction.abstractor_suggestions.empty?
-                    abstractor_abstraction.unknown = unknown
-                    abstractor_abstraction.not_applicable = not_applicable
-                    abstractor_abstraction.save!
-                  end
+                  abstractor_suggestion = abstractor_abstraction.abstractor_subject.suggest(abstractor_abstraction, nil, nil, nil, nil, nil, nil, nil, nil, unknown, not_applicable, nil, nil)
+                  abstractor_suggestion.accepted = true
+                  abstractor_suggestion.save!
                 end
               end
             end

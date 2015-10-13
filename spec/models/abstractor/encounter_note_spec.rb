@@ -255,7 +255,7 @@ describe EncounterNote do
     it "does not create a'has_karnofsky_performance_status_date' abstraction 'unknown' suggestion if the custom rule makes a suggestion (using a custom rule)", focus: false do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.")
       @encounter_note.abstract
-      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date).abstractor_suggestions.select { |suggestion| suggestion.unknown.nil? }.size).to eq(1)
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date).abstractor_suggestions.select { |suggestion| suggestion.unknown == false }.size).to eq(1)
     end
 
     it "does create a'has_karnofsky_performance_status_date' abstraction 'unknown' suggestion if the custom rule does not make a suggestion (using a custom rule)", focus: false do
@@ -593,16 +593,16 @@ describe EncounterNote do
       encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks not so healthy.  I think 20 kps 20 is correct.')
       encounter_note.abstract
 
-      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
+      expect(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
       normalizaiton = [{
             source_type: "EncounterNote",
             source_method: "note_text",
             source_id: 1,
             section_name: nil,
-            sentences: [ { sentence: "kps: 20", match_values: ["kps: 20"]}, { sentence: "kps: 20.", match_values: ["kps: 20."]}]
+            sentences: [{sentence: "i think 20 kps 20 is correct.", match_values: ["i think 20 kps 20 is correct."]}]
       }]
 
-      expect(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.normalize_abstractor_suggestion_sentences).to eq([])
+      expect(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.normalize_abstractor_suggestion_sentences).to eq(normalizaiton)
     end
 
     it 'creates a relationship to it accpeted object value', focus: false do
@@ -633,7 +633,7 @@ describe EncounterNote do
         abstractor_suggestion.accepted = false
         abstractor_suggestion.save!
       end
-      expect(abstract or_abstraction.reload.abstractor_object_value).to be_nil
+      expect(abstractor_abstraction.reload.abstractor_object_value).to be_nil
     end
 
     describe "querying by abstractor abstraction status" do
@@ -913,7 +913,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -931,7 +931,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -943,7 +943,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -972,7 +972,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -988,7 +988,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1000,7 +1000,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1047,7 +1047,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1068,7 +1068,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1080,7 +1080,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1102,7 +1102,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1113,7 +1113,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1129,7 +1129,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1150,7 +1150,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1161,7 +1161,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1174,7 +1174,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1185,7 +1185,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1201,7 +1201,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1212,7 +1212,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1260,7 +1260,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1282,7 +1282,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1294,7 +1294,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1317,7 +1317,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1328,7 +1328,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1344,7 +1344,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1366,7 +1366,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1377,7 +1377,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1390,7 +1390,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1401,7 +1401,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1417,7 +1417,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
@@ -1428,7 +1428,7 @@ describe EncounterNote do
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: false })
 
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end

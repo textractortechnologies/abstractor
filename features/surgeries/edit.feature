@@ -1,5 +1,6 @@
 Feature: Editing surgery
   User should be able to edit surgery information
+
   @javascript
   Scenario: User editing an abstraction with indirect sources
     Given abstraction schemas are set
@@ -26,9 +27,11 @@ Feature: Editing surgery
     And I select "123 (2014-01-01)" from ".indirect_source_list" in the first ".indirect_source"
     And I wait for the ajax request to finish
     Then ".indirect_source_text" in the first ".indirect_source" should contain text "Hello, you look good to me."
+    When I fill in "input.combobox" autocompleter within the first ".has_imaging_confirmed_extent_of_resection" with "Gross total resection"
     When I press "Save"
     And I go to the last surgery edit page
     And I click on ".edit_link" within the last ".abstractor_abstraction"
+    And I wait for the ajax request to finish
     Then ".indirect_source_list" in the first ".indirect_source" should have "123 (2014-01-01)" selected
     When I go to the last surgery edit page
     When I confirm link "Add Surgery Anatomical Location"
@@ -37,6 +40,7 @@ Feature: Editing surgery
     And I select "456 (2014-01-02)" from ".indirect_source_list" in the first ".indirect_source"
     And I wait for the ajax request to finish
     Then ".indirect_source_text" in the first ".indirect_source" should contain text "Hello, you look suspicious."
+    When I fill in "input.combobox" autocompleter within the last ".has_imaging_confirmed_extent_of_resection" with "Gross total resection"
     When I press "Save"
     And I go to the last surgery edit page
     And I click on ".edit_link" within the last ".abstractor_abstraction"
@@ -64,9 +68,10 @@ Feature: Editing surgery
       | Hello, you look better than before. |      2     | 5/1/2013  | 333              |
     When I go to the last surgery edit page
     And I click on "span.abstractor_abstraction_source_tooltip_img" within the first ".edit_abstractor_abstraction"
-    Then I should see an ".ui-dialog_abstractor" element
-    And ".ui-dialog-titlebar" should contain text "SurgicalProcedure description"
-    And ".ui-dialog-content" should contain text "Left temporal lobe resection"
+    Then I should see an ".highlight" element
+    And ".abstractor_source_tab label" should contain text "Surgical Procedure: Description"
+    And ".abstractor_source_tab_content" should contain text "Left temporal lobe resection"
+    And ".abstractor_source_tab_content" should equal highlighted text "temporal lobe"
     When I go to the last surgery edit page
     And I click on ".edit_link" within the first ".abstractor_abstraction"
     Then I should see 4 "span.abstractor_abstraction_source_tooltip_img" within the first ".edit_abstractor_abstraction"

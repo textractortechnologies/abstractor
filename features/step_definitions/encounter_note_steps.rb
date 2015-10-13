@@ -34,4 +34,3 @@ end
 Given /^last encounter note abstraction has(?: (accepted|rejected))? suggestion with value "([^"]*)"(?: and with match value(?:s)? "([^"]*)")?$/ do |status, value, match_values|
   set_abstractor_suggestion_for_object(EncounterNote.last, status, nil, value, match_values)
 end
-

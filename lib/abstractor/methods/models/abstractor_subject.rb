@@ -312,6 +312,8 @@ module Abstractor
           end
 
           def suggest(abstractor_abstraction, abstractor_abstraction_source, match_value, sentence_match_value, source_id, source_type, source_method, section_name, suggested_value, unknown, not_applicable, custom_method, custom_explanation)
+            unknown ||= false
+            not_applicable ||= false
             match_value.strip! unless match_value.nil?
             sentence_match_value.strip! unless sentence_match_value.nil?
 

@@ -5,17 +5,23 @@ module NavigationHelpers
     when /the home page/
       root_path
     when /the namespace_type "(.*?)" and namespace_id (\d+) sent to the last imaging exam edit page/
-      edit_imaging_exam_path(ImagingExam.last, namespace_type: $1, namespace_id: $2)
+      @abstractable = ImagingExam.last
+      edit_imaging_exam_path(@abstractable, namespace_type: $1, namespace_id: $2)
     when /the last surgery edit page/
-      edit_surgery_path(Surgery.last)
+      @abstractable = Surgery.last
+      edit_surgery_path(@abstractable)
     when /the last moomin edit page/
-      edit_moomin_path(Moomin.last)
+      @abstractable = Moomin.last
+      edit_moomin_path(@abstractable)
     when /the last pathology case edit page/
-      edit_pathology_case_path(PathologyCase.last)
+      @abstractable = PathologyCase.last
+      edit_pathology_case_path(@abstractable)
     when /the last encounter note edit page/
-      edit_encounter_note_path(EncounterNote.last)
+      @abstractable = EncounterNote.last
+      edit_encounter_note_path(@abstractable)
     when /the last radiation therapy prescription edit page/
-      edit_radiation_therapy_prescription_path(RadiationTherapyPrescription.last)
+      @abstractable = RadiationTherapyPrescription.last
+      edit_radiation_therapy_prescription_path(@abstractable)
     # Add more page name => path mappings here
     when /the radiation therapies index page/
       radiation_therapy_prescriptions_path()
