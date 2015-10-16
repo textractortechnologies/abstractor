@@ -33,7 +33,9 @@ module Abstractor
                       abstractor_suggestion.destroy
                     end
                   end
-                  @abstractor_abstraction.update_attributes(abstractor_abstraction_params)
+                  #Updating the values of an abstraction are handled by the insertion/updating of suggestions.  See the following line.
+                  #But we stil need to support updating of other attributes.  Like abstractor_indirect_sources.
+                  @abstractor_abstraction.update_attributes(abstractor_abstraction_params.except(:value, :unknown, :not_applicable))
                   abstractor_suggestion = @abstractor_abstraction.abstractor_subject.suggest(@abstractor_abstraction, nil, nil, nil, nil, nil, nil, nil, abstractor_abstraction_params[:value], abstractor_abstraction_params[:unknown].to_s.to_boolean, abstractor_abstraction_params[:not_applicable].to_s.to_boolean, nil, nil)
                   abstractor_suggestion.accepted = true
                   abstractor_suggestion.save!
