@@ -179,6 +179,17 @@ Feature: Editing encounter note
     When I follow "Clear" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
     And the "100" checkbox within ".has_karnofsky_performance_status" should not be checked
+    When I follow "Edit" within ".has_karnofsky_performance_status"
+    And I wait for the ajax request to finish
+    And I fill in "input.combobox" autocompleter within the first ".abstractor_abstraction" with "60% - Requires occasional assistance, but is able to care for most of his personal needs."
+    And I press "Save"
+    And I wait for the ajax request to finish
+    When I go to the last encounter note edit page
+    Then the "60" checkbox within ".has_karnofsky_performance_status" should be checked
+    When I follow "Clear" within ".has_karnofsky_performance_status"
+    And I wait for the ajax request to finish
+    Then the "60" checkbox within ".has_karnofsky_performance_status" should not be present
+    And the "100" checkbox within ".has_karnofsky_performance_status" should be present
 
   @javascript
   Scenario: User creating abstraction when matching suggestion exists
