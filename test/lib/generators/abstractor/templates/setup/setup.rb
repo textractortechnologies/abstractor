@@ -102,7 +102,7 @@ module Setup
     source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
     v_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
     anatomical_location_abstractor_abstraction_schema = Setup.abstractor_abstraction_schema_anatomical_location
-    location_group  = Abstractor::AbstractorSubjectGroup.create(name: 'Anatomical Location')
+    location_group  = Abstractor::AbstractorSubjectGroup.create(name: 'Anatomical Location', enable_workflow_status: true, workflow_status_submit: 'Submit', workflow_status_pend: 'Remove')
     abstractor_subject = Abstractor::AbstractorSubject.create(subject_type: 'RadiationTherapyPrescription', abstractor_abstraction_schema: anatomical_location_abstractor_abstraction_schema)
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name', abstractor_rule_type: v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
     Abstractor::AbstractorSubjectGroupMember.create(abstractor_subject: abstractor_subject, abstractor_subject_group: location_group, display_order: 1)

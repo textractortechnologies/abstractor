@@ -48,6 +48,7 @@ end
 
 When /^I press "([^\"]*)" within(?: the (first|last))? "([^\"]*)"$/ do |selector, position, scope_selector|
   within_scope(get_scope(position, scope_selector)) {
+    page.evaluate_script('window.confirm = function() { return true; }')
     click_button(selector)
   }
 end
@@ -435,5 +436,55 @@ Then /^the "([^"]*)" checkbox within(?: the (first|last))? "([^\"]*)" should not
     else
       assert !field_checked
     end
+  }
+end
+
+Given(/^workflow status is enabled on the "(.*?)"  with "(.*?)" as the submit label and "(.*?)" as the pend label$/) do |abstractor_subject_group_name, submit_label, pend_label|
+  abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: abstractor_subject_group_name).first
+  abstractor_subject_group.enable_workflow_status = true
+  abstractor_subject_group.workflow_status_submit = submit_label
+  abstractor_subject_group.workflow_status_pend = pend_label
+  abstractor_subject_group.save!
+end
+
+Then /^the "([^"]*)" button within(?: the (first|last))? "([^\"]*)" should( not)? be present$/ do |locator, position, scope_selector, negate|
+  within_scope(get_scope(position, scope_selector)) {
+    expectation = negate ? :should_not : :should
+    begin
+      button = find(locator, visible: true)
+    rescue Capybara::ElementNotFound
+    end
+    button.send(expectation, be_present)
+  }
+end
+
+Then /^the "([^"]*)" button within(?: the (first|last))? "([^\"]*)" should( not)? be disabled$/ do |locator, position, scope_selector, negate|
+  within_scope(get_scope(position, scope_selector)) {
+    expectation = negate ? :should_not : :should
+    begin
+      button = find(locator)
+    rescue Capybara::ElementNotFound
+    end
+    button['disabled'].send(expectation, be_truthy)
+  }
+end
+
+Then /^the "([^"]*)" checkbox within(?: the (first|last))? "([^\"]*)" should be disabled$/ do |locator, position, scope_selector|
+  within_scope(get_scope(position, scope_selector)) {
+    begin
+      checkbox = find_field(locator, disabled: true )
+    rescue Capybara::ElementNotFound
+    end
+    checkbox['disabled'].should be_truthy
+  }
+end
+
+Then /^the "([^"]*)" checkbox within(?: the (first|last))? "([^\"]*)" should not be disabled$/ do |locator, position, scope_selector|
+  within_scope(get_scope(position, scope_selector)) {
+    begin
+      checkbox = find_field(locator, disabled: false )
+    rescue Capybara::ElementNotFound
+    end
+    checkbox['disabled'].should be_falsey
   }
 end

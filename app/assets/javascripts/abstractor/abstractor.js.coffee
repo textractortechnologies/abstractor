@@ -44,7 +44,7 @@ Abstractor.AbstractionUI = ->
       success: (data) ->
         abstractor_abstraction_group = $(that).closest('.abstractor_abstraction_group')
         $(that).closest(".abstractor_abstraction").html(data)
-        toggleGroupWorkflowStatus()
+        toggleGroupWorkflowStatus(abstractor_abstraction_group)
         toggleWorkflowStatus()
 
         return
@@ -89,7 +89,7 @@ Abstractor.AbstractionUI = ->
     parent_div = $(this).closest(".abstractor_abstraction")
     parent_div.html xhr.responseText
     parent_div.removeClass "highlighted"
-    toggleGroupWorkflowStatus()
+    toggleGroupWorkflowStatus(abstractor_abstraction_group)
     toggleWorkflowStatus()
 
     return
@@ -179,7 +179,7 @@ Abstractor.AbstractionSuggestionUI = ->
   $(document).on "ajax:success", "form.edit_abstractor_suggestion", (e, data, status, xhr) ->
     abstractor_abstraction_group = $(this).closest('.abstractor_abstraction_group')
     $(this).closest(".abstractor_abstraction").html xhr.responseText
-    toggleGroupWorkflowStatus()
+    toggleGroupWorkflowStatus(abstractor_abstraction_group)
     toggleWorkflowStatus()
     return
   return

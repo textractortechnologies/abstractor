@@ -163,3 +163,60 @@ Feature: Editing radiation therapy prescription
     And the "unknown" checkbox within the first ".has_anatomical_location" should be checked
     And the "unknown" checkbox within the first ".has_laterality" should be checked
     And the "unknown" checkbox within the first ".has_radiation_therapy_prescription_date" should be checked
+
+  @javascript
+  Scenario: Updating the workflowstatus of a group
+    Given abstraction schemas are set
+    And workflow status is enabled on the "Anatomical Location"  with "Submit" as the submit label and "Remove" as the pend label
+    And radiation therapy prescriptions with the following information exist
+      | Site                                    |
+      | right temporal lobe                     |
+    When I go to the last radiation therapy prescription edit page
+    Then the ".abstractor_group_update_workflow_status_link_submit" button within the first ".abstractor_abstraction_group" should be present
+    And the ".abstractor_group_update_workflow_status_link_submit" button within the first ".abstractor_abstraction_group" should be disabled
+    When I check "temporal lobe" within the first ".abstractor_abstraction_group"
+    When I check "right" within the first ".abstractor_abstraction_group"
+    And I click on ".edit_link" within the first ".has_radiation_therapy_prescription_date"
+    And I wait for the ajax request to finish
+    And I fill in "abstractor_abstraction_value" with "2014-06-03" within ".has_radiation_therapy_prescription_date"
+    And I press "Save"
+    And I wait for the ajax request to finish
+    And the ".abstractor_group_update_workflow_status_link_submit" button within the first ".abstractor_abstraction_group" should not be disabled
+    When I follow "Clear" within the first ".has_anatomical_location"
+    And I wait for the ajax request to finish
+    Then the ".abstractor_group_update_workflow_status_link_submit" button within the first ".abstractor_abstraction_group" should be disabled
+    When I check "temporal lobe" within the first ".abstractor_abstraction_group"
+    And I wait for the ajax request to finish
+    Then the ".abstractor_group_update_workflow_status_link_submit" button within the first ".abstractor_abstraction_group" should not be disabled
+    When I uncheck "temporal lobe" within the first ".abstractor_abstraction_group"
+    And I wait for the ajax request to finish
+    Then the ".abstractor_group_update_workflow_status_link_submit" button within the first ".abstractor_abstraction_group" should be disabled
+    When I check "temporal lobe" within the first ".abstractor_abstraction_group"
+    And I wait for the ajax request to finish
+    Then the ".abstractor_group_update_workflow_status_link_submit" button within the first ".abstractor_abstraction_group" should not be disabled
+    When I press "Submit" within the first ".abstractor_abstraction_group"
+    And I wait 1 seconds
+    Then the ".abstractor_group_update_workflow_status_link_submit" button within the first ".abstractor_abstraction_group" should not be present
+    And the ".abstractor_group_update_workflow_status_link_pend" button within the first ".abstractor_abstraction_group" should be present
+    And the ".abstractor_group_update_workflow_status_link_pend" button within the first ".abstractor_abstraction_group" should not be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_anatomical_location" should be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_laterality" should be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_radiation_therapy_prescription_date" should be disabled
+    When I press "Remove" within the first ".abstractor_abstraction_group"
+    And I wait 1 seconds
+    Then the ".abstractor_group_update_workflow_status_link_submit" button within the first ".abstractor_abstraction_group" should be present
+    And the ".abstractor_group_update_workflow_status_link_submit" button within the first ".abstractor_abstraction_group" should not be disabled
+    And the ".abstractor_group_update_workflow_status_link_pend" button within the first ".abstractor_abstraction_group" should not be present
+    When I press "Submit" within the first ".abstractor_abstraction_group"
+    And I wait 1 seconds
+    Then the ".abstractor_group_update_workflow_status_link_submit" button within the first ".abstractor_abstraction_group" should not be present
+    And the ".abstractor_group_update_workflow_status_link_pend" button within the first ".abstractor_abstraction_group" should be present
+    And the ".abstractor_group_update_workflow_status_link_pend" button within the first ".abstractor_abstraction_group" should not be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_anatomical_location" should be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_laterality" should be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_radiation_therapy_prescription_date" should be disabled
+    When I confirm link "Add Anatomical Location"
+    And I wait for the ajax request to finish
+    Then the ".abstractor_group_update_workflow_status_link_submit" button within the last ".abstractor_abstraction_group" should be present
+    And the ".abstractor_group_update_workflow_status_link_submit" button within the last ".abstractor_abstraction_group" should be disabled
+    And the ".abstractor_group_update_workflow_status_link_pend" button within the last ".abstractor_abstraction_group" should not be present

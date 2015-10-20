@@ -10,15 +10,21 @@ bundle exec rails server
 http://0.0.0.0:3000/encounter_notes/1/edit
 http://0.0.0.0:3000/encounter_notes/4/edit
 http://0.0.0.0:3000/encounter_notes/5/edit
+http://0.0.0.0:3000/encounter_notes/3/edit
 
 
-
+Abstractor::Setup.system
 require './lib/setup/setup/'
+Setup.sites
+Setup.custom_site_synonyms
+Setup.site_categories
+Setup.laterality
 Setup.radiation_therapy_prescription
 rtp = RadiationTherapyPrescription.create!(site_name: 'Looks like the left frontal lobe to me')
 rtp.abstract
+bundle exec rails server
 
-http://0.0.0.0:3000/radiation_therapy_prescriptions/2/edit
+http://0.0.0.0:3000/radiation_therapy_prescriptions/1/edit
 
 
 Abstractor::Setup.system
