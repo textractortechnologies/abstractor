@@ -220,3 +220,88 @@ Feature: Editing radiation therapy prescription
     Then the ".abstractor_group_update_workflow_status_link_submit" button within the last ".abstractor_abstraction_group" should be present
     And the ".abstractor_group_update_workflow_status_link_submit" button within the last ".abstractor_abstraction_group" should be disabled
     And the ".abstractor_group_update_workflow_status_link_pend" button within the last ".abstractor_abstraction_group" should not be present
+
+  @javascript
+  Scenario: Submitting and discarding across an entire radiation therapy prescription
+    Given abstraction schemas are set
+    And workflow status is enabled on the "Anatomical Location"  with "Submit" as the submit label and "Remove" as the pend label
+    And radiation therapy prescriptions with the following information exist
+      | Site                                    |
+      | right temporal lobe                     |
+    When I go to the last radiation therapy prescription edit page
+    Then the ".abstractor_update_workflow_status_link_submit" button within the first ".radiation_therapy_prescription_actions" should be present
+    And the ".abstractor_update_workflow_status_link_submit" button within the first ".radiation_therapy_prescription_actions" should be disabled
+    When I confirm link "Add Anatomical Location"
+    And I wait for the ajax request to finish
+    When I check "temporal lobe" within the first ".abstractor_abstraction_group"
+    When I check "right" within the first ".abstractor_abstraction_group"
+    And I click on ".edit_link" within the first ".has_radiation_therapy_prescription_date"
+    And I wait for the ajax request to finish
+    And I fill in "abstractor_abstraction_value" with "2014-06-03" within the first ".has_radiation_therapy_prescription_date"
+    And I press "Save"
+    And I wait 1 seconds
+    And the ".abstractor_update_workflow_status_link_submit" button within the first ".radiation_therapy_prescription_actions" should be disabled
+    When I check "temporal lobe" within the last ".abstractor_abstraction_group"
+    When I check "right" within the last ".abstractor_abstraction_group"
+    And I click on ".edit_link" within the last ".has_radiation_therapy_prescription_date"
+    And I wait for the ajax request to finish
+    And I fill in "abstractor_abstraction_value" with "2014-06-03" within the last ".has_radiation_therapy_prescription_date"
+    And I press "Save"
+    And I wait 1 seconds
+    Then the ".abstractor_update_workflow_status_link_submit" button within the first ".radiation_therapy_prescription_actions" should not be disabled
+    When I press "Submit" within the first ".radiation_therapy_prescription_actions"
+    And I wait 1 seconds
+    Then the ".abstractor_update_workflow_status_link_pend" button within the first ".radiation_therapy_prescription_actions" should be present
+    And I should see 0 ".workflow_status_pending" rows
+    And I should see 2 ".workflow_status_submitted" rows
+    And I should see 0 ".workflow_status_discarded" rows
+    And the ".abstractor_update_workflow_status_link_pend" button within the first ".radiation_therapy_prescription_actions" should not be disabled
+    And the radiation therapy prescription should be submitted
+    And the radiation therapy prescription should not be discarded
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_anatomical_location" should be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_laterality" should be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_radiation_therapy_prescription_date" should be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the last ".has_anatomical_location" should be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the last ".has_laterality" should be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the last ".has_radiation_therapy_prescription_date" should be disabled
+    When I press "Remove" within the first ".radiation_therapy_prescription_actions"
+    And I wait 1 seconds
+    Then the ".abstractor_update_workflow_status_link_submit" button within the first ".radiation_therapy_prescription_actions" should be present
+    And the ".abstractor_update_workflow_status_link_submit" button within the first ".radiation_therapy_prescription_actions" should not be disabled
+    And I should see 2 ".workflow_status_pending" rows
+    And I should see 0 ".workflow_status_submitted" rows
+    And I should see 0 ".workflow_status_discarded" rows
+    And the radiation therapy prescription should not be submitted
+    And the radiation therapy prescription should not be discarded
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_anatomical_location" should not be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_laterality" should not be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_radiation_therapy_prescription_date" should not be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the last ".has_anatomical_location" should not be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the last ".has_laterality" should not be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the last ".has_radiation_therapy_prescription_date" should not be disabled
+    When I confirm link "Discard" in the first ".radiation_therapy_prescription_actions"
+    And I wait 1 seconds
+    Then the radiation therapy prescription should not be submitted
+    And I should see 0 ".workflow_status_pending" rows
+    And I should see 0 ".workflow_status_submitted" rows
+    And I should see 2 ".workflow_status_discarded" rows
+    And the radiation therapy prescription should be discarded
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_anatomical_location" should be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_laterality" should be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_radiation_therapy_prescription_date" should be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the last ".has_anatomical_location" should be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the last ".has_laterality" should be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the last ".has_radiation_therapy_prescription_date" should be disabled
+    When I confirm link "Undiscard" in the first ".radiation_therapy_prescription_actions"
+    And I wait 1 seconds
+    Then the radiation therapy prescription should not be submitted
+    And the radiation therapy prescription should not be discarded
+    And I should see 2 ".workflow_status_pending" rows
+    And I should see 0 ".workflow_status_submitted" rows
+    And I should see 0 ".workflow_status_discarded" rows
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_anatomical_location" should not be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_laterality" should not be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the first ".has_radiation_therapy_prescription_date" should not be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the last ".has_anatomical_location" should not be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the last ".has_laterality" should not be disabled
+    And the "abstractor_suggestion[accepted]" checkbox within the last ".has_radiation_therapy_prescription_date" should not be disabled

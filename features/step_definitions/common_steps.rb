@@ -21,11 +21,13 @@ When /^(?:|I )choose "([^"]*)" within(?: the (first|last))? "(.*?)"$/ do |field,
   }
 end
 
-When /^(?:|I )fill in "([^"]*)" with "([^"]*)" within "(.*?)"$/ do |field, value, parent|
-  within(parent) do
+When /^(?:|I )fill in "([^"]*)" with "([^"]*)" within(?: the (first|last))? "(.*?)"$/ do |field, value, position, parent|
+  position ||= 'first'
+  within_scope(get_scope(position, parent)) {
     fill_in(field, :with => value)
-  end
+  }
 end
+
 
 # When /^(?:|I )check "([^"]*)" within "(.*?)"$/ do |field, parent|
 #   within(parent) do

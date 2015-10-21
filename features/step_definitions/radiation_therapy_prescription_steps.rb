@@ -36,3 +36,15 @@ end
 Given /^last radiation therapy prescription abstraction has(?: (accepted|rejected))? suggestion with value "([^"]*)"(?: and with match value(?:s)? "([^"]*)")?$/ do |status, value, match_values|
   set_abstractor_suggestion_for_object(RadiationTherapyPrescription.last, status, nil, value, match_values)
 end
+
+Then(/^the radiation therapy prescription should( not)? be submitted$/) do |negate|
+  expectation = negate ? :should_not : :should
+  radiation_therapy_prescription = RadiationTherapyPrescription.first
+  radiation_therapy_prescription.submitted?.send(expectation, be_truthy)
+end
+
+Then(/^the radiation therapy prescription should( not)? be discarded$/) do |negate|
+  expectation = negate ? :should_not : :should
+  radiation_therapy_prescription = RadiationTherapyPrescription.first
+  radiation_therapy_prescription.discarded?.send(expectation, be_truthy)
+end
