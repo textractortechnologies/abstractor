@@ -249,6 +249,7 @@ Feature: Editing radiation therapy prescription
     And I press "Save"
     And I wait 1 seconds
     Then the ".abstractor_update_workflow_status_link_submit" button within the first ".radiation_therapy_prescription_actions" should not be disabled
+    And I should see "Add Anatomical Location" within the last ".abstractor_abstraction_group"
     When I press "Submit" within the first ".radiation_therapy_prescription_actions"
     And I wait 1 seconds
     Then the ".abstractor_update_workflow_status_link_pend" button within the first ".radiation_therapy_prescription_actions" should be present
@@ -264,6 +265,7 @@ Feature: Editing radiation therapy prescription
     And the "abstractor_suggestion[accepted]" checkbox within the last ".has_anatomical_location" should be disabled
     And the "abstractor_suggestion[accepted]" checkbox within the last ".has_laterality" should be disabled
     And the "abstractor_suggestion[accepted]" checkbox within the last ".has_radiation_therapy_prescription_date" should be disabled
+    And I should not see "Add Anatomical Location" within ".abstractor_abstraction_group"
     When I press "Remove" within the first ".radiation_therapy_prescription_actions"
     And I wait 1 seconds
     Then the ".abstractor_update_workflow_status_link_submit" button within the first ".radiation_therapy_prescription_actions" should be present
@@ -279,19 +281,21 @@ Feature: Editing radiation therapy prescription
     And the "abstractor_suggestion[accepted]" checkbox within the last ".has_anatomical_location" should not be disabled
     And the "abstractor_suggestion[accepted]" checkbox within the last ".has_laterality" should not be disabled
     And the "abstractor_suggestion[accepted]" checkbox within the last ".has_radiation_therapy_prescription_date" should not be disabled
+    And I should see "Add Anatomical Location" within ".abstractor_abstraction_group"
     When I confirm link "Discard" in the first ".radiation_therapy_prescription_actions"
     And I wait 1 seconds
     Then the radiation therapy prescription should not be submitted
+    And the radiation therapy prescription should be discarded
     And I should see 0 ".workflow_status_pending" rows
     And I should see 0 ".workflow_status_submitted" rows
     And I should see 2 ".workflow_status_discarded" rows
-    And the radiation therapy prescription should be discarded
     And the "abstractor_suggestion[accepted]" checkbox within the first ".has_anatomical_location" should be disabled
     And the "abstractor_suggestion[accepted]" checkbox within the first ".has_laterality" should be disabled
     And the "abstractor_suggestion[accepted]" checkbox within the first ".has_radiation_therapy_prescription_date" should be disabled
     And the "abstractor_suggestion[accepted]" checkbox within the last ".has_anatomical_location" should be disabled
     And the "abstractor_suggestion[accepted]" checkbox within the last ".has_laterality" should be disabled
     And the "abstractor_suggestion[accepted]" checkbox within the last ".has_radiation_therapy_prescription_date" should be disabled
+    And I should not see "Add Anatomical Location" within ".abstractor_abstraction_group"
     When I confirm link "Undiscard" in the first ".radiation_therapy_prescription_actions"
     And I wait 1 seconds
     Then the radiation therapy prescription should not be submitted

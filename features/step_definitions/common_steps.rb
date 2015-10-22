@@ -154,26 +154,29 @@ When /^(?:|I )follow element "([^"]*)"$/ do |path|
   page.find(:xpath, path).click
 end
 
-Then(/^I should see "(.*?)" within "(.*?)"$/) do |regexp, selector|
+Then(/^I should see "(.*?)" within(?: the (first|last))? "(.*?)"$/) do |regexp, position, selector|
+position ||= 'first'
   regexp = Regexp.new(regexp)
-  within(selector) do
+  within_scope(get_scope(position, selector)) {
     if page.respond_to? :should
       page.should have_xpath('//*', :text => regexp, :visible => true )
     else
       assert page.has_xpath?('//*', :text => regexp, :visible => :true)
     end
-  end
+  }
 end
 
-Then(/^I should not see "(.*?)" within "(.*?)"$/) do |regexp, selector|
+Then(/^I should not see "(.*?)" within(?: the (first|last))? "(.*?)"$/) do |regexp, position, selector|
+  position ||= 'first'
   regexp = Regexp.new(regexp)
-  within(selector) do
+
+  within_scope(get_scope(position, selector)) {
     if page.respond_to? :should
       page.should have_no_xpath('//*', :text => regexp, :visible => true )
     else
       assert page.has_no_xpath?('//*', :text => regexp, :visible => true)
     end
-  end
+  }
 end
 
 Then(/^I should see (\d+) "(.*?)" rows$/) do |count, selector|
