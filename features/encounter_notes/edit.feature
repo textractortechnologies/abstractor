@@ -156,13 +156,14 @@ Feature: Editing encounter note
     Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                                                  |
-      |Hello, your KPS is 100%. Have a great day! Yes, KPS is 100%!|
+      |Hello, your KPS is 100%. Have a great day! Yes, KPS is 100%! And then I elaborated.  KPS: 100.|
     And I go to the last encounter note edit page
     And I click on "i" within the first ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
     And ".abstractor_source_tab label" should contain text "Encounter Note: Note text"
     And ".abstractor_source_tab_content" should contain text "Hello, your KPS is 100%. Have a great day! Yes, KPS is 100%!"
     And ".abstractor_source_tab_content" should equal highlighted text "Hello, your KPS is 100%."
     And ".abstractor_source_tab_content" should equal highlighted text "Yes, KPS is 100%!"
+    And ".abstractor_source_tab_content" should equal highlighted text "KPS: 100"
 
   @javascript
   Scenario: User clearing an abstraction

@@ -309,3 +309,24 @@ Feature: Editing radiation therapy prescription
     And the "abstractor_suggestion[accepted]" checkbox within the last ".has_anatomical_location" should not be disabled
     And the "abstractor_suggestion[accepted]" checkbox within the last ".has_laterality" should not be disabled
     And the "abstractor_suggestion[accepted]" checkbox within the last ".has_radiation_therapy_prescription_date" should not be disabled
+
+  @javascript
+  Scenario: Editing an abstraction with autocompleter list is smart
+    Given abstraction schemas are set
+    And radiation therapy prescriptions with the following information exist
+      | Site                                    |
+      | Vague blather.                          |
+    When I go to the last radiation therapy prescription edit page
+    And I click on ".edit_link" within the first ".has_anatomical_location"
+    And I wait for the ajax request to finish
+    And I enter "mouth" into "input.combobox" within the first ".has_anatomical_location"
+    And I should see "anterior floor of mouth" within ".ui-autocomplete"
+    And I should see "mouth" within the first "ui-autocomplete a strong"
+    And I should see "floor of mouth" within ".ui-autocomplete"
+    And I should see "floor of mouth, nos" within ".ui-autocomplete"
+    And I should see "lateral floor of mouth" within ".ui-autocomplete"
+    And I should see "mouth, nos" within ".ui-autocomplete"
+    And I should see "other and unspecified parts of mouth" within ".ui-autocomplete"
+    And I should see "overlapping lesion of floor of mouth" within ".ui-autocomplete"
+    And I should see "overlapping lesion of other and unspecified parts of mouth" within ".ui-autocomplete"
+    And I should see "vestibule of mouth" within ".ui-autocomplete"
