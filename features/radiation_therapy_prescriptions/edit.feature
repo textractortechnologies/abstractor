@@ -9,12 +9,19 @@ Feature: Editing radiation therapy prescription
       | Vague blather.                          |
     When I go to the last radiation therapy prescription edit page
     And I click on ".edit_link" within the first ".has_laterality"
+    And I wait for the ajax request to finish
+    Then I should see "bilateral" within "#abstractor_abstraction_value_bilateral"
     And I choose "left"
     And I press "Save"
     And I wait for the ajax request to finish
     Then the "left" checkbox within "has_laterality" should be checked
     When I go to the last radiation therapy prescription edit page
     Then the "left" checkbox within "has_laterality" should be checked
+    When I delete the "bilateral" object value for the "has_laterality" abstraction schema
+    When I go to the last radiation therapy prescription edit page
+    And I click on ".edit_link" within the first ".has_laterality"
+    And I wait for the ajax request to finish
+    Then I should not see "bilateral" within "#abstractor_abstraction_value_bilateral"
 
   @javascript
   Scenario: Adding and removing abstraction groups

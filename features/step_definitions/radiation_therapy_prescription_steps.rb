@@ -48,3 +48,8 @@ Then(/^the radiation therapy prescription should( not)? be discarded$/) do |nega
   radiation_therapy_prescription = RadiationTherapyPrescription.first
   radiation_therapy_prescription.discarded?.send(expectation, be_truthy)
 end
+
+When(/^I delete the "(.*?)" object value for the "(.*?)" abstraction schema$/) do |value, abstraction_schema_predicate|
+  abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(predicate: abstraction_schema_predicate).first
+  abstractor_abstraction_schema.abstractor_object_values.where(value: value).first.destroy
+end
