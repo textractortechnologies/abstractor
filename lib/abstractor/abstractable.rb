@@ -632,6 +632,8 @@ module Abstractor
           prepare_pivot_joins(select, '1', options)
         when 'postgresql'
           prepare_pivot_joins(select, 'true', options)
+        when 'mysql2'
+          prepare_pivot_joins(select, 'true', options)
         end
         joins(j).select("#{self.table_name}.*, pivoted_abstractions.*")
       end
@@ -661,6 +663,7 @@ module Abstractor
       def pivot_grouped_abstractions(abstractor_subject_groups_name, options = {})
         options = { grouped: true, namespace_type: nil, namespace_id: nil }.merge(options)
         select = prepare_pivot_select(options)
+        select = select + ", abstractor_abstraction_group_id"
         adapter = ActiveRecord::Base.connection.instance_values["config"][:adapter]
         j = case adapter
         when 'sqlite3'
@@ -668,6 +671,8 @@ module Abstractor
         when 'sqlserver'
           prepare_grouped_pivot_joins(select, '1', abstractor_subject_groups_name, options)
         when 'postgresql'
+          prepare_grouped_pivot_joins(select, 'true', abstractor_subject_groups_name, options)
+        when 'mysql2'
           prepare_grouped_pivot_joins(select, 'true', abstractor_subject_groups_name, options)
         end
         joins(j).select("#{self.table_name}.*, pivoted_abstractions.*")
