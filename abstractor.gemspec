@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
 
   s.files = Dir['{app,config,db,lib}/**/*'] + ['MIT-LICENSE', 'Rakefile', 'README.md']
 
-  s.add_dependency 'rails', '~> 4.1'
+  s.add_dependency 'rails', '~> 4'
   s.add_dependency 'jquery-rails', '~> 4.0.0', '>= 4.0.0'
   s.add_dependency 'jquery-ui-rails', '~> 4.2', '>= 4.2.0'
   s.add_dependency 'haml', '~> 4.0.5', '>= 4.0.5'
@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'factory_girl_rails', '~> 4.4.0', '>= 4.4.0'
   s.add_development_dependency 'cucumber-rails','~> 1.4.0', '>= 1.4.0'
   s.add_development_dependency 'capybara', '~> 2.4.0', '>= 2.4.0'
-  s.add_development_dependency 'selenium-webdriver', '~> 2.42.0', '>= 2.42.0'
+  s.add_development_dependency 'selenium-webdriver', '~> 2', '>= 2.42.0'
   s.add_development_dependency 'database_cleaner', '~> 1.3.0', '>= 1.3.0'
   s.add_development_dependency 'ansi', '~> 1.4.3', '>= 1.4.3'
   s.add_development_dependency 'sprockets', '~> 2.12.1', '>= 2.12.1'
