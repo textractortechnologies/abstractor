@@ -105,7 +105,7 @@ module Abstractor
 
     def test_dummy_assets
       template "application.js", "#{dummy_path}/app/assets/javascripts/application.js", :force => true
-      template "radiation_therapy_prescriptions.scss", "#{dummy_path}/app/assets/javascripts/radiation_therapy_prescriptions.scss", :force => true
+      template "application.css", "#{dummy_path}/app/assets/stylesheets/application.css", :force => true
     end
 
     def test_dummy_clean

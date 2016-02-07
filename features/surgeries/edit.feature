@@ -46,6 +46,7 @@ Feature: Editing surgery
     And I click on ".edit_link" within the last ".abstractor_abstraction"
     Then ".indirect_source_list" in the first ".indirect_source" should have "456 (2014-01-02)" selected
 
+  @wip
   @javascript
   Scenario: User editing an abstraction with a suggestion against a complex source
     Given abstraction schemas are set
@@ -73,5 +74,6 @@ Feature: Editing surgery
     And ".abstractor_source_tab_content" should contain text "Left temporal lobe resection"
     And ".abstractor_source_tab_content" should equal highlighted text "temporal lobe"
     When I go to the last surgery edit page
-    And I click on ".edit_link" within the first ".abstractor_abstraction"
-    Then I should see 4 "span.abstractor_abstraction_source_tooltip_img" within the first ".edit_abstractor_abstraction"
+    And I click on ".edit_link" within the last ".abstractor_abstraction"
+    And I wait 30 seconds
+    Then I should see 4 "span.abstractor_abstraction_source_tooltip_img" within the last ".edit_abstractor_abstraction"

@@ -141,6 +141,7 @@ Feature: Editing radiation therapy prescription
     And the "not applicable" checkbox within the first ".has_laterality" should be checked
     And the "not applicable" checkbox within the first ".has_radiation_therapy_prescription_date" should be checked
 
+  @wip
   @javascript
   Scenario: User setting all the values to 'unknown' in an abstraction group
     Given abstraction schemas are set
