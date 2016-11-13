@@ -33,12 +33,18 @@ module Abstractor
     # @param [Hash] source The hash of values representing the source for submission to a custom nlp provider endpoint.
     # @return [Hash] The formatted body.
     def self.format_body_for_suggestion_endpoint(abstractor_abstraction, abstractor_abstraction_source, abstractor_text, source)
-      Rails.logger.info('Enjoy every sandwich')
-      Rails.logger.info("Here we are #{Abstractor::Engine.routes.url_helpers.abstractor_abstraction_abstractor_suggestions_url(abstractor_abstraction, format: :json)}")
+      if Rails.application.config.relative_url_root
+        abstractor_abstraction_schema_uri =  Abstractor::Engine.routes.url_helpers.abstractor_abstraction_schema_url(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema, script_name: Rails.application.config.relative_url_root, format: :json)
+        abstractor_abstraction_abstractor_suggestions_uri = Abstractor::Engine.routes.url_helpers.abstractor_abstraction_abstractor_suggestions_url(abstractor_abstraction, script_name: Rails.application.config.relative_url_root,format: :json)
+      else
+        abstractor_abstraction_schema_uri =  Abstractor::Engine.routes.url_helpers.abstractor_abstraction_schema_url(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema,  format: :json)
+        abstractor_abstraction_abstractor_suggestions_uri =  Abstractor::Engine.routes.url_helpers.abstractor_abstraction_abstractor_suggestions_url(abstractor_abstraction, format: :json)
+      end
+
       {
         abstractor_abstraction_schema_id: abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema.id,
-        abstractor_abstraction_schema_uri: Abstractor::Engine.routes.url_helpers.abstractor_abstraction_schema_url(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema,  format: :json),
-        abstractor_abstraction_abstractor_suggestions_uri: Abstractor::Engine.routes.url_helpers.abstractor_abstraction_abstractor_suggestions_url(abstractor_abstraction, format: :json),
+        abstractor_abstraction_schema_uri: abstractor_abstraction_schema_uri,
+        abstractor_abstraction_abstractor_suggestions_uri: abstractor_abstraction_abstractor_suggestions_uri,
         abstractor_abstraction_id: abstractor_abstraction.id,
         abstractor_abstraction_source_id: abstractor_abstraction_source.id,
         source_id: source[:source_id],
