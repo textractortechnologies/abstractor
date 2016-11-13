@@ -141,7 +141,6 @@ Feature: Editing radiation therapy prescription
     And the "not applicable" checkbox within the first ".has_laterality" should be checked
     And the "not applicable" checkbox within the first ".has_radiation_therapy_prescription_date" should be checked
 
-  @wip
   @javascript
   Scenario: User setting all the values to 'unknown' in an abstraction group
     Given abstraction schemas are set
@@ -168,9 +167,6 @@ Feature: Editing radiation therapy prescription
     Then I should see "unknown" anywhere within the first ".has_anatomical_location"
     And I should see "unknown" anywhere within the first ".has_laterality"
     And I should see "unknown" anywhere within the first ".has_radiation_therapy_prescription_date"
-    And the "unknown" checkbox within the first ".has_anatomical_location" should be checked
-    And the "unknown" checkbox within the first ".has_laterality" should be checked
-    And the "unknown" checkbox within the first ".has_radiation_therapy_prescription_date" should be checked
 
   @javascript
   Scenario: Updating the workflowstatus of a group

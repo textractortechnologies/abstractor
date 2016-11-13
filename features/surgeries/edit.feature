@@ -46,8 +46,8 @@ Feature: Editing surgery
     And I click on ".edit_link" within the last ".abstractor_abstraction"
     Then ".indirect_source_list" in the first ".indirect_source" should have "456 (2014-01-02)" selected
 
-  @wip
   @javascript
+  @wip
   Scenario: User editing an abstraction with a suggestion against a complex source
     Given abstraction schemas are set
     And surgical procedures with the following information exist
