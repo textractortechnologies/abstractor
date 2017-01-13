@@ -168,10 +168,13 @@ module Abstractor
           # @return [void]
           def abstract_custom_nlp_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
             suggestion_endpoint = CustomNlpProvider.determine_suggestion_endpoint(abstractor_abstraction_source.custom_nlp_provider)
+            suggestion_endpoint_auth = Abstractor::CustomNlpProvider.determine_suggestion_endpoint_credentials(abstractor_abstraction_source.custom_nlp_provider).symbolize_keys
+            user = User.where(username: suggestion_endpoint_auth[:username]).first
+            suggestion_endpoint_auth[:password] = user.authentication_token
             abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
               abstractor_text = Abstractor::AbstractorAbstractionSource.abstractor_text(source)
               body = Abstractor::CustomNlpProvider.format_body_for_suggestion_endpoint(abstractor_abstraction, abstractor_abstraction_source, abstractor_text, source)
-              HTTParty.post(suggestion_endpoint, body: body.to_json, headers: { 'Content-Type' => 'application/json' })
+              result = HTTParty.post(suggestion_endpoint, { body: body.to_json, headers: { 'Content-Type' => 'application/json', }, basic_auth: suggestion_endpoint_auth, :debug_output => $stdout })
             end
           end
 

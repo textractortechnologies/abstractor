@@ -12,6 +12,10 @@ module Abstractor
       suggestion_endpoint = YAML.load_file("#{Rails.root}/config/abstractor/custom_nlp_providers.yml")[custom_nlp_provider]['suggestion_endpoint'][Rails.env]
     end
 
+    def self.determine_suggestion_endpoint_credentials(custom_nlp_provider)
+      suggestion_endpoint_credentials = YAML.load_file("#{Rails.root}/config/abstractor/custom_nlp_providers.yml")[custom_nlp_provider]['suggestion_endpoint_credentials'][Rails.env]
+    end
+
     ##
     # Formats the JSON body in preparation for submision to a custom NLP provider endpoint.
     #
