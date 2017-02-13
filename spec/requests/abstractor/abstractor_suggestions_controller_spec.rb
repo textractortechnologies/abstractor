@@ -7,6 +7,7 @@ describe Abstractor::AbstractorSuggestionsController, :type => :request do
 
   describe "POST /abstractor_abstractions/:abstractor_abstraction_id/abstractor_suggestions" do
     before(:each) do
+      custom_nlp_provider = 'custom_nlp_provider_name'
       Abstractor::Engine.routes.default_url_options[:host] = 'https://moomin.com'
       Abstractor::Setup.system
       list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
@@ -30,10 +31,13 @@ describe Abstractor::AbstractorSuggestionsController, :type => :request do
 
       abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'PathologyCase', :abstractor_abstraction_schema => abstractor_abstraction_schema)
       @from_method = 'note_text'
-      @abstractor_abstraction_source = Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: @from_method, abstractor_abstraction_source_type: custom_nlp_suggestion_source_type, custom_nlp_provider: 'custom_nlp_provider_name')
+      @abstractor_abstraction_source = Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: @from_method, abstractor_abstraction_source_type: custom_nlp_suggestion_source_type, custom_nlp_provider: custom_nlp_provider)
       @abstractor_abstraction_schema_has_cancer_histology = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_cancer_histology').first
       @abstractor_subject_abstraction_schema_has_cancer_histology = Abstractor::AbstractorSubject.where(subject_type: PathologyCase.to_s, abstractor_abstraction_schema_id:@abstractor_abstraction_schema_has_cancer_histology.id).first
-      stub_request(:post, "http://custom-nlp-provider.test/suggest").to_return(:status => 200, :body => "", :headers => {})
+      stub_request(:post, "http://testuser:password@custom-nlp-provider.test/suggest").
+        with(:body => "{\"abstractor_abstraction_schema_id\":1,\"abstractor_abstraction_schema_uri\":\"https://moomin.com/abstractor_abstraction_schemas/1.json\",\"abstractor_abstraction_abstractor_suggestions_uri\":\"https://moomin.com/abstractor_abstractions/1/abstractor_suggestions.json\",\"abstractor_abstraction_id\":1,\"abstractor_abstraction_source_id\":1,\"source_id\":1,\"source_type\":\"PathologyCase\",\"source_method\":\"note_text\",\"text\":\"The patient has a diagnosis of glioblastoma.  GBM does not have a good prognosis.  But I can't rule out meningioma.\"}",
+             :headers => {'Content-Type'=>'application/json'}).
+        to_return(:status => 200, :body => "", :headers => {})
       text = "The patient has a diagnosis of glioblastoma.  GBM does not have a good prognosis.  But I can't rule out meningioma."
       @pathology_case = FactoryGirl.create(:pathology_case, note_text: text, patient_id: 1)
       @pathology_case.abstract

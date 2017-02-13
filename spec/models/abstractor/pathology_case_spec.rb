@@ -36,7 +36,11 @@ describe PathologyCase do
 
     it 'posts a message to a custom nlp provider to generate suggestions', focus: false do
       Abstractor::Engine.routes.default_url_options[:host] = 'https://moomin.com'
-      stub_request(:post, "http://custom-nlp-provider.test/suggest").to_return(:status => 200, :body => "", :headers => {})
+      stub_request(:post, "http://testuser:password@custom-nlp-provider.test/suggest").
+        with(:body => "{\"abstractor_abstraction_schema_id\":2,\"abstractor_abstraction_schema_uri\":\"https://moomin.com/abstractor_abstraction_schemas/2.json\",\"abstractor_abstraction_abstractor_suggestions_uri\":\"https://moomin.com/abstractor_abstractions/2/abstractor_suggestions.json\",\"abstractor_abstraction_id\":2,\"abstractor_abstraction_source_id\":2,\"source_id\":1,\"source_type\":\"PathologyCase\",\"source_method\":\"note_text\",\"text\":\"Looks like metastatic carcinoma to me.\"}",
+             :headers => {'Content-Type'=>'application/json'}).
+        to_return(:status => 200, :body => "", :headers => {})
+
       text = 'Looks like metastatic carcinoma to me.'
       @pathology_case = FactoryGirl.create(:pathology_case, note_text: text, patient_id: 1)
       @pathology_case.abstract
@@ -44,7 +48,7 @@ describe PathologyCase do
       abstractor_abstraction = @pathology_case.abstractor_abstractions_by_abstraction_schemas({abstractor_abstraction_schema_ids: [@abstractor_abstraction_schema_has_cancer_histology.id] }).first
       abstractor_abstraction_soruce = @abstractor_subject_abstraction_schema_has_cancer_histology.abstractor_abstraction_sources.first
       body = %{{"abstractor_abstraction_schema_id":#{@abstractor_abstraction_schema_has_cancer_histology.id},"abstractor_abstraction_schema_uri":"https://moomin.com/abstractor_abstraction_schemas/#{@abstractor_abstraction_schema_has_cancer_histology.id}.json","abstractor_abstraction_abstractor_suggestions_uri":"https://moomin.com/abstractor_abstractions/#{abstractor_abstraction.id}/abstractor_suggestions.json","abstractor_abstraction_id":#{abstractor_abstraction.id},"abstractor_abstraction_source_id":#{abstractor_abstraction_soruce.id},"source_id":#{@pathology_case.id},"source_type":"#{@pathology_case.class.to_s}","source_method":"note_text","text":"#{text}"}}
-      expect(a_request(:post, "custom-nlp-provider.test/suggest").with(body: body, headers: { 'Content-Type' => 'application/json' })).to have_been_made
+      expect(a_request(:post, "testuser:password@custom-nlp-provider.test/suggest").with(body: body, headers: { 'Content-Type' => 'application/json' })).to have_been_made
     end
   end
 end

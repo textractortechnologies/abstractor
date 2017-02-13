@@ -46,6 +46,13 @@ custom_nlp_provider_name:
       test: http://custom-nlp-provider.test/suggest
       staging: http://custom-nlp-provider-staging.org/suggest
       production: http://custom-nlp-provider.org/suggest
+  suggestion_endpoint_credentials:
+      development:
+          "username": testuser
+          "password": password
+      test:
+          "username": testuser
+          "password": password
 EOS
 
       if !File.exist?('config/abstractor/custom_nlp_providers.yml')
