@@ -17,7 +17,6 @@ describe  Abstractor::AbstractorSuggestion do
     abstractor_suggestion_source_bar = FactoryGirl.create(:abstractor_suggestion_source, abstractor_suggestion: abstractor_suggestion_bar, abstractor_abstraction_source: abstractor_abstraction_source, match_value: 'bar', sentence_match_value: 'bar', source_id: 1, source_type: 'Foo', source_method: 'boo', section_name: 'moomin')
     suggestion_source_bar_like = FactoryGirl.create(:abstractor_suggestion_source, abstractor_suggestion: abstractor_suggestion_bar, abstractor_abstraction_source: abstractor_abstraction_source, match_value: 'bar-like', source_id: 1, source_type: 'Foo', source_method: 'bing', section_name: 'moomin')
 
-    puts abstractor_suggestion_bar.detect_abstractor_suggestion_source(abstractor_abstraction_source, 'bar', 1, 'Foo', 'boo', 'moomin').inspect
     expect(abstractor_suggestion_bar.detect_abstractor_suggestion_source(abstractor_abstraction_source, 'bar', 1, 'Foo', 'boo', 'moomin')).to eq(abstractor_suggestion_source_bar)
   end
 end

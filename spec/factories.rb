@@ -60,6 +60,10 @@ FactoryGirl.define do
   end
 
   factory :abstractor_object_value, class: Abstractor::AbstractorObjectValue do
+    value '1'
+    vocabulary_code '1'
+    vocabulary '1'
+    vocabulary_version '1'
   end
 
   factory :abstractor_object_value_variant, class: Abstractor::AbstractorObjectValueVariant do

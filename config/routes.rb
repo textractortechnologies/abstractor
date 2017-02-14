@@ -18,6 +18,7 @@ Abstractor::Engine.routes.draw do
     resources :abstractor_suggestions
   end
 
-  resources :abstractor_abstraction_schemas do
+  resources :abstractor_abstraction_schemas, only: [:index, :show] do
+    resources :abstractor_object_values
   end
 end

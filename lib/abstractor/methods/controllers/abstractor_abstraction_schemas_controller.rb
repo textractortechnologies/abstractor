@@ -7,6 +7,10 @@ module Abstractor
           base.send :before_filter, :set_abstractor_abstraction_schema, only: :show
         end
 
+        def index
+          @abstractor_abstraction_schemas = Abstractor::AbstractorAbstractionSchema.not_deleted.order(:display_name)
+        end
+
         def show
           respond_to do |format|
             format.json { render json: Abstractor::Serializers::AbstractorAbstractionSchemaSerializer.new(@abstractor_abstraction_schema).as_json }

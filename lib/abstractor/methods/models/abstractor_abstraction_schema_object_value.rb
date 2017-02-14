@@ -9,7 +9,16 @@ module Abstractor
           base.send :belongs_to, :abstractor_abstraction_schema
           base.send :belongs_to, :abstractor_object_value
 
-          # base.send :attr_accessible, :abstractor_abstraction_schema, :abstractor_abstraction_schema_id, :abstractor_object_value, :abstractor_object_value_id
+          # Hooks
+          base.send :after_create,  :update_abstractor_abstraction_schema
+          base.send :after_update,  :update_abstractor_abstraction_schema
+          base.send :after_destroy, :update_abstractor_abstraction_schema
+          base.send :after_touch,   :update_abstractor_abstraction_schema
+        end
+
+        # Instance Methods
+        def update_abstractor_abstraction_schema
+          abstractor_abstraction_schema.touch if abstractor_abstraction_schema && abstractor_abstraction_schema.persisted?
         end
       end
     end

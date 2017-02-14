@@ -22,7 +22,6 @@ describe Abstractor::AbstractorAbstractionSchemasController, :type => :request d
       expect(response.status).to be 200
 
       body = JSON.parse(response.body)
-      puts body
       expect(body['abstractor_abstraction_schema']['predicate']).to eq 'has_some_property'
       expect(body['abstractor_abstraction_schema']['display_name']).to eq 'some_property'
       expect(body['abstractor_abstraction_schema']['abstractor_object_type']).to eq 'list'
@@ -44,7 +43,6 @@ describe Abstractor::AbstractorAbstractionSchemasController, :type => :request d
       get "/abstractor_abstraction_schemas/#{abstractor_abstraction_schema.id}", {}, accept_json
       expect(response.status).to be 200
       body = JSON.parse(response.body)
-      puts body
       expect(body['abstractor_abstraction_schema']['object_values']).to eq  [{"value"=>"foo", "properties" => {"type"=>"Rpt", "select_for"=>"Brain, CNS, and Pituitary"}, "vocabulary_code"=>"8148/0", "vocabulary"=>"ICD-O-3", "vocabulary_version"=>"2011 Updates to ICD-O-3", "object_value_variants"=>[{"value"=>"boo"}]}, {"value"=>"loo", "properties"=>{"type"=>"Rpt", "select_for"=>"Brain, CNS, and Pituitary"}, "vocabulary_code"=>"8149/0", "vocabulary"=>"ICD-O-3", "vocabulary_version"=>"2011 Updates to ICD-O-3", "object_value_variants"=>[]}]
 
       abstractor_object_value_2.soft_delete!

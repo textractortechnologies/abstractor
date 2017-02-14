@@ -20,7 +20,7 @@ describe Abstractor::AbstractorSuggestionsController, :type => :request do
 
       histologies =  [{ name: 'glioblastoma, nos', icdo3_code: '9440/3' }, { name: 'meningioma, nos', icdo3_code: '9530/0' }]
       histologies.each do |histology|
-        abstractor_object_value = Abstractor::AbstractorObjectValue.create(:value => "#{histology[:name]} (#{histology[:icdo3_code]})")
+        abstractor_object_value = FactoryGirl.create(:abstractor_object_value, :value => "#{histology[:name]} (#{histology[:icdo3_code]})")
         Abstractor::AbstractorAbstractionSchemaObjectValue.where(abstractor_abstraction_schema: abstractor_abstraction_schema,abstractor_object_value: abstractor_object_value).first_or_create
         Abstractor::AbstractorObjectValueVariant.create(:abstractor_object_value => abstractor_object_value, :value => histology[:name])
         histology_synonyms = [{ synonym_name: 'glioblastoma', icdo3_code: '9440/3' }, { synonym_name: 'spongioblastoma multiforme', icdo3_code: '9440/3' }, { synonym_name: 'gbm', icdo3_code: '9440/3' }, { synonym_name: 'meningioma', icdo3_code: '9530/0' }, { synonym_name: 'leptomeningioma', icdo3_code: '9530/0' }, { synonym_name: 'meningeal fibroblastoma', icdo3_code: '9530/0' }]

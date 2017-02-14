@@ -27,6 +27,11 @@ module NavigationHelpers
       radiation_therapy_prescriptions_path()
     when /the encounter notes index page/
       encounter_notes_path()
+    when /the last abstraction schema object values index page/
+      abstraction_schema = Abstractor::AbstractorAbstractionSchema.order(:display_name).last
+      Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_schema_abstractor_object_values_path(abstraction_schema))
+    when /the abstraction schemas index page/
+      Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_schemas_path)
     else
       if path = match_rails_path_for(page_name)
         path

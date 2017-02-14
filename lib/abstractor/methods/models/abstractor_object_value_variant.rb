@@ -8,7 +8,15 @@ module Abstractor
           # Associations
           base.send :belongs_to, :abstractor_object_value
 
-          # base.send :attr_accessible, :abstractor_object_value, :abstractor_object_value_id, :deleted_at, :value
+          # Hooks
+          base.send :after_create,    :update_abstractor_object_value
+          base.send :after_update,    :update_abstractor_object_value
+          base.send :after_destroy,   :update_abstractor_object_value 
+          base.send :after_touch,     :update_abstractor_object_value
+
+          def update_abstractor_object_value
+            abstractor_object_value.touch if abstractor_object_value && abstractor_object_value.persisted?
+          end
         end
       end
     end

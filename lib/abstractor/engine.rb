@@ -1,4 +1,6 @@
+require 'cocoon'
 require 'haml'
+require 'will_paginate'
 
 module Abstractor
   class Engine < ::Rails::Engine

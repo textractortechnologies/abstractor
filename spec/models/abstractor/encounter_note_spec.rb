@@ -159,7 +159,7 @@ describe EncounterNote do
     end
 
     it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a predicate variant (using the sentential format) that is equivalient to a object", focus: false do
-      abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'kps')
+      abstractor_object_value = FactoryGirl.create(:abstractor_object_value, value: 'kps')
       Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: @abstractor_abstraction_schema_kps, abstractor_object_value: abstractor_object_value)
 
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient has a ?kps")

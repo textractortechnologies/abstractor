@@ -1,0 +1,40 @@
+.abstractor_abstraction_schema_values_index
+  = form_tag abstractor_abstraction_schema_abstractor_object_values_path, method: :get, id: 'search_pathology_cases_form' do
+    .abstractor_search
+      = label_tag :search, 'Search'
+      = text_field_tag :search, (params[:search].nil? ? '' : params[:search]), type: 'search'
+    .abstractor_navigation
+      %button{ type: 'submit', id: 'search_pathology_cases_button', class: 'tiny' }
+        Search
+      = link_to 'Clear', abstractor_abstraction_schema_abstractor_object_values_path
+
+  = will_paginate @abstractor_object_values
+  %table.abstractor_abstraction_schema_values_index_table
+    %thead
+      %tr
+        %th
+          Value
+        %th
+          Vocabulary
+        %th
+          Vocabulary version
+        %th
+          Vocabulary code
+        %th{colspan: 2}
+    %tbody
+      - @abstractor_object_values.each do |abstractor_abstraction_object_value|
+        %tr
+          %td
+            = abstractor_abstraction_object_value.value
+          %td
+            = abstractor_abstraction_object_value.vocabulary
+          %td
+            = abstractor_abstraction_object_value.vocabulary_version
+          %td
+            = abstractor_abstraction_object_value.vocabulary_code
+          %td
+            = link_to 'Edit', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_abstraction_schema_abstractor_object_value_path(@abstractor_abstraction_schema, abstractor_abstraction_object_value)), class: 'edit_abstractor_abstraction_schema_abstractor_object_value_link'
+          %td
+            = link_to 'Delete', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_schema_abstractor_object_value_path(@abstractor_abstraction_schema, abstractor_abstraction_object_value)), method: :delete, class: 'delete_abstractor_abstraction_schema_abstractor_object_value_link', data: { confirm: 'Are you sure?' }
+  = will_paginate @abstractor_object_values
+  = link_to 'New', Abstractor::UserInterface.abstractor_relative_path(abstractor.new_abstractor_abstraction_schema_abstractor_object_value_path(@abstractor_abstraction_schema)), class: 'new_abstractor_abstraction_schema_abstractor_object_value_link'

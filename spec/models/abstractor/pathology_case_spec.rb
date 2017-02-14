@@ -14,7 +14,7 @@ describe PathologyCase do
 
     histologies =  [{ name: 'carcinoma in situ, nos', icdo3_code: '8010/2' }, { name: 'carcinoma, nos', icdo3_code: '8010/3' }, { name: 'carcinoma, metastatic, nos', icdo3_code: '8010/6' }]
     histologies.each do |histology|
-      abstractor_object_value = Abstractor::AbstractorObjectValue.create(:value => "#{histology[:name]} (#{histology[:icdo3_code]})")
+      abstractor_object_value = FactoryGirl.create(:abstractor_object_value, :value => "#{histology[:name]} (#{histology[:icdo3_code]})")
       Abstractor::AbstractorAbstractionSchemaObjectValue.where(abstractor_abstraction_schema: abstractor_abstraction_schema,abstractor_object_value: abstractor_object_value).first_or_create
       Abstractor::AbstractorObjectValueVariant.create(:abstractor_object_value => abstractor_object_value, :value => histology[:name])
       histology_synonyms = [{ synonym_name: 'intraepithelial carcinoma, nos', icdo3_code: '8010/2' }, { synonym_name: 'carcinoma in situ', icdo3_code: '8010/2' }, { synonym_name: 'intraepithelial carcinoma', icdo3_code: '8010/2' }, { synonym_name: 'carcinoma', icdo3_code: '8010/3' }, { synonym_name: 'malignant epithelial tumor', icdo3_code: '8010/3' }, { synonym_name: 'epithelial tumor malignant', icdo3_code: '8010/3' }, { synonym_name: 'secondary carcinoma', icdo3_code: '8010/6' }, { synonym_name: 'metastatic carcinoma', icdo3_code: '8010/6' }, { synonym_name: 'carcinoma metastatic', icdo3_code: '8010/6' }]
