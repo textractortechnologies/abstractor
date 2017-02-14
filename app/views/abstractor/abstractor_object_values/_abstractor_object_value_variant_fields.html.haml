@@ -1,4 +1,6 @@
 .abstractor_object_value_variant.nested-fields
-  = f.label :value
-  = f.text_field :value
-  = link_to_remove_association 'Delete', f, data: { confirm: 'Are you sure?' }, class: 'abstractor_object_value_variant_delete_link'
+  .abstractor_object_value_variant_value
+    = f.label :value
+    = f.text_field :value
+  .abstractor_object_value_variant_remove
+    = link_to_remove_association 'Delete', f, data: { confirm: 'Are you sure?' }, class: 'abstractor_object_value_variant_delete_link'

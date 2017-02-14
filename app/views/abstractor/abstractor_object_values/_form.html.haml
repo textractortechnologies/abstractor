@@ -1,34 +1,41 @@
-.abstractor_object_value_form
-  - if @abstractor_object_value.new_record?
-    - path = Abstractor::UserInterface.abstractor_relative_path(abstractor_abstraction_schema_abstractor_object_values_path(@abstractor_abstraction_schema))
-  - else 
-    - path = Abstractor::UserInterface.abstractor_relative_path(abstractor_abstraction_schema_abstractor_object_value_path(@abstractor_abstraction_schema, @abstractor_object_value))
 
-  = form_for @abstractor_object_value, url: path do |f|
-    = render 'abstractor/shared/error_messages', object: f.object
-    %br
-    = f.label :value
-    = f.text_field :value
-    %br
-    = f.label :vocabulary
-    = f.text_field :vocabulary
-    %br
-    = f.label :vocabulary_version
-    = f.text_field :vocabulary_version
-    %br
-    = f.label :vocabulary_code
-    = f.text_field :vocabulary_code
-    %br
-    = f.label :comments
-    = f.text_area :comments
-    %br
-    %h3
-      Variants
-    #abstractor_object_value_variants
-      = f.fields_for :abstractor_object_value_variants, @abstractor_object_value.abstractor_object_value_variants.not_deleted do |ff|
-        = render 'abstractor_object_value_variant_fields', f: ff
-      .links
-        = link_to_add_association f, :abstractor_object_value_variants, class: 'abstractor_object_value_variant_add_link' do
-          Add variant
-    %br
-    = f.submit 'Save'
+- if @abstractor_object_value.new_record?
+  - path = Abstractor::UserInterface.abstractor_relative_path(abstractor_abstraction_schema_abstractor_object_values_path(@abstractor_abstraction_schema))
+  %h2
+    %b
+      New value
+- else 
+  - path = Abstractor::UserInterface.abstractor_relative_path(abstractor_abstraction_schema_abstractor_object_value_path(@abstractor_abstraction_schema, @abstractor_object_value))
+  %h2
+    %b
+      Edit value
+
+= form_for @abstractor_object_value, url: path do |f|
+  = render 'abstractor/shared/error_messages', object: f.object
+  %br
+  = f.label :value
+  = f.text_field :value
+  %br
+  = f.label :vocabulary
+  = f.text_field :vocabulary
+  %br
+  = f.label :vocabulary_version
+  = f.text_field :vocabulary_version
+  %br
+  = f.label :vocabulary_code
+  = f.text_field :vocabulary_code
+  %br
+  = f.label :comments
+  = f.text_area :comments
+  %br
+  %h4
+    %b
+      Value variants
+  #abstractor_object_value_variants
+    = f.fields_for :abstractor_object_value_variants, @abstractor_object_value.abstractor_object_value_variants.not_deleted do |ff|
+      = render 'abstractor_object_value_variant_fields', f: ff
+    .links
+      = link_to_add_association f, :abstractor_object_value_variants, class: 'abstractor_object_value_variant_add_link' do
+        Add variant
+  %br
+  = f.submit 'Save'
