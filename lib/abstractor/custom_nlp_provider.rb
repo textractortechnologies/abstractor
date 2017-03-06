@@ -12,6 +12,10 @@ module Abstractor
       suggestion_endpoint = YAML.load_file("#{Rails.root}/config/abstractor/custom_nlp_providers.yml")[custom_nlp_provider]['suggestion_endpoint'][Rails.env]
     end
 
+    def self.determine_multiple_suggestion_endpoint(custom_nlp_provider)
+      suggestion_endpoint = YAML.load_file("#{Rails.root}/config/abstractor/custom_nlp_providers.yml")[custom_nlp_provider]['multiple_suggestion_endpoint'][Rails.env]
+    end
+
     def self.determine_suggestion_endpoint_credentials(custom_nlp_provider)
       suggestion_endpoint_credentials = YAML.load_file("#{Rails.root}/config/abstractor/custom_nlp_providers.yml")[custom_nlp_provider]['suggestion_endpoint_credentials'][Rails.env]
     end
@@ -56,6 +60,38 @@ module Abstractor
         source_method: source[:source_method],
         text: abstractor_text
       }
+    end
+
+    def self.format_body_for_multiple_suggestion_endpoint(abstractor_abstractions, abstractor_abstraction_sources, abstractor_text, source)
+      body = {
+        source_id: source[:source_id],
+        source_type: source[:source_type].to_s,
+        source_method: source[:source_method],
+        text: abstractor_text,
+        abstractor_abstraction_schemas: []
+      }
+
+      abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction_source = abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources & abstractor_abstraction_sources
+        abstractor_abstraction_source = abstractor_abstraction_source.first
+        if Rails.application.config.relative_url_root
+          abstractor_abstraction_schema_uri =  Abstractor::Engine.routes.url_helpers.abstractor_abstraction_schema_url(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema, script_name: Rails.application.config.relative_url_root, format: :json)
+          abstractor_abstraction_abstractor_suggestions_uri = Abstractor::Engine.routes.url_helpers.abstractor_abstraction_abstractor_suggestions_url(abstractor_abstraction, script_name: Rails.application.config.relative_url_root,format: :json)
+        else
+          abstractor_abstraction_schema_uri =  Abstractor::Engine.routes.url_helpers.abstractor_abstraction_schema_url(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema,  format: :json)
+          abstractor_abstraction_abstractor_suggestions_uri =  Abstractor::Engine.routes.url_helpers.abstractor_abstraction_abstractor_suggestions_url(abstractor_abstraction, format: :json)
+        end
+
+        abstractor_abstraction_schema = {
+          abstractor_abstraction_schema_id: abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema.id,
+          abstractor_abstraction_schema_uri: abstractor_abstraction_schema_uri,
+          abstractor_abstraction_abstractor_suggestions_uri: abstractor_abstraction_abstractor_suggestions_uri,
+          abstractor_abstraction_id: abstractor_abstraction.id,
+          abstractor_abstraction_source_id: abstractor_abstraction_source.id,
+        }
+        body[:abstractor_abstraction_schemas] << abstractor_abstraction_schema
+      end
+      body
     end
   end
 end

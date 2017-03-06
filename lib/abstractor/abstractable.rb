@@ -177,6 +177,46 @@ module Abstractor
         sentinental_groups.uniq.map{|sentinental_group| regroup_sentinental_suggestions(sentinental_group, options)}
       end
 
+      def abstract_multiple(options = {})
+        options = { namespace_type: nil, namespace_id: nil, abstractor_abstraction_schema_ids: [] }.merge(options)
+        sources_with_abstractor_abstraction_schemas = []
+        self.class.abstractor_subjects(options).each do |abstractor_subject|
+          abstractor_abstraction = self.find_or_create_abstractor_abstraction(abstractor_subject.abstractor_abstraction_schema, abstractor_subject)
+          abstractor_subject.abstractor_abstraction_sources.each do |abstractor_abstraction_source|
+            abstractor_abstraction_source.normalize_from_method_to_sources(self).each do |source|
+              if s = sources_with_abstractor_abstraction_schemas.detect { |s| s[:source] == source }
+                s[:abstractor_abstraction_schemas] << abstractor_subject.abstractor_abstraction_schema
+                if s[:abstractor_abstraction_sources].none? { |aas| aas == abstractor_abstraction_source }
+                  s[:abstractor_abstraction_sources] << abstractor_abstraction_source
+                end
+                if s[:abstractor_abstractions].none? { |a| a ==  abstractor_abstraction }
+                  s[:abstractor_abstractions] << abstractor_abstraction
+                end
+              else
+                sources_with_abstractor_abstraction_schemas << { source: source, abstractor_abstraction_sources: [abstractor_abstraction_source], abstractor_abstractions: [abstractor_abstraction], abstractor_abstraction_schemas: [abstractor_subject.abstractor_abstraction_schema] }
+              end
+            end
+          end
+        end
+
+        body = nil
+        sources_with_abstractor_abstraction_schemas.each do |source_with_abstractor_abstraction_schema|
+          custom_nlp_provider = source_with_abstractor_abstraction_schema[:abstractor_abstraction_sources].map(&:custom_nlp_provider)
+          custom_nlp_provider  = custom_nlp_provider.first
+          multiple_suggestion_endpoint = CustomNlpProvider.determine_multiple_suggestion_endpoint(custom_nlp_provider)
+          suggestion_endpoint_auth = Abstractor::CustomNlpProvider.determine_suggestion_endpoint_credentials(custom_nlp_provider).symbolize_keys
+
+          if !Rails.env.test?
+            user = User.where(username: suggestion_endpoint_auth[:username]).first
+            suggestion_endpoint_auth[:password] = user.authentication_token
+          end
+
+          abstractor_text = Abstractor::AbstractorAbstractionSource.abstractor_text(source_with_abstractor_abstraction_schema[:source])
+          body = Abstractor::CustomNlpProvider.format_body_for_multiple_suggestion_endpoint(source_with_abstractor_abstraction_schema[:abstractor_abstractions], source_with_abstractor_abstraction_schema[:abstractor_abstraction_sources], abstractor_text, source_with_abstractor_abstraction_schema[:source])
+          result = HTTParty.post(multiple_suggestion_endpoint, { body: body.to_json, headers: { 'Content-Type' => 'application/json', }, basic_auth: suggestion_endpoint_auth, :debug_output => $stdout })
+        end
+      end
+
       def detect_abstractor_abstraction(abstractor_subject)
         abstractor_abstractions(true).not_deleted.detect { |abstractor_abstraction| abstractor_abstraction.abstractor_subject_id == abstractor_subject.id }
       end
