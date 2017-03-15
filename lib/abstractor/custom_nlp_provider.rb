@@ -63,10 +63,17 @@ module Abstractor
     end
 
     def self.format_body_for_multiple_suggestion_endpoint(abstractor_abstractions, abstractor_abstraction_sources, abstractor_text, source)
+      if Rails.application.config.relative_url_root
+        abstractor_rules_uri =  Abstractor::Engine.routes.url_helpers.abstractor_rules_url(script_name: Rails.application.config.relative_url_root, format: :json)
+      else
+        abstractor_rules_uri =  Abstractor::Engine.routes.url_helpers.abstractor_rules_url(format: :json)
+      end
+
       body = {
         source_id: source[:source_id],
         source_type: source[:source_type].to_s,
         source_method: source[:source_method],
+        abstractor_rules_uri: abstractor_rules_uri,
         text: abstractor_text,
         abstractor_abstraction_schemas: []
       }
@@ -88,6 +95,7 @@ module Abstractor
           abstractor_abstraction_abstractor_suggestions_uri: abstractor_abstraction_abstractor_suggestions_uri,
           abstractor_abstraction_id: abstractor_abstraction.id,
           abstractor_abstraction_source_id: abstractor_abstraction_source.id,
+          abstractor_subject_id: abstractor_abstraction.abstractor_subject.id
         }
         body[:abstractor_abstraction_schemas] << abstractor_abstraction_schema
       end

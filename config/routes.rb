@@ -20,4 +20,7 @@ Abstractor::Engine.routes.draw do
 
   resources :abstractor_abstraction_schemas do
   end
+
+  resources :abstractor_rules do
+  end
 end
