@@ -21,4 +21,7 @@ Abstractor::Engine.routes.draw do
   resources :abstractor_abstraction_schemas, only: [:index, :show] do
     resources :abstractor_object_values
   end
+
+  resources :abstractor_rules do
+  end
 end

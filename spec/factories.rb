@@ -81,4 +81,7 @@ FactoryGirl.define do
   factory :abstractor_subject_group, :class => Abstractor::AbstractorSubjectGroup do
     cardinality nil
   end
+
+  factory :abstractor_rule, :class => Abstractor::AbstractorRule do
+  end
 end
