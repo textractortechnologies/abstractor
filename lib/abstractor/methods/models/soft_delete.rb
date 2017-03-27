@@ -5,6 +5,7 @@ module Abstractor
         def self.included(base)
           # attr_accessor :soft_delete
           base.send(:scope, :not_deleted, -> { base.where(:deleted_at => nil) })
+          base.send(:scope, :deleted, -> { base.where('deleted_at IS NOT NULL') })
         end
 
         def process_soft_delete

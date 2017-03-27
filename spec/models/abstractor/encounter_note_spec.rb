@@ -151,7 +151,7 @@ describe EncounterNote do
       expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to eq('90% - Able to carry on normal activity; minor signs or symptoms of disease.')
     end
 
-    it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a predicate variant (using the sentential format)" do
+    it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a predicate variant (using the sentential format)", focus: false do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.")
       @encounter_note.abstract
 
@@ -858,20 +858,20 @@ describe EncounterNote do
         items_count = 0
 
         @relative_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where( predicate: 'has_relative_with_movement_disorder_relative', display_name: 'Relative', abstractor_object_type: @list_object_type, preferred_name: 'Relative').first_or_create
-        abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: 'Biological Mother').first_or_create
+        abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: 'Biological Mother', vocabulary_code: 'Biological Mother').first_or_create
         ['mother','mom'].each do |variant|
           Abstractor::AbstractorObjectValueVariant.where(abstractor_object_value: abstractor_object_value, value: variant).first_or_create
         end
         Abstractor::AbstractorAbstractionSchemaObjectValue.where(abstractor_abstraction_schema: @relative_abstractor_abstraction_schema,abstractor_object_value: abstractor_object_value).first_or_create
 
-        abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: 'Biological Father').first_or_create
+        abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: 'Biological Father', vocabulary_code: 'Biological Father').first_or_create
         ['father','dad'].each do |variant|
           Abstractor::AbstractorObjectValueVariant.where(abstractor_object_value: abstractor_object_value, value: variant).first_or_create
         end
 
         Abstractor::AbstractorAbstractionSchemaObjectValue.where(abstractor_abstraction_schema: @relative_abstractor_abstraction_schema,abstractor_object_value: abstractor_object_value).first_or_create
         ['Full', 'Half'].each do |value|
-          abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: "#{value} Sibling").first_or_create
+          abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: "#{value} Sibling", vocabulary_code: "#{value} Sibling").first_or_create
           ['sister', 'sisters', 'brother', 'brothers', 'sibling', 'siblings'].each do |variant|
             if value == 'Full'
               Abstractor::AbstractorObjectValueVariant.where(abstractor_object_value: abstractor_object_value, value: variant).first_or_create
@@ -891,7 +891,7 @@ describe EncounterNote do
         @disorder_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where( predicate: 'has_relative_with_movement_disorder_disorder', display_name: 'Disorder', abstractor_object_type: @list_object_type, preferred_name: 'Disorder').first_or_create
 
         ['parkinsonism', 'tremor', 'Essential tremor', 'pd'].each do |value|
-          abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: value).first_or_create
+          abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: value, vocabulary_code: value).first_or_create
           Abstractor::AbstractorAbstractionSchemaObjectValue.where(abstractor_abstraction_schema: @disorder_abstractor_abstraction_schema,abstractor_object_value: abstractor_object_value).first_or_create
         end
 

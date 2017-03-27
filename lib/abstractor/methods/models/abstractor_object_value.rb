@@ -8,20 +8,26 @@ module Abstractor
           # Associations
           base.send :has_many, :abstractor_object_value_variants
           base.send :has_many, :abstractor_abstraction_schema_object_values
-          base.send :has_many, :abstractor_abstraction_schemas, :through => :abstractor_abstraction_schema_object_values
-          base.send :has_many, :abstractor_abstractions
+          base.send :has_many, :abstractor_abstraction_schemas, through: :abstractor_abstraction_schema_object_values
+          base.send :has_many, :abstractor_abstraction_object_values
+          base.send :has_many, :abstractor_abstractions, through: :abstractor_abstraction_object_values
+          base.send :has_many, :abstractor_suggestion_object_values
+          base.send :has_many, :abstractor_suggestions, through: :abstractor_suggestion_object_values
 
           # Validations
           base.send :validates_presence_of, :value
+          base.send :validates_presence_of, :vocabulary_code
+          base.send :validates_associated, :abstractor_object_value_variants
 
           # Hooks
           base.send :before_save,   :soft_delete_abstractor_object_value_variants
+          base.send :before_save,   :soft_delete_abstractor_suggestions
           base.send :after_update,  :update_abstractor_abstraction_schema_object_values
-          base.send :after_destroy, :update_abstractor_abstraction_schema_object_values    
+          base.send :after_destroy, :update_abstractor_abstraction_schema_object_values
           base.send :after_touch,   :update_abstractor_abstraction_schema_object_values
 
           base.send :accepts_nested_attributes_for, :abstractor_object_value_variants, allow_destroy: false
-          
+
           base.send(:include, InstanceMethods)
           base.extend(ClassMethods)
         end
@@ -38,6 +44,18 @@ module Abstractor
 
           def soft_delete_abstractor_object_value_variants
             self.abstractor_object_value_variants.select(&:marked_for_destruction?).map(&:process_soft_delete)
+          end
+
+          def soft_delete_abstractor_suggestions
+            as = self.abstractor_suggestions.where('accepted IS NULL OR accepted = ?', false)
+            as.each(&:soft_delete!)
+            as.each do |abstractor_suggestion|
+              if abstractor_suggestion.abstractor_abstraction.abstractor_suggestions.not_deleted.empty?
+                abstractor_abstraction = abstractor_suggestion.abstractor_abstraction
+                abstractor_abstraction_source = abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.first
+                abstractor_suggestion.abstractor_abstraction.abstractor_subject.create_unknown_abstractor_suggestion(abstractor_abstraction.about, abstractor_abstraction, abstractor_abstraction_source)
+              end
+            end
           end
         end
 

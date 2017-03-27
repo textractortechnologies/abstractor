@@ -5,25 +5,24 @@ describe  Abstractor::AbstractorObjectValue do
   end
 
   let(:abstractor_object_type)        { Abstractor::AbstractorObjectType.all.sample }
-  let(:abstractor_object_value)       { FactoryGirl.create(:abstractor_object_value, value: 'foo') }
+  let(:abstractor_object_value)       { FactoryGirl.create(:abstractor_object_value, value: 'foo', vocabulary_code: 'foo') }
   let(:abstractor_abstraction_schema) { FactoryGirl.create(:abstractor_abstraction_schema, predicate: 'has_some_property', display_name: 'some_property', abstractor_object_type: abstractor_object_type, preferred_name: 'property') }
 
-  it "is valid with valid attributes" do
+  it "is valid with valid attributes", focus: false do
     expect(abstractor_object_value).to be_valid
   end
 
-  it "is invalid with invalid attributes" do
+  it "is invalid with invalid attributes", focus: false do
     abstractor_object_value.value = nil
     abstractor_object_value.vocabulary_code = nil
-    abstractor_object_value.vocabulary = nil
-    abstractor_object_value.vocabulary_version = nil
 
     expect(abstractor_object_value).not_to be_valid
     expect(abstractor_object_value.errors.full_messages).to include("Value can't be blank")
+    expect(abstractor_object_value.errors.full_messages).to include("Vocabulary code can't be blank")
   end
 
   it "can report its object variants" do
-    abstractor_abstraction_schema.abstractor_object_values << FactoryGirl.build(:abstractor_object_value, value: 'foo')
+    abstractor_abstraction_schema.abstractor_object_values << FactoryGirl.build(:abstractor_object_value, value: 'foo', vocabulary_code: 'foo')
     FactoryGirl.create(:abstractor_object_value_variant, abstractor_object_value: abstractor_abstraction_schema.abstractor_object_values.first, value: 'boo')
     expect(Set.new(abstractor_abstraction_schema.abstractor_object_values.first.object_variants)).to eq(Set.new(['foo', 'boo']))
   end
@@ -49,5 +48,46 @@ describe  Abstractor::AbstractorObjectValue do
 
     expect(abstractor_abstraction_schema.reload.updated_at).to              be > abstractor_abstraction_schema_timestamp
     expect(abstractor_abstraction_schema_object_value.reload.updated_at).to be > abstractor_abstraction_schema_object_value_timestamp
+  end
+
+  describe 'subject' do
+    before(:each) do
+      Abstractor::Setup.system
+      Setup.encounter_note
+      @abstractor_abstraction_schema_kps = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_karnofsky_performance_status').first
+      @abstractor_subject_abstraction_schema_kps = Abstractor::AbstractorSubject.where(subject_type: EncounterNote.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_kps.id).first
+      @abstractor_object_value = @abstractor_abstraction_schema_kps.abstractor_object_values.where(value: '20% - Very sick; hospital admission necessary; active supportive treatment necessary.').first
+    end
+
+    it 'cascade soft deletes unaccepted abstractor suggestions upon soft delete of an abstractor object', focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
+      @encounter_note.abstract
+
+      abstractor_abstraction = @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)
+      abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.not_deleted.where(suggested_value: @abstractor_object_value.value).first
+      expect(abstractor_suggestion).to_not be_nil
+      expect(abstractor_suggestion.abstractor_object_value).to eq(@abstractor_object_value)
+      @abstractor_object_value.soft_delete!
+      abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.deleted.where(suggested_value: @abstractor_object_value.value).first
+      expect(abstractor_suggestion).to_not be_nil
+    end
+
+    it 'does not cascade soft deletes accepted abstractor suggestions upon soft delete of an abstractor object', focus: true do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
+      @encounter_note.abstract
+
+      abstractor_abstraction = @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)
+      abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.not_deleted.where(suggested_value: @abstractor_object_value.value).first
+      abstractor_suggestion.accepted = true
+      abstractor_suggestion.save!
+      expect(abstractor_suggestion).to_not be_nil
+      expect(abstractor_suggestion.abstractor_object_value).to eq(@abstractor_object_value)
+      @abstractor_object_value.soft_delete!
+      abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.deleted.where(suggested_value: @abstractor_object_value.value).first
+      expect(abstractor_suggestion).to be_nil
+      abstractor_abstraction = @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)
+      abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.not_deleted.where(suggested_value: @abstractor_object_value.value).first
+      expect(abstractor_suggestion).to_not be_nil
+    end
   end
 end

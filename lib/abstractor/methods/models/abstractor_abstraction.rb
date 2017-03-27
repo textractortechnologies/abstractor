@@ -10,7 +10,6 @@ module Abstractor
           base.send :belongs_to, :abstractor_subject
 
           base.send :has_many, :abstractor_suggestions
-          base.send :has_many, :abstractor_abstraction_sources, :through => :abstractor_abstractor_suggestions
           base.send :has_many, :abstractor_indirect_sources
 
           base.send :has_one, :abstractor_abstraction_group_member
@@ -139,7 +138,7 @@ module Abstractor
 
           def detect_abstractor_suggestion(suggested_value, unknown, not_applicable)
             abstractor_suggestion = nil
-            abstractor_suggestion = abstractor_suggestions(true).detect do |abstractor_suggestion|
+            abstractor_suggestion = abstractor_suggestions(true).not_deleted.detect do |abstractor_suggestion|
               abstractor_suggestion.suggested_value == suggested_value &&
               abstractor_suggestion.unknown == unknown &&
               abstractor_suggestion.not_applicable == not_applicable

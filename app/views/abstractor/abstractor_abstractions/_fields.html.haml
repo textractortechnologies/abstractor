@@ -2,8 +2,8 @@
 - read_only ||= @read_only
 - unless abstractor_abstraction.blank?
   - abstractor_abstraction_schema   = abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema
-  - abstractor_suggestions          = abstractor_abstraction.abstractor_suggestions.order(:suggested_value)
-  - rejected_suggestions            = abstractor_suggestions.where(accepted: false)
+  - abstractor_suggestions          = abstractor_abstraction.abstractor_suggestions.not_deleted.order(:suggested_value)
+  - rejected_suggestions            = abstractor_suggestions.not_deleted.where(accepted: false)
   - about = abstractor_abstraction.about
 
   .abstractor_abstraction_display

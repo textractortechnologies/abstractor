@@ -3,7 +3,7 @@
     %h2
       %b
         = @abstractor_abstraction_schema.display_name
-        values
+        Values
     = form_tag abstractor_abstraction_schema_abstractor_object_values_path, method: :get, id: 'search_abstractor_object_values_form' do
       .abstractor_search
         = label_tag :search, 'Search'
@@ -21,10 +21,6 @@
           %th
             Value
           %th
-            Vocabulary
-          %th
-            Vocabulary version
-          %th
             Vocabulary code
           %th{colspan: 2}
       %tbody
@@ -32,10 +28,6 @@
           %tr
             %td.abstractor_abstraction_object_value_value
               = abstractor_abstraction_object_value.value
-            %td.abstractor_abstraction_object_value_vocabulary
-              = abstractor_abstraction_object_value.vocabulary
-            %td.abstractor_abstraction_object_value_vocabulary_version
-              = abstractor_abstraction_object_value.vocabulary_version
             %td.abstractor_abstraction_object_value_vocabulary_code
               = abstractor_abstraction_object_value.vocabulary_code
             %td.abstractor_abstraction_object_value_edit

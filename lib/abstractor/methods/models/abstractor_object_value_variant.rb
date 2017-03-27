@@ -8,10 +8,13 @@ module Abstractor
           # Associations
           base.send :belongs_to, :abstractor_object_value
 
+          # Validations
+          base.send :validates_presence_of, :value
+
           # Hooks
           base.send :after_create,    :update_abstractor_object_value
           base.send :after_update,    :update_abstractor_object_value
-          base.send :after_destroy,   :update_abstractor_object_value 
+          base.send :after_destroy,   :update_abstractor_object_value
           base.send :after_touch,     :update_abstractor_object_value
 
           def update_abstractor_object_value

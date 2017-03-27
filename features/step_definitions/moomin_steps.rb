@@ -59,7 +59,7 @@ def setup_moomin_abstraction_schemas
   abstractor_abstraction_schema_moomin = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_favorite_moomin', display_name: 'Has favorite moomin', abstractor_object_type_id: list_object_type.id, preferred_name: 'Has favorite moomin').first_or_create
 
   ['Moomintroll', 'Little My', 'The Groke'].each do |moomin|
-    abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: moomin)
+    abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: moomin, vocabulary_code: moomin)
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: abstractor_abstraction_schema_moomin, abstractor_object_value: abstractor_object_value)
   end
 

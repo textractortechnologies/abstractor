@@ -19,7 +19,7 @@ module Abstractor
         def create
           @abstractor_object_value = Abstractor::AbstractorObjectValue.new(abstractor_object_value_params)
           @abstractor_object_value.abstractor_abstraction_schemas << @abstractor_abstraction_schema
-          if @abstractor_object_value.save!
+          if @abstractor_object_value.save
             redirect_to action: :index
           else
             render :new
@@ -56,12 +56,12 @@ module Abstractor
 
           def abstractor_object_value_params
             params.require(:abstractor_object_value).permit(
-              :id, 
-              :value, 
-              :vocabulary, 
-              :vocabulary_version, 
-              :vocabulary_code, 
-              :comments, 
+              :id,
+              :value,
+              :vocabulary,
+              :vocabulary_version,
+              :vocabulary_code,
+              :comments,
               abstractor_object_value_variants_attributes: [
                 :id, :value, :soft_delete
               ]

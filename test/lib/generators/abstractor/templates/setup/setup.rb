@@ -68,7 +68,7 @@ module Setup
     if anatomical_location_abstractor_abstraction_schema.blank?
       anatomical_location_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_anatomical_location', display_name: 'Anatomical location', abstractor_object_type: list_object_type, preferred_name: 'Anatomical location')
       Site.where(synonym: false).each do |site|
-        object_value = Abstractor::AbstractorObjectValue.create(value: site.name)
+        object_value = Abstractor::AbstractorObjectValue.create(value: site.name, vocabulary_code: site.name)
         Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: anatomical_location_abstractor_abstraction_schema, abstractor_object_value: object_value)
         Site.where(icdo3_code: site.icdo3_code, synonym: true).each do |site_synonym|
           Abstractor::AbstractorObjectValueVariant.create(abstractor_object_value: object_value, value: site_synonym.name)
@@ -83,9 +83,9 @@ module Setup
     laterality_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_laterality').first
     if laterality_abstractor_abstraction_schema.blank?
       laterality_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_laterality', display_name: 'Laterality', abstractor_object_type: radio_button_list_object_type, preferred_name: 'Laterality')
-      left_ov       = Abstractor::AbstractorObjectValue.create(value: 'left')
-      right_ov      = Abstractor::AbstractorObjectValue.create(value: 'right')
-      bilateral_ov = Abstractor::AbstractorObjectValue.create(value: 'bilateral')
+      left_ov       = Abstractor::AbstractorObjectValue.create(value: 'left', vocabulary_code: 'left')
+      right_ov      = Abstractor::AbstractorObjectValue.create(value: 'right', vocabulary_code: 'right')
+      bilateral_ov = Abstractor::AbstractorObjectValue.create(value: 'bilateral', vocabulary_code: 'bilateral')
 
       laterals = [left_ov, right_ov, bilateral_ov]
 
@@ -130,66 +130,66 @@ module Setup
     abstractor_subject = Abstractor::AbstractorSubject.create(subject_type: 'EncounterNote', abstractor_abstraction_schema: kps_abstractor_abstraction_schema)
     abstractor_object_values = []
     abstractor_object_value = nil
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '100% - Normal; no complaints; no evidence of disease.')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '100% - Normal; no complaints; no evidence of disease.', vocabulary_code: '100% - Normal; no complaints; no evidence of disease.')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '100')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '100%')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '90% - Able to carry on normal activity; minor signs or symptoms of disease.')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '90% - Able to carry on normal activity; minor signs or symptoms of disease.', vocabulary_code: '90% - Able to carry on normal activity; minor signs or symptoms of disease.')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '90')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '.90')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '90%')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '80% - Normal activity with effort; some signs or symptoms of disease.')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '80% - Normal activity with effort; some signs or symptoms of disease.', vocabulary_code: '80% - Normal activity with effort; some signs or symptoms of disease.')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '80')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '.80')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '80%')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '70% - Cares for self; unable to carry on normal activity or to do active work.')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '70% - Cares for self; unable to carry on normal activity or to do active work.', vocabulary_code: '70% - Cares for self; unable to carry on normal activity or to do active work.')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '70')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '.70')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '70%')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '60% - Requires occasional assistance, but is able to care for most of his personal needs.')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '60% - Requires occasional assistance, but is able to care for most of his personal needs.', vocabulary_code: '60% - Requires occasional assistance, but is able to care for most of his personal needs.')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '60')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '.60')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '60%')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '50% - Requires considerable assistance and frequent medical care.')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '50% - Requires considerable assistance and frequent medical care.', vocabulary_code: '50% - Requires considerable assistance and frequent medical care.')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '50')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '.50')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '50%')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '40% - Disabled; requires special care and assistance.')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '40% - Disabled; requires special care and assistance.', vocabulary_code: '40% - Disabled; requires special care and assistance.')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '40')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '.40')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '40%')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '30% - Severely disabled; hospital admission is indicated although death not imminent.')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '30% - Severely disabled; hospital admission is indicated although death not imminent.', vocabulary_code: '30% - Severely disabled; hospital admission is indicated although death not imminent.')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '30')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '.30')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '30%')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '20% - Very sick; hospital admission necessary; active supportive treatment necessary.')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '20% - Very sick; hospital admission necessary; active supportive treatment necessary.', vocabulary_code: '20% - Very sick; hospital admission necessary; active supportive treatment necessary.')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '20')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '.20')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '20%')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '10% - Moribund; fatal processes progressing rapidly.')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '10% - Moribund; fatal processes progressing rapidly.', vocabulary_code: '10% - Moribund; fatal processes progressing rapidly.')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '10')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '.10')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '10%')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '0% - Dead')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '0% - Dead', vocabulary_code: '0% - Dead')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '0')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '0% ')
     abstractor_object_value.save
@@ -226,10 +226,10 @@ module Setup
     Abstractor::AbstractorSubjectGroupMember.create(abstractor_subject: abstractor_subject, abstractor_subject_group: surgery_anatomical_location_group, display_order: 1)
 
     imaging_confirmed_extent_of_resection_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_imaging_confirmed_extent_of_resection', display_name: 'Extent of resection', abstractor_object_type: list_object_type, preferred_name: 'Extent of resection')
-    abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'Gross total resection')
+    abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'Gross total resection', vocabulary_code: 'Gross total resection')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: imaging_confirmed_extent_of_resection_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'Subtotal resection')
+    abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'Subtotal resection', vocabulary_code: 'Subtotal resection')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: imaging_confirmed_extent_of_resection_abstraction_schema, abstractor_object_value: abstractor_object_value)
     abstractor_subject = Abstractor::AbstractorSubject.create(subject_type: 'Surgery', abstractor_abstraction_schema: imaging_confirmed_extent_of_resection_abstraction_schema)
@@ -249,15 +249,15 @@ module Setup
     abstractor_object_values = []
     abstractor_object_value = nil
 
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'moomin')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'moomin', vocabulary_code: 'moomin')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: moomin_major_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
 
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'moominpapa')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'moominpapa', vocabulary_code: 'moominpapa')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: moomin_major_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
 
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'little my')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'little my', vocabulary_code: 'little my')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: moomin_major_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
 
@@ -272,10 +272,10 @@ module Setup
     Abstractor::AbstractorSubjectGroupMember.create(abstractor_subject: abstractor_subject, abstractor_subject_group: dat_group, display_order: 1)
     abstractor_object_values = []
     abstractor_object_value = nil
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'Normal')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'Normal', vocabulary_code: 'Normal')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: dat_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'Abnormal')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'Abnormal', vocabulary_code: 'Abnormal')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: dat_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', abstractor_rule_type: n_v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
@@ -290,15 +290,15 @@ module Setup
     abstractor_object_values = []
     abstractor_object_value = nil
 
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'fillyjonk')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'fillyjonk', vocabulary_code: 'fillyjonk')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: moomin_minor_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
 
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'hemulen')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'hemulen', vocabulary_code: 'hemulen')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: moomin_minor_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
 
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'the groke')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'the groke', vocabulary_code: 'the groke')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: moomin_minor_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
 
@@ -310,22 +310,22 @@ module Setup
     Abstractor::AbstractorSubjectGroupMember.create(abstractor_subject: abstractor_subject, abstractor_subject_group: recist_response_group, display_order: 1)
     abstractor_object_values = []
     abstractor_object_value = nil
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'CR (complete response) = disappearance of all target lesions')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'CR (complete response) = disappearance of all target lesions', vocabulary_code: 'CR (complete response) = disappearance of all target lesions')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'CR')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'complete response')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: recist_response_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'PR (partial response) = 30% decrease in the sum of the longest diameter of target lesions')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'PR (partial response) = 30% decrease in the sum of the longest diameter of target lesions', vocabulary_code: 'PR (partial response) = 30% decrease in the sum of the longest diameter of target lesions')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'PR')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'partial response')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: recist_response_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'PD (progressive disease) = 20% increase in the sum of the longest diameter of target lesions')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'PD (progressive disease) = 20% increase in the sum of the longest diameter of target lesions', vocabulary_code: 'PD (progressive disease) = 20% increase in the sum of the longest diameter of target lesions')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'PD')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'progressive disease')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: recist_response_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'SD (stable disease) = small changes that do not meet above criteria')
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'SD (stable disease) = small changes that do not meet above criteria', vocabulary_code: 'SD (stable disease) = small changes that do not meet above criteria')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'PD')
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'progressive disease')
     abstractor_object_value.save
@@ -340,7 +340,7 @@ module Setup
     diagnosis_duration_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_diagnosis_duration', display_name: 'Duration', abstractor_object_type: list_object_type, preferred_name: 'Duration')
 
     ['Tremor', 'PD', 'Ataxia'].each do |diagnosis|
-      abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: diagnosis)
+      abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: diagnosis, vocabulary_code: diagnosis)
       abstractor_object_value.save
       Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: diagnosis_abstraction_schema, abstractor_object_value: abstractor_object_value)
     end
@@ -349,7 +349,7 @@ module Setup
     abstractor_section = Abstractor::AbstractorSection.create(abstractor_section_type: abstractor_section_type_custom, source_type: 'ImagingExam', source_method: 'note_text', name: 'favorite moomin', custom_regular_expression: "(?<=^|[\r\n])([A-Z][^delimiter]*)delimiter([^\r\n]*(?:[\r\n]+(?![A-Z].*delimiter).*)*)", delimiter: ':')
 
     ['2008', '2009', '2010'].each do |duration|
-      abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: duration)
+      abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: duration, vocabulary_code: duration)
       abstractor_object_value.save
       Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: diagnosis_duration_abstraction_schema, abstractor_object_value: abstractor_object_value)
     end
@@ -370,7 +370,7 @@ module Setup
     score_2_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_score_2', display_name: 'Score 2', abstractor_object_type: list_object_type, preferred_name: 'Score 2')
 
     (1..3).each do |score|
-      abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: score)
+      abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: score, vocabulary_code: score)
       abstractor_object_value.save
       Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: score_1_abstraction_schema, abstractor_object_value: abstractor_object_value)
       Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: score_2_abstraction_schema, abstractor_object_value: abstractor_object_value)
@@ -387,7 +387,7 @@ module Setup
     freezing_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_freezing', display_name: 'Freezing', abstractor_object_type: list_object_type, preferred_name: 'Freezing')
 
     ['yes', 'no'].each do |value|
-      abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: value)
+      abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: value, vocabulary_code: value)
       abstractor_object_value.save
       Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: falls_abstraction_schema, abstractor_object_value: abstractor_object_value)
       Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: freezing_abstraction_schema, abstractor_object_value: abstractor_object_value)
