@@ -3,7 +3,6 @@ module Abstractor
     module Models
       module SoftDelete
         def self.included(base)
-          # attr_accessor :soft_delete
           base.send(:scope, :not_deleted, -> { base.where(:deleted_at => nil) })
           base.send(:scope, :deleted, -> { base.where('deleted_at IS NOT NULL') })
         end
@@ -16,10 +15,6 @@ module Abstractor
           if (removed.is_a?(TrueClass) || removed.to_s == 't' || removed.to_s == '1')
             process_soft_delete
           end
-        end
-
-        def soft_delete
-          !self.deleted_at.blank?
         end
 
         def soft_delete!

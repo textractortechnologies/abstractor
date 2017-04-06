@@ -80,6 +80,16 @@ When /^I follow "([^\"]*)" within(?: the (first|last))? "([^\"]*)"$/ do |selecto
   }
 end
 
+When /^I follow "([^\"]*)" within(?: the (first|last))? "([^\"]*)" and accept confirm$/ do |selector, position, scope_selector|
+  accept_confirm do
+    within_scope(get_scope(position, scope_selector)) {
+      steps %Q{
+        When I follow "#{selector}"
+      }
+    }
+  end
+end
+
 When /^I fill in "([^\"]*)" autocompleter within(?: the (first|last))? "([^\"]*)" with "([^\"]*)"$/ do |selector, position, scope_selector, value|
   within_scope(get_scope(position, scope_selector)) {
     all(selector).should_not be_empty

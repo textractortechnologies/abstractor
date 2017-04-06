@@ -1,8 +1,7 @@
 - if !f.object.deleted?
   .abstractor_object_value_variant.nested-fields
-    .abstractor_object_value_variant_value
-      %label{ for: 'abstractor_object_object_value_variant_value' }
-        Value
+    .value
+      = f.label :value, 'Variant Value'
       = f.text_field :value
       - if validation_errors?(f.object, :value)
         %p.error= format_validation_errors(f.object, :value)

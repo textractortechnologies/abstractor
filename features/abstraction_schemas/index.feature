@@ -1,5 +1,5 @@
 Feature: Listing abstraction schemas
-  User should be able to edit encounter note information
+  User should be able to list abstraction schemas
 
   @javascript
   Scenario: Viewing a list of abstraction schemas

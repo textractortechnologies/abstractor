@@ -8,27 +8,27 @@
   %h2
     %b
       Edit Value
-
 #abstractor_object_value
   = form_for @abstractor_object_value, url: path do |f|
-    %label{ for: 'abstractor_object_object_value' }
-      Value
-    = f.text_field :value
-    - if validation_errors?(@abstractor_object_value, :value)
-      %p.error= format_validation_errors(@abstractor_object_value, :value)
-    %br
-    %label{ for: 'abstractor_object_object_vocabulary_code' }
-      Vocabulary Code
-    = f.text_field :vocabulary_code
-    - if validation_errors?(@abstractor_object_value, :vocabulary_code)
-      %p.error= format_validation_errors(@abstractor_object_value, :vocabulary_code)
-    %br
-    = f.label :comments
-    = f.text_area :comments
-    %br
+    .value
+      %label{ for: 'abstractor_object_value_value' }
+        Value
+      = f.text_field :value, disabled: @abstractor_object_value.used?
+      - if validation_errors?(@abstractor_object_value, :value)
+        %p.error= format_validation_errors(@abstractor_object_value, :value)
+    .vocabulary_code
+      %label{ for: 'abstractor_object_value_vocabulary_code' }
+        Vocabulary Code
+      = f.text_field :vocabulary_code, disabled: @abstractor_object_value.used?
+      - if validation_errors?(@abstractor_object_value, :vocabulary_code)
+        %p.error= format_validation_errors(@abstractor_object_value, :vocabulary_code)
+    .comments
+      %label{ for: 'abstractor_object_value_comments' }
+        Comments
+      = f.text_area :comments
     %h4
       %b
-        Value Variants
+        Variant Values
     #abstractor_object_value_variants
       = f.fields_for :abstractor_object_value_variants do |ff|
         = render 'abstractor_object_value_variant_fields', f: ff

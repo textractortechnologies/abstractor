@@ -50,7 +50,7 @@ describe  Abstractor::AbstractorObjectValue do
     expect(abstractor_abstraction_schema_object_value.reload.updated_at).to be > abstractor_abstraction_schema_object_value_timestamp
   end
 
-  describe 'subject' do
+  describe 'deleting an abstractor object value' do
     before(:each) do
       Abstractor::Setup.system
       Setup.encounter_note
@@ -72,7 +72,7 @@ describe  Abstractor::AbstractorObjectValue do
       expect(abstractor_suggestion).to_not be_nil
     end
 
-    it 'does not cascade soft deletes accepted abstractor suggestions upon soft delete of an abstractor object', focus: true do
+    it 'does not cascade soft deletes accepted abstractor suggestions upon soft delete of an abstractor object', focus: false do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
       @encounter_note.abstract
 
@@ -88,6 +88,47 @@ describe  Abstractor::AbstractorObjectValue do
       abstractor_abstraction = @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)
       abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.not_deleted.where(suggested_value: @abstractor_object_value.value).first
       expect(abstractor_suggestion).to_not be_nil
+    end
+
+    it 'cascade soft deletes unaccepted abstractor suggestions upon soft delete of an abstractor object and create and unknonw suggestion if not more suggestions remain', focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
+      @encounter_note.abstract
+
+      abstractor_abstraction = @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)
+      expect(abstractor_abstraction.abstractor_suggestions.not_deleted.select { |abstractor_suggestion| abstractor_suggestion.unknown == true }.empty?).to be_truthy
+      abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.not_deleted.where(suggested_value: @abstractor_object_value.value).first
+      expect(abstractor_suggestion).to_not be_nil
+      expect(abstractor_suggestion.abstractor_object_value).to eq(@abstractor_object_value)
+      @abstractor_object_value.soft_delete!
+      abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.deleted.where(suggested_value: @abstractor_object_value.value).first
+      expect(abstractor_suggestion).to_not be_nil
+      expect(abstractor_abstraction.abstractor_suggestions.not_deleted.select { |abstractor_suggestion| abstractor_suggestion.unknown == true }.empty?).to be_falsy
+    end
+
+    it 'cascade soft deletes abstractor object value variants', focus: false do
+      expect(@abstractor_object_value.abstractor_object_value_variants.not_deleted.size).to eq(3)
+      @abstractor_object_value.soft_delete!
+      expect(@abstractor_object_value.abstractor_object_value_variants.not_deleted.size).to eq(0)
+      expect(@abstractor_object_value.abstractor_object_value_variants.deleted.size).to eq(3)
+    end
+
+    it 'knows if an abstractor object value is used by having an abstractor suggestion', focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
+      @encounter_note.abstract
+
+      expect(@abstractor_object_value.used?).to  be_truthy
+    end
+
+    it 'knows if an abstractor object value is used by having an abstractor abstraction', focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
+      @encounter_note.abstract
+
+      abstractor_object_value = @abstractor_abstraction_schema_kps.abstractor_object_values.where(value: '10% - Moribund; fatal processes progressing rapidly.').first
+      expect(abstractor_object_value.used?).to be_falsy
+      abstractor_abstraction = @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)
+      abstractor_abstraction.value = abstractor_object_value.value
+      abstractor_abstraction.save!
+      expect(abstractor_object_value.used?).to be_truthy
     end
   end
 end

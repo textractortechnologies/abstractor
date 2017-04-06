@@ -32,12 +32,34 @@ describe Article do
       expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_UNKNOWN)).to be_empty
     end
 
+    it "reports not empty what has a 'unknown' suggestion type when there is a deleted 'suggested' suggestion", focus: false do
+      article = FactoryGirl.create(:article, note_text: 'I love the white sox.  Minnie Minoso should be in the hall of fame.')
+      article.abstract
+      article.reload
+      @abstractor_object_value_white_sox.soft_delete!
+      article.reload
+
+      expect(article.abstractor_abstractions.map { |a| a.abstractor_suggestions.deleted }.size).to eq(1)
+      expect(article.abstractor_abstractions.map { |a| a.abstractor_suggestions.not_deleted }.size).to eq(1)
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_UNKNOWN)).to eq([article])
+    end
+
+    it "reports empty what has a 'suggested' suggestion type when there is a deleted 'suggested' suggestion", focus: false do
+      article = FactoryGirl.create(:article, note_text: 'I love the white sox.  Minnie Minoso should be in the hall of fame.')
+      article.abstract
+      article.reload
+      @abstractor_object_value_white_sox.soft_delete!
+      article.reload
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED)).to be_empty
+    end
+
     it "can report what has a 'suggested' suggestion type", focus: false do
       article = FactoryGirl.create(:article, note_text: 'I love the white sox.  Minnie Minoso should be in the hall of fame.')
       article.abstract
       article.reload
       expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED)).to eq([article])
     end
+
 
     it "reports empty what has a 'suggested' suggestion type when there is an 'unknown' suggestion", focus: false do
       article = FactoryGirl.create(:article, note_text: 'gobbledy gook')
@@ -56,6 +78,19 @@ describe Article do
       expect(abstractor_abstraction.abstractor_suggestions.size).to eq(1)
       abstractor_abstraction.abstractor_subject.suggest(abstractor_abstraction, nil, nil, nil, nil, nil, nil, nil, @abstractor_object_value_white_sox.value, nil, nil, nil, nil)
       expect(abstractor_abstraction.reload.abstractor_suggestions.size).to eq(2)
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_UNKNOWN)).to eq([article])
+    end
+
+    it "reports what has an 'unknown' suggestion type, even when a manual suggestion is made and then its abstracto object value soft deleted", focus: false do
+      article = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article.abstract
+      article.reload
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_UNKNOWN)).to eq([article])
+      abstractor_abstraction = article.reload.detect_abstractor_abstraction(@favorite_baseball_team_abstractor_abstraction_schema)
+      expect(abstractor_abstraction.abstractor_suggestions.size).to eq(1)
+      abstractor_abstraction.abstractor_subject.suggest(abstractor_abstraction, nil, nil, nil, nil, nil, nil, nil, @abstractor_object_value_white_sox.value, nil, nil, nil, nil)
+      expect(abstractor_abstraction.reload.abstractor_suggestions.size).to eq(2)
+      @abstractor_object_value_white_sox.soft_delete!
       expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_UNKNOWN)).to eq([article])
     end
   end
@@ -86,6 +121,15 @@ describe Article do
       expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_UNKNOWN, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to eq([article])
     end
 
+    it "reports what has a 'unknown' suggestion type when there is a 'suggested' suggestion thats abstractor object value is soft deleted", focus: false do
+      article = FactoryGirl.create(:article, note_text: 'I love the white sox.  Minnie Minoso should be in the hall of fame.')
+      article.abstract
+      @abstractor_object_value_white_sox.soft_delete!
+      article.reload
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_UNKNOWN, abstractor_abstraction_schemas: [@favorite_baseball_team_abstractor_abstraction_schema])).to eq([article])
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_UNKNOWN, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to eq([article])
+    end
+
     it "can report what has a 'suggested' suggestion type", focus: false do
       article = FactoryGirl.create(:article, note_text: 'I love the white sox.  Minnie Minoso should be in the hall of fame.')
       article.abstract
@@ -103,6 +147,15 @@ describe Article do
       expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
     end
 
+    it "reports empty what has a 'suggested' suggestion type when the abstractor object value is soft deleted", focus: false do
+      article = FactoryGirl.create(:article, note_text: 'I love the white sox.  Minnie Minoso should be in the hall of fame.')
+      article.abstract
+      @abstractor_object_value_white_sox.soft_delete!
+      article.reload
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@favorite_baseball_team_abstractor_abstraction_schema])).to be_empty
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
+    end
+
     it "reports what has an 'unknown' suggestion type, even when a manual suggestion is made", focus: false do
       article = FactoryGirl.create(:article, note_text: 'gobbledy gook')
       article.abstract
@@ -111,6 +164,22 @@ describe Article do
       abstractor_abstraction = article.reload.detect_abstractor_abstraction(@favorite_baseball_team_abstractor_abstraction_schema)
       expect(abstractor_abstraction.abstractor_suggestions.size).to eq(1)
       abstractor_abstraction.abstractor_subject.suggest(abstractor_abstraction, nil, nil, nil, nil, nil, nil, nil, @abstractor_object_value_white_sox.value, nil, nil, nil, nil)
+      expect(abstractor_abstraction.reload.abstractor_suggestions.size).to eq(2)
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@favorite_baseball_team_abstractor_abstraction_schema])).to be_empty
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@favorite_baseball_team_abstractor_abstraction_schema])).to be_empty
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
+    end
+
+    it "reports what has an 'unknown' suggestion type, even when a manual suggestion is made and its abstactor object value is soft deleted", focus: true do
+      article = FactoryGirl.create(:article, note_text: 'gobbledy gook')
+      article.abstract
+      article.reload
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@favorite_baseball_team_abstractor_abstraction_schema])).to be_empty
+      abstractor_abstraction = article.reload.detect_abstractor_abstraction(@favorite_baseball_team_abstractor_abstraction_schema)
+      expect(abstractor_abstraction.abstractor_suggestions.size).to eq(1)
+      abstractor_abstraction.abstractor_subject.suggest(abstractor_abstraction, nil, nil, nil, nil, nil, nil, nil, @abstractor_object_value_white_sox.value, nil, nil, nil, nil)
+      @abstractor_object_value_white_sox.soft_delete!
       expect(abstractor_abstraction.reload.abstractor_suggestions.size).to eq(2)
       expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@favorite_baseball_team_abstractor_abstraction_schema])).to be_empty
       expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@favorite_baseball_team_abstractor_abstraction_schema])).to be_empty
