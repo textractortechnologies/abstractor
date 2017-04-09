@@ -62,6 +62,24 @@ describe RadiationTherapyPrescription do
       expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.suggested_value).to eq('parietal lobe')
     end
 
+    it "creates an association to the abstractor object value variant for a 'has_anatomical_location' abstraction suggestion suggested value from an abstractor object value variant", focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal')
+      radiation_therapy_prescription.abstract
+      abstractor_abstraction = radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location)
+      abstractor_object_value = @abstractor_abstraction_schema_has_anatomical_location.abstractor_object_values.where(value: 'parietal lobe').first
+      abstractor_object_value_variant = abstractor_object_value.abstractor_object_value_variants.where(value: 'parietal').first
+      expect(abstractor_abstraction.abstractor_suggestions.first.abstractor_object_value_variant).to eq(abstractor_object_value_variant)
+    end
+
+    it "creates an association to the abstractor object value variant for a 'has_anatomical_location' abstraction suggestion suggested value from an abstractor object value variant case insensitively", focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left PARIETAL')
+      radiation_therapy_prescription.abstract
+      abstractor_abstraction = radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location)
+      abstractor_object_value = @abstractor_abstraction_schema_has_anatomical_location.abstractor_object_values.where(value: 'parietal lobe').first
+      abstractor_object_value_variant = abstractor_object_value.abstractor_object_value_variants.where(value: 'parietal').first
+      expect(abstractor_abstraction.abstractor_suggestions.first.abstractor_object_value_variant).to eq(abstractor_object_value_variant)
+    end
+
     it "creates a 'has_anatomical_location' abstraction suggestion suggested value from an abstractor object value variant even if another synonym for the same term is negated", focus: false do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'Not in the thalamus.  But I think it is in the basal ganglia.')
 

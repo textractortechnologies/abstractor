@@ -330,8 +330,9 @@ module Abstractor
               else
                 abstractor_object_value = abstractor_abstraction_schema.abstractor_object_values.not_deleted.where(value: suggested_value).first
               end
-              if abstractor_object_value
+              if abstractor_object_value && match_value
                 suggested_value = abstractor_object_value.value
+                abstractor_object_value_variant = abstractor_object_value.abstractor_object_value_variants.where('lower(value) =?',  match_value.downcase).first
               end
             end
 
@@ -347,6 +348,11 @@ module Abstractor
 
               if abstractor_object_value
                 abstractor_suggestion.abstractor_suggestion_object_value = Abstractor::AbstractorSuggestionObjectValue.new(abstractor_object_value: abstractor_object_value)
+                abstractor_suggestion.save!
+              end
+
+              if abstractor_object_value_variant
+                abstractor_suggestion.abstractor_suggestion_object_value_variant = Abstractor::AbstractorSuggestionObjectValueVariant.new(abstractor_object_value_variant: abstractor_object_value_variant)
                 abstractor_suggestion.save!
               end
             end

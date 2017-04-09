@@ -7,6 +7,8 @@ module Abstractor
 
           # Associations
           base.send :belongs_to, :abstractor_object_value
+          base.send :has_many, :abstractor_suggestion_object_value_variants
+          base.send :has_many, :abstractor_suggestions, through: :abstractor_suggestion_object_value_variants
 
           # Validations
           base.send :validates_presence_of, :value

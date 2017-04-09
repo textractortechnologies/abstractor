@@ -171,7 +171,7 @@ describe Article do
       expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
     end
 
-    it "reports what has an 'unknown' suggestion type, even when a manual suggestion is made and its abstactor object value is soft deleted", focus: true do
+    it "reports what has an 'unknown' suggestion type, even when a manual suggestion is made and its abstactor object value is soft deleted", focus: false do
       article = FactoryGirl.create(:article, note_text: 'gobbledy gook')
       article.abstract
       article.reload
