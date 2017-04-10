@@ -62,8 +62,9 @@ module Abstractor
               :vocabulary_version,
               :vocabulary_code,
               :comments,
+              :case_sensitive,
               abstractor_object_value_variants_attributes: [
-                :id, :value, :soft_delete
+                :id, :value, :case_sensitive, :soft_delete
               ]
             )
 

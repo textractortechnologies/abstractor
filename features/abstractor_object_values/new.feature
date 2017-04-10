@@ -9,9 +9,11 @@ Feature: Adding an abstractor object value
     And I follow "New"
     And I fill in "Value" with "moomin"
     And I fill in "Vocabulary Code" with "moomin code"
+    And I check "Case Sensitive?"
     And I fill in "Comments" with "moomin comments"
     And I follow "Add variant"
     And I fill in "Variant Value" with "moomin variant"
+    And I check "Case Sensitive?" within the first ".abstractor_object_value_variant"
     And I press "Save"
     When I fill in "Search" with "moomin"
     And I press "Search"
@@ -22,9 +24,10 @@ Feature: Adding an abstractor object value
     Then the "Value" field should not be disabled and contain the value "moomin"
     And the "Vocabulary Code" field should not be disabled and contain the value "moomin code"
     And the "Comments" field should not be disabled and contain the value "moomin comments"
+    And "#abstractor_object_value_case_sensitive" should be checked
     And I should see the following variants
-      | Value           |
-      | moomin variant  |
+      | Value           | Case Sensitve? |
+      | moomin variant  | yes            |
 
   @javascript
   Scenario: Adding an abstractor object value with validation

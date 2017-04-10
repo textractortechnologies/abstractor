@@ -22,6 +22,9 @@
       = f.text_field :vocabulary_code, disabled: @abstractor_object_value.used?
       - if validation_errors?(@abstractor_object_value, :vocabulary_code)
         %p.error= format_validation_errors(@abstractor_object_value, :vocabulary_code)
+    .case_sensitive
+      = f.label :case_sensitive, 'Case Sensitive?'
+      = f.check_box :case_sensitive, disabled: @abstractor_object_value.used?
     .comments
       %label{ for: 'abstractor_object_value_comments' }
         Comments

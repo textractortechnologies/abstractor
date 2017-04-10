@@ -21,6 +21,7 @@ Feature: Editing an abstractor object value
     Then the "Value" field should be disabled and contain the value "abdomen, nos"
     And the "Vocabulary Code" field should be disabled and contain the value "abdomen, nos"
     And the "Comments" field should not be disabled and contain the value ""
+    And "Case Sensitive?" in the first ".case_sensitive" should not be checked and should be disabled
 
   @javascript
   Scenario: Allowing edit of an abstractor object value without suggestions
@@ -39,13 +40,16 @@ Feature: Editing an abstractor object value
     Then the "Value" field should not be disabled and contain the value "abdomen, nos"
     And the "Vocabulary Code" field should not be disabled and contain the value "abdomen, nos"
     And the "Comments" field should not be disabled and contain the value ""
+    And "#abstractor_object_value_case_sensitive" should not be checked
     Then I should see the following variants
-      | Value                                                               |
-      | abdominal wall, nos                                                 |
-      | intra-abdominal site, nos                                           |
+      | Value                                                               | Case Sensitve? |
+      | abdominal wall, nos                                                 | no             |
+      | intra-abdominal site, nos                                           | no             |
     And I fill in "Value" with "abdomen, nos moomin"
     And I fill in "Vocabulary Code" with "abdomen, nos little my"
     And I fill in "Comments" with "hello moomin"
+    And I check "Case Sensitive?" within the first ".case_sensitive"
+    And I check "Case Sensitive?" within the last ".abstractor_object_value_variant"
     And I press "Save"
     When I fill in "Search" with "abdomen, nos moomin"
     And I press "Search"
@@ -56,6 +60,7 @@ Feature: Editing an abstractor object value
     Then the "Value" field should not be disabled and contain the value "abdomen, nos moomin"
     And the "Vocabulary Code" field should not be disabled and contain the value "abdomen, nos little my"
     And the "Comments" field should not be disabled and contain the value "hello moomin"
+    And "#abstractor_object_value_case_sensitive" should be checked
     When I follow "Delete" within the first ".abstractor_object_value_variant" and accept confirm
     And I press "Save"
     When I fill in "Search" with "abdomen, nos moomin"
@@ -65,9 +70,10 @@ Feature: Editing an abstractor object value
       | abdomen, nos moomin                                                 |  abdomen, nos little my |
     When I follow "Edit" within the first ".abstractor_object_value"
     Then I should see the following variants
-      | Value                                                               |
-      | intra-abdominal site, nos                                           |
+      | Value                                                               | Case Sensitve? |
+      | intra-abdominal site, nos                                           | yes            |
     When I fill in "Variant Value" with "moomin"
+    And I uncheck "Case Sensitive?" within the first ".abstractor_object_value_variant"
     And I press "Save"
     When I fill in "Search" with "abdomen, nos moomin"
     And I press "Search"
@@ -76,5 +82,5 @@ Feature: Editing an abstractor object value
       | abdomen, nos moomin                                                 |  abdomen, nos little my |
     When I follow "Edit" within the first ".abstractor_object_value"
     Then I should see the following variants
-      | Value   |
-      | moomin  |
+      | Value   | Case Sensitve? |
+      | moomin  | no             |

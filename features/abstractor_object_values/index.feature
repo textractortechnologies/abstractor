@@ -9,7 +9,7 @@ Feature: Listing and searching abstractor object values
     Then I should see the first 10 "Anatomical location" abstractor object values
     When I fill in "Search" with "abdomen"
     And I press "Search"
-    Then I should the following 3 "Anatomical location" abstractor object values
+    Then I should see the following "Anatomical location" abstractor object values
       | Value                                                               | Vocabulary Code |
       | abdomen, nos                                                        |      C76.2      |
       | connective, subcutaneous and other soft tissues of abdomen          |      C49.4      |
@@ -23,7 +23,7 @@ Feature: Listing and searching abstractor object values
     Then I should see the first 10 "Anatomical location" abstractor object values
     When I fill in "Search" with "abdomen"
     And I press "Search"
-    Then I should the following 3 "Anatomical location" abstractor object values
+    Then I should see the following "Anatomical location" abstractor object values
       | Value                                                               | Vocabulary Code |
       | abdomen, nos                                                        |      C76.2      |
       | connective, subcutaneous and other soft tissues of abdomen          |      C49.4      |
@@ -31,7 +31,7 @@ Feature: Listing and searching abstractor object values
     When I follow "Delete" within the first ".abstractor_object_value" and accept confirm
     When I fill in "Search" with "abdomen"
     And I press "Search"
-    Then I should the following 3 "Anatomical location" abstractor object values
+    Then I should see the following "Anatomical location" abstractor object values
       | Value                                                               | Vocabulary Code |
       | connective, subcutaneous and other soft tissues of abdomen          |      C49.4      |
       | peripheral nerves and autonomic nervous system of abdomen           |      C47.4      |

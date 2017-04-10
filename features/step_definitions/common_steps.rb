@@ -343,6 +343,10 @@ Then /^"([^\"]*)"(?: in the(?: (first|last)?) "([^\"]*)")? should(?: (not))? be 
   }
 end
 
+Then /^"([^\"]*)"(?: in the(?: (first|last)?) "([^\"]*)")? should(?: (not))? be checked and should be disabled$/ do |selector, position, scope_selector, negation|
+  expect(all("#{scope_selector}")[0].find_field(selector, disabled: true)).to be_truthy
+end
+
 Then /^"([^\"]*)"(?: in the (first|last) "([^\"]*)")? should(?: (not))? have options "([^\"]*)"$/ do |selector, position, scope_selector, negation, options|
   within_scope(get_scope(position, scope_selector)) {
     elements = all(selector)
