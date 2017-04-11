@@ -81,11 +81,12 @@ module Abstractor
       abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_abstraction_source = abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources & abstractor_abstraction_sources
         abstractor_abstraction_source = abstractor_abstraction_source.first
+        abstractor_abstraction_schema = abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema
         if Rails.application.config.relative_url_root
-          abstractor_abstraction_schema_uri =  Abstractor::Engine.routes.url_helpers.abstractor_abstraction_schema_url(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema, script_name: Rails.application.config.relative_url_root, format: :json)
+          abstractor_abstraction_schema_uri =  Abstractor::Engine.routes.url_helpers.abstractor_abstraction_schema_url(abstractor_abstraction_schema, script_name: Rails.application.config.relative_url_root, format: :json)
           abstractor_abstraction_abstractor_suggestions_uri = Abstractor::Engine.routes.url_helpers.abstractor_abstraction_abstractor_suggestions_url(abstractor_abstraction, script_name: Rails.application.config.relative_url_root,format: :json)
         else
-          abstractor_abstraction_schema_uri =  Abstractor::Engine.routes.url_helpers.abstractor_abstraction_schema_url(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema,  format: :json)
+          abstractor_abstraction_schema_uri =  Abstractor::Engine.routes.url_helpers.abstractor_abstraction_schema_url(abstractor_abstraction_schema,  format: :json)
           abstractor_abstraction_abstractor_suggestions_uri =  Abstractor::Engine.routes.url_helpers.abstractor_abstraction_abstractor_suggestions_url(abstractor_abstraction, format: :json)
         end
 
@@ -95,7 +96,8 @@ module Abstractor
           abstractor_abstraction_abstractor_suggestions_uri: abstractor_abstraction_abstractor_suggestions_uri,
           abstractor_abstraction_id: abstractor_abstraction.id,
           abstractor_abstraction_source_id: abstractor_abstraction_source.id,
-          abstractor_subject_id: abstractor_abstraction.abstractor_subject.id
+          abstractor_subject_id: abstractor_abstraction.abstractor_subject.id,
+          updated_at: abstractor_abstraction_schema.updated_at.iso8601.to_s
         }
         body[:abstractor_abstraction_schemas] << abstractor_abstraction_schema
       end
