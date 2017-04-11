@@ -19,8 +19,16 @@ module Abstractor
           base.send :after_destroy,   :update_abstractor_object_value
           base.send :after_touch,     :update_abstractor_object_value
 
+          base.send(:include, InstanceMethods)
+        end
+
+        module InstanceMethods
           def update_abstractor_object_value
             abstractor_object_value.touch if abstractor_object_value && abstractor_object_value.persisted?
+          end
+
+          def used?
+            @used = @used || self.abstractor_suggestions.any?
           end
         end
       end

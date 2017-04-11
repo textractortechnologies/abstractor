@@ -332,7 +332,7 @@ module Abstractor
               end
               if abstractor_object_value && match_value
                 suggested_value = abstractor_object_value.value
-                abstractor_object_value_variant = abstractor_object_value.abstractor_object_value_variants.where('lower(value) =?',  match_value.downcase).first
+                abstractor_object_value_variant = abstractor_object_value.abstractor_object_value_variants.not_deleted.where('lower(value) =?',  match_value.downcase).first
               end
             end
 

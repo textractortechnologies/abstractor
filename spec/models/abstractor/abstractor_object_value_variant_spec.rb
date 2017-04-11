@@ -64,4 +64,26 @@ describe  Abstractor::AbstractorObjectValueVariant do
     expect(abstractor_abstraction_schema_object_value.reload.updated_at).to be > abstractor_abstraction_schema_object_value_timestamp
     expect(abstractor_abstraction_schema.reload.updated_at).to              be > abstractor_abstraction_schema_timestamp
   end
+
+  describe 'being used' do
+    before(:each) do
+      Setup.sites
+      Setup.custom_site_synonyms
+      Setup.site_categories
+      Setup.laterality
+      Abstractor::Setup.system
+      Setup.radiation_therapy_prescription
+      @abstractor_abstraction_schema_has_anatomical_location = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_anatomical_location').first
+      @abstractor_subject_abstraction_schema_has_anatomical_location = Abstractor::AbstractorSubject.where(subject_type: RadiationTherapyPrescription.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_has_anatomical_location.id).first
+      @abstractor_object_value = @abstractor_abstraction_schema_has_anatomical_location.abstractor_object_values.where(value: 'parietal lobe').first
+      @abstractor_object_value_variant = @abstractor_object_value.abstractor_object_value_variants.where(value: 'parietal').first
+    end
+
+    it 'knows if an abstractor object value varaint is used by having an abstractor suggestion', focus: false do
+      expect(@abstractor_object_value_variant.used?).to be_falsy
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal')
+      radiation_therapy_prescription.abstract
+      expect(@abstractor_object_value_variant.reload.used?).to be_truthy
+    end
+  end
 end

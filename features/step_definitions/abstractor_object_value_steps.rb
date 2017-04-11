@@ -24,13 +24,14 @@ end
 
 Then(/^I should see the following variants$/) do |table|
   table.hashes.each_with_index do |abstractor_object_value_variant_hash, i|
-    expect(all(".abstractor_object_value_variant")[i].find('.value').has_field?('Value', with: abstractor_object_value_variant_hash['Value'], disabled: false)).to be_truthy
+    disabled = abstractor_object_value_variant_hash['Disabled'] == 'yes' ? true: false
+    expect(all(".abstractor_object_value_variant")[i].find('.value').has_field?('Variant Value', with: abstractor_object_value_variant_hash['Variant Value'], disabled: disabled)).to be_truthy
     if  abstractor_object_value_variant_hash['Case Sensitive?'] == 'yes'
-      expect(all(".abstractor_object_value_variant")[i].find('.case_sensitive').has_checked_field?('Case Sensitive?')).to be_truthy
+      expect(all(".abstractor_object_value_variant")[i].find('.case_sensitive').has_checked_field?('Case Sensitive?', disabled: disabled)).to be_truthy
     end
 
     if  abstractor_object_value_variant_hash['Case Sensitive?'] == 'no'
-      expect(all(".abstractor_object_value_variant")[i].find('.case_sensitive').has_unchecked_field?('Case Sensitive?')).to be_truthy
+      expect(all(".abstractor_object_value_variant")[i].find('.case_sensitive').has_unchecked_field?('Case Sensitive?', disabled: disabled)).to be_truthy
     end
   end
 end

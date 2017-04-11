@@ -10,10 +10,10 @@ Feature: Listing and searching abstractor object values
     When I fill in "Search" with "abdomen"
     And I press "Search"
     Then I should see the following "Anatomical location" abstractor object values
-      | Value                                                               | Vocabulary Code |
-      | abdomen, nos                                                        |      C76.2      |
-      | connective, subcutaneous and other soft tissues of abdomen          |      C49.4      |
-      | peripheral nerves and autonomic nervous system of abdomen           |      C47.4      |
+      | Value                                                               | Vocabulary Code                                             |
+      | abdomen, nos                                                        | abdomen, nos                                                |
+      | connective, subcutaneous and other soft tissues of abdomen          | connective, subcutaneous and other soft tissues of abdomen  |
+      | peripheral nerves and autonomic nervous system of abdomen           | peripheral nerves and autonomic nervous system of abdomen   |
 
   @javascript
   Scenario: Deleting an abstractor object value
@@ -24,14 +24,14 @@ Feature: Listing and searching abstractor object values
     When I fill in "Search" with "abdomen"
     And I press "Search"
     Then I should see the following "Anatomical location" abstractor object values
-      | Value                                                               | Vocabulary Code |
-      | abdomen, nos                                                        |      C76.2      |
-      | connective, subcutaneous and other soft tissues of abdomen          |      C49.4      |
-      | peripheral nerves and autonomic nervous system of abdomen           |      C47.4      |
+      | Value                                                               | Vocabulary Code                                             |
+      | abdomen, nos                                                        | abdomen, nos                                                |
+      | connective, subcutaneous and other soft tissues of abdomen          | connective, subcutaneous and other soft tissues of abdomen  |
+      | peripheral nerves and autonomic nervous system of abdomen           | peripheral nerves and autonomic nervous system of abdomen   |
     When I follow "Delete" within the first ".abstractor_object_value" and accept confirm
     When I fill in "Search" with "abdomen"
     And I press "Search"
     Then I should see the following "Anatomical location" abstractor object values
-      | Value                                                               | Vocabulary Code |
-      | connective, subcutaneous and other soft tissues of abdomen          |      C49.4      |
-      | peripheral nerves and autonomic nervous system of abdomen           |      C47.4      |
+      | Value                                                               | Vocabulary Code                                             |
+      | connective, subcutaneous and other soft tissues of abdomen          | connective, subcutaneous and other soft tissues of abdomen  |
+      | peripheral nerves and autonomic nervous system of abdomen           | peripheral nerves and autonomic nervous system of abdomen   |

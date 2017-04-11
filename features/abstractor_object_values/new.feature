@@ -26,8 +26,8 @@ Feature: Adding an abstractor object value
     And the "Comments" field should not be disabled and contain the value "moomin comments"
     And "#abstractor_object_value_case_sensitive" should be checked
     And I should see the following variants
-      | Value           | Case Sensitve? |
-      | moomin variant  | yes            |
+      | Variant Value                                                       | Case Sensitve? | Disabled |
+      | moomin variant                                                      | yes            | no       |
 
   @javascript
   Scenario: Adding an abstractor object value with validation
