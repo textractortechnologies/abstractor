@@ -44,7 +44,7 @@ describe Abstractor::AbstractorAbstractionSchemasController, :type => :request d
       expect(response.status).to be 200
       body = JSON.parse(response.body)
 
-      expect(body['abstractor_abstraction_schema']['object_values']).to eq  [{"value"=>"foo", "properties" => {"type"=>"Rpt", "select_for"=>"Brain, CNS, and Pituitary"}, "vocabulary_code"=>"8148/0", "vocabulary"=>"ICD-O-3", "vocabulary_version"=>"2011 Updates to ICD-O-3", "case_sensitive"=> "false", "object_value_variants"=>[{"value"=>"boo", "case_sensitive"=> "false"}]}, {"value"=>"loo", "properties"=>{"type"=>"Rpt", "select_for"=>"Brain, CNS, and Pituitary"}, "vocabulary_code"=>"8149/0", "vocabulary"=>"ICD-O-3", "vocabulary_version"=>"2011 Updates to ICD-O-3", "case_sensitive"=>"false", "object_value_variants"=>[]}]
+      expect(body['abstractor_abstraction_schema']['object_values']).to eq  [{"value"=>"foo", "properties" => {"type"=>"Rpt", "select_for"=>"Brain, CNS, and Pituitary"}, "vocabulary_code"=>"8148/0", "vocabulary"=>"ICD-O-3", "vocabulary_version"=>"2011 Updates to ICD-O-3", "case_sensitive"=> "false", "object_value_variants"=>[{"value"=>"boo", "case_sensitive"=> "true"}]}, {"value"=>"loo", "properties"=>{"type"=>"Rpt", "select_for"=>"Brain, CNS, and Pituitary"}, "vocabulary_code"=>"8149/0", "vocabulary"=>"ICD-O-3", "vocabulary_version"=>"2011 Updates to ICD-O-3", "case_sensitive"=>"false", "object_value_variants"=>[]}]
       abstractor_object_value_2.soft_delete!
       abstractor_object_value_variant.soft_delete!
       get "/abstractor_abstraction_schemas/#{abstractor_abstraction_schema.id}", {}, accept_json

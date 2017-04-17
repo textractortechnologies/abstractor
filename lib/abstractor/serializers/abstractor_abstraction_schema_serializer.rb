@@ -22,7 +22,7 @@ module Abstractor
                 'vocabulary' => abstractor_object_value.vocabulary,
                 'vocabulary_version' => abstractor_object_value.vocabulary_version,
                 'case_sensitive' => abstractor_object_value.case_sensitive.to_s,
-                'object_value_variants' => abstractor_object_value.abstractor_object_value_variants.not_deleted.map { |abstractor_object_value_variant| { 'value' => abstractor_object_value_variant.value, 'case_sensitive' => abstractor_object_value.case_sensitive.to_s } }
+                'object_value_variants' => abstractor_object_value.abstractor_object_value_variants.not_deleted.map { |abstractor_object_value_variant| { 'value' => abstractor_object_value_variant.value, 'case_sensitive' => abstractor_object_value_variant.case_sensitive.to_s } }
               }
             end
           }
