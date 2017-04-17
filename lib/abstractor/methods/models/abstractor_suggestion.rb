@@ -10,9 +10,8 @@ module Abstractor
 
           base.send :has_one, :abstractor_suggestion_object_value, dependent: :destroy
           base.send :has_one, :abstractor_object_value, through: :abstractor_suggestion_object_value
-          base.send :has_one, :abstractor_suggestion_object_value_variant, dependent: :destroy
-          base.send :has_one, :abstractor_object_value_variant, through: :abstractor_suggestion_object_value_variant
-
+          base.send :has_many, :abstractor_suggestion_object_value_variants, dependent: :destroy
+          base.send :has_many, :abstractor_object_value_variants, through: :abstractor_suggestion_object_value_variants
           base.send :has_many, :abstractor_suggestion_sources, dependent: :destroy
 
           # Hooks

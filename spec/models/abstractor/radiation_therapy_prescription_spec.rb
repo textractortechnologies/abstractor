@@ -68,7 +68,28 @@ describe RadiationTherapyPrescription do
       abstractor_abstraction = radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location)
       abstractor_object_value = @abstractor_abstraction_schema_has_anatomical_location.abstractor_object_values.where(value: 'parietal lobe').first
       abstractor_object_value_variant = abstractor_object_value.abstractor_object_value_variants.where(value: 'parietal').first
-      expect(abstractor_abstraction.abstractor_suggestions.first.abstractor_object_value_variant).to eq(abstractor_object_value_variant)
+      expect(abstractor_abstraction.abstractor_suggestions.first.abstractor_object_value_variants.first).to eq(abstractor_object_value_variant)
+    end
+
+    it "creates an association to the abstractor object value variant for a 'has_anatomical_location' abstraction suggestion suggested value from an abstractor object value variant (but only one)", focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'Look at the cerebral cortex.  My goodness that is the Cerebral cortex.')
+      radiation_therapy_prescription.abstract
+      abstractor_abstraction = radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location)
+      abstractor_object_value = @abstractor_abstraction_schema_has_anatomical_location.abstractor_object_values.where(value: 'cerebrum').first
+      abstractor_object_value_variant = abstractor_object_value.abstractor_object_value_variants.where(value: 'cerebral cortex').first
+      expect(abstractor_abstraction.abstractor_suggestions.first.abstractor_suggestion_sources.size).to eq(2)
+      expect(abstractor_abstraction.abstractor_suggestions.first.abstractor_object_value_variants).to match_array([abstractor_object_value_variant])
+    end
+
+    it "creates an association to multiple abstractor object value variants for a 'has_anatomical_location' abstraction suggestion suggested value from multiple abstractor object value variants", focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'Look at the cerebral cortex.  My goodness that is the internal capsule.')
+      radiation_therapy_prescription.abstract
+      abstractor_abstraction = radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location)
+      abstractor_object_value = @abstractor_abstraction_schema_has_anatomical_location.abstractor_object_values.where(value: 'cerebrum').first
+      abstractor_object_value_variant_1 = abstractor_object_value.abstractor_object_value_variants.where(value: 'cerebral cortex').first
+      abstractor_object_value_variant_2 = abstractor_object_value.abstractor_object_value_variants.where(value: 'internal capsule').first
+      expect(abstractor_abstraction.abstractor_suggestions.first.abstractor_suggestion_sources.size).to eq(2)
+      expect(abstractor_abstraction.abstractor_suggestions.first.abstractor_object_value_variants).to match_array([abstractor_object_value_variant_1, abstractor_object_value_variant_2])
     end
 
     it "creates an association to the abstractor object value variant for a 'has_anatomical_location' abstraction suggestion suggested value from an abstractor object value variant case insensitively", focus: false do
@@ -77,7 +98,7 @@ describe RadiationTherapyPrescription do
       abstractor_abstraction = radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location)
       abstractor_object_value = @abstractor_abstraction_schema_has_anatomical_location.abstractor_object_values.where(value: 'parietal lobe').first
       abstractor_object_value_variant = abstractor_object_value.abstractor_object_value_variants.where(value: 'parietal').first
-      expect(abstractor_abstraction.abstractor_suggestions.first.abstractor_object_value_variant).to eq(abstractor_object_value_variant)
+      expect(abstractor_abstraction.abstractor_suggestions.first.abstractor_object_value_variants.first).to eq(abstractor_object_value_variant)
     end
 
     it "creates a 'has_anatomical_location' abstraction suggestion suggested value from an abstractor object value variant even if another synonym for the same term is negated", focus: false do
@@ -288,7 +309,6 @@ describe RadiationTherapyPrescription do
       pivots = RadiationTherapyPrescription.pivot_grouped_abstractions('Anatomical Location').where(id: radiation_therapy_prescription.id).map { |rtp| { id: rtp.id, site_name: rtp.site_name, has_laterality: rtp.has_laterality, has_anatomical_location: rtp.has_anatomical_location } }
       expect(Set.new(pivots)).to eq(Set.new([{ id: radiation_therapy_prescription.id, site_name: radiation_therapy_prescription.site_name, has_laterality: "left", has_anatomical_location: "parietal lobe" }, { id: radiation_therapy_prescription.id, site_name: radiation_therapy_prescription.site_name, has_laterality: nil, has_anatomical_location: nil }]))
     end
-
 
     it "can pivot grouped abstractions as if regular columns on the abstractable entity if the vaue is marked as 'unknown'", focus: false do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')

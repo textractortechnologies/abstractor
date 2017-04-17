@@ -350,11 +350,6 @@ module Abstractor
                 abstractor_suggestion.abstractor_suggestion_object_value = Abstractor::AbstractorSuggestionObjectValue.new(abstractor_object_value: abstractor_object_value)
                 abstractor_suggestion.save!
               end
-
-              if abstractor_object_value_variant
-                abstractor_suggestion.abstractor_suggestion_object_value_variant = Abstractor::AbstractorSuggestionObjectValueVariant.new(abstractor_object_value_variant: abstractor_object_value_variant)
-                abstractor_suggestion.save!
-              end
             end
 
             if abstractor_abstraction_source
@@ -374,6 +369,12 @@ module Abstractor
                                                  )
               end
             end
+
+            if abstractor_object_value_variant && abstractor_suggestion.abstractor_suggestion_object_value_variants.where(abstractor_object_value_variant_id: abstractor_object_value_variant.id).empty?
+              abstractor_suggestion.abstractor_suggestion_object_value_variants << Abstractor::AbstractorSuggestionObjectValueVariant.new(abstractor_object_value_variant: abstractor_object_value_variant)
+              abstractor_suggestion.save!
+            end
+
             abstractor_suggestion
           end
 

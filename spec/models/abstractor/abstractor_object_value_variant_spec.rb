@@ -65,7 +65,7 @@ describe  Abstractor::AbstractorObjectValueVariant do
     expect(abstractor_abstraction_schema.reload.updated_at).to              be > abstractor_abstraction_schema_timestamp
   end
 
-  describe 'being used' do
+  describe 'deleting an abstractor object value variant' do
     before(:each) do
       Setup.sites
       Setup.custom_site_synonyms
@@ -84,6 +84,51 @@ describe  Abstractor::AbstractorObjectValueVariant do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal')
       radiation_therapy_prescription.abstract
       expect(@abstractor_object_value_variant.reload.used?).to be_truthy
+    end
+
+    it 'cascade soft deletes unaccepted abstractor suggestions upon soft delete of an abstractor object value variant', focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal')
+      radiation_therapy_prescription.abstract
+
+      abstractor_abstraction = radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_abstraction_schema_has_anatomical_location)
+      abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.not_deleted.where(suggested_value: @abstractor_object_value.value).first
+      expect(abstractor_suggestion).to_not be_nil
+      expect(abstractor_suggestion.abstractor_object_value_variants.detect { |abstractor_object_value_variant| abstractor_object_value_variant == @abstractor_object_value_variant }).to be_truthy
+      @abstractor_object_value_variant.soft_delete!
+      abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.deleted.where(suggested_value: @abstractor_object_value.value).first
+      expect(abstractor_suggestion).to_not be_nil
+    end
+
+    it 'does not cascade soft deletes accepted abstractor suggestions upon soft delete of an abstractor object value variant', focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal')
+      radiation_therapy_prescription.abstract
+
+      abstractor_abstraction = radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_abstraction_schema_has_anatomical_location)
+      abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.not_deleted.where(suggested_value: @abstractor_object_value.value).first
+      abstractor_suggestion.accepted = true
+      abstractor_suggestion.save!
+      expect(abstractor_suggestion).to_not be_nil
+      expect(abstractor_suggestion.abstractor_object_value_variants.detect { |abstractor_object_value_variant| abstractor_object_value_variant == @abstractor_object_value_variant }).to be_truthy
+      @abstractor_object_value_variant.soft_delete!
+      abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.deleted.where(suggested_value: @abstractor_object_value.value).first
+      expect(abstractor_suggestion).to be_nil
+      abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.not_deleted.where(suggested_value: @abstractor_object_value.value).first
+      expect(abstractor_suggestion).to_not be_nil
+    end
+
+    it 'cascade soft deletes unaccepted abstractor suggestions upon soft delete of an abstractor object value variant and create and unknonw suggestion if no more suggestions remain', focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal')
+      radiation_therapy_prescription.abstract
+
+      abstractor_abstraction = radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_abstraction_schema_has_anatomical_location)
+      expect(abstractor_abstraction.abstractor_suggestions.not_deleted.select { |abstractor_suggestion| abstractor_suggestion.unknown == true }.empty?).to be_truthy
+      abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.not_deleted.where(suggested_value: @abstractor_object_value.value).first
+      expect(abstractor_suggestion).to_not be_nil
+      expect(abstractor_suggestion.abstractor_object_value_variants.detect { |abstractor_object_value_variant| abstractor_object_value_variant == @abstractor_object_value_variant }).to be_truthy
+      @abstractor_object_value_variant.soft_delete!
+      abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.deleted.where(suggested_value: @abstractor_object_value.value).first
+      expect(abstractor_suggestion).to_not be_nil
+      expect(abstractor_abstraction.abstractor_suggestions.not_deleted.select { |abstractor_suggestion| abstractor_suggestion.unknown == true }.empty?).to be_falsy
     end
   end
 end
