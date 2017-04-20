@@ -24,4 +24,7 @@ Abstractor::Engine.routes.draw do
 
   resources :abstractor_rules do
   end
+
+  resources :abstractor_rules do
+  end
 end
