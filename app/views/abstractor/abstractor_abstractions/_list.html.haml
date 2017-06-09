@@ -29,3 +29,4 @@
                   - hashed_sentence = abstractor_suggestion_source[:sentence_match_value].hash
                   - abstractor_text = Abstractor::UserInterface.highlight(ERB::Util.html_escape(abstractor_text), ERB::Util.html_escape(abstractor_suggestion_source[:sentence_match_value].strip), highlighter: %{<strong class="abstractor_highlight #{hashed_sentence.to_s}">\\1</strong>})
             = simple_format(ERB::Util.html_escape(abstractor_text))
+            

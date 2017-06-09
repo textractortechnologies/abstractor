@@ -16,7 +16,7 @@ module Abstractor
         text
       else
         match = Array(phrases).map { |p| Regexp.escape(p) }.join('|')
-        text = text.gsub(/(#{match})/i) { |m| options[:highlighter].gsub('\\1', m.gsub(/(?:\n\r?|\r\n?)/, ' ')) }
+        text = text.gsub(/(#{match})/i) { |m| options[:highlighter].gsub('\\1', m) }
       end.html_safe
     end
 

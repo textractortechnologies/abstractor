@@ -137,6 +137,6 @@ Feature: Editing imaging exam
   And I confirm link "Add Diagnosis" in the last ".abstractor_subject_groups_container"
   And I wait for the ajax request to finish
   When I click within last ".has_favorite_major_moomin_character span.abstractor_abstraction_source_tooltip_img"
-  Then I should see an ".highlight" element
+  Then I should see an "[style*='background-color: yellow;']" element
   And ".abstractor_source_tab label" should contain text "Imaging Exam: Note text"
   And ".abstractor_source_tab_content" should contain text "The groke is the bomb!"

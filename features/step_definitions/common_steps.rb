@@ -285,7 +285,7 @@ Then /^I should see an? "([^"]*)" element$/ do |selector|
 end
 
 Then /^I should not see an? "([^"]*)" element$/ do |selector|
-  page.evaluate_script("$('#{selector}');").should be_empty
+  page.evaluate_script("$(\"#{selector}\");").should be_empty
 end
 
 Then /^the element "([^\"]*)"(?: in the(?: (first|last)?) "([^\"]*)")? should(?: (not))? be visible$/ do |selector, position, scope_selector, negation|
