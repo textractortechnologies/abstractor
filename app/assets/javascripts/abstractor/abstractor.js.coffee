@@ -273,7 +273,6 @@ Abstractor.AbstractionUI = ->
 
   $(document).on "click", ".abstractor_abstraction_source_tooltip_img", (e) ->
     e.preventDefault()
-    document.execCommand("enableObjectResizing", false, false);
     target = $(this).attr("rel")
     tab = $(target).find('.abstractor_source_tab')
     if tab.length == 1
@@ -294,14 +293,15 @@ Abstractor.AbstractionUI = ->
         if highlight
           $(this).find('.match_value').each (index) ->
             # replace empty spaces with regex matcher and match to the text
-            match_value   = $(this).html().trim().replace(/\s+/, "\\s*")
             text_element  = $('#' + tab + " .abstractor_source_tab_content ." + hashed_sentence)
-            text = text_element.html()
-            regex = new RegExp(match_value, 'gi')
-            while (match = regex.exec(text_element.get(0).textContent)) != null
-              highlightedRanges.push(highlightRange(text_element.get(0), match.index, match.index + match[0].length))
-            return
-          $('.abstractor_source_tab_content').scrollTo($(highlightedRanges[0].startContainer.parentNode))
+            if text_element.length
+              match_value   = $(this).html().trim().replace(/[-[\]{}()*+?.,\\^$|#]/g, "\\$&").replace(/\s+/, "\\s*")
+              regex         = new RegExp(match_value, 'gi')
+              while (match = regex.exec(text_element.get(0).textContent)) != null
+                highlightedRanges.push(highlightRange(text_element.get(0), match.index, match.index + match[0].length))
+              return
+          if highlightedRanges.length
+            $('.abstractor_source_tab_content').scrollTo($(highlightedRanges[0].endContainer.parentNode))
         else
           removeHihighlightFromRanges(highlightedRanges)
           highlightedRanges = []

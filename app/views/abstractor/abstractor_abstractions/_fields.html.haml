@@ -56,7 +56,7 @@
             %span{ class: 'abstractor_abstraction_source_tooltip_img', rel: "#abstraction_text_#{dom_id}", title: "#{source[:source_type].to_s} #{source[:source_method]} #{source[:section_name]}"}
               %i{ id: "abstraction_text_link_#{dom_id}" }
             %div{ id: "abstraction_text_#{dom_id}", class: 'tooltip'}
-              = simple_format(abstractor_text)
+              = format_text(abstractor_text)
       .abstractor_abstraction_value
         .clear
         .links

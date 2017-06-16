@@ -62,4 +62,4 @@
           - sources.each do |source|
             - hidden = abstractor_indirect_source_form.object.source_id == source.id ? '' : 'hidden'
             %div{ class: "indirect_source_text #{hidden} #{source_setup[:source_type]}_#{source.id}"}
-              = simple_format(ERB::Util.html_escape(source.send(source_setup[:source_method])))
+              = format_text(ERB::Util.html_escape(source.send(source_setup[:source_method])))
