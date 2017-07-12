@@ -25,6 +25,9 @@ module Abstractor
 
           base.send :validates_associated, :abstractor_subject
 
+          # Validations
+          base.send :validate, :workflow_status_submitted_and_not_blank
+
           # Hooks
           base.send :after_save, :review_suggestions
           base.send :before_save, :set_abstractor_object_value
@@ -34,6 +37,12 @@ module Abstractor
         end
 
         module InstanceMethods
+          def workflow_status_submitted_and_not_blank
+             if workflow_status == Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED && value.blank? && unknown.nil? && not_applicable.nil?
+               errors.add(:workflow_status, "can't have a workflow status of #{Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED} and be blank.")
+             end
+          end
+
           ##
           # Whether or not it has a discarded workflow status.
           #
@@ -86,7 +95,7 @@ module Abstractor
               abstractor_suggestion.save!
             end
 
-            abstractor_suggestions.each do |abstractor_suggestion|
+            abstractor_suggestions.not_deleted.each do |abstractor_suggestion|
               if value && abstractor_suggestion.suggested_value && value != abstractor_suggestion.suggested_value
                 abstractor_suggestion.accepted = false
                 abstractor_suggestion.save!
@@ -121,7 +130,7 @@ module Abstractor
             unknown_values        = unknown ? unknown : [unknown, nil]
             not_applicable_values = not_applicable ? not_applicable : [not_applicable, nil]
             suggested_values = value.blank? ? ['', nil] : value
-            abstractor_suggestions.where(unknown: unknown_values, not_applicable: not_applicable_values, suggested_value: suggested_values)
+            abstractor_suggestions.not_deleted.where(unknown: unknown_values, not_applicable: not_applicable_values, suggested_value: suggested_values)
           end
 
           def display_value

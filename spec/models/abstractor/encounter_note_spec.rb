@@ -537,7 +537,9 @@ describe EncounterNote do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
       @encounter_note.abstract
 
-      @encounter_note.reload.abstractor_abstractions.first.value ='moomin'
+      abstractor_abstraction = @encounter_note.reload.abstractor_abstractions.first
+      abstractor_abstraction.value ='moomin'
+      @encounter_note.save!
 
       expect(@encounter_note.reload.fully_set?).to be_falsey
     end
@@ -547,6 +549,7 @@ describe EncounterNote do
       encounter_note.abstract
 
       encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.value = 'moomin'
         abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
         abstractor_abstraction.workflow_status_whodunnit = 'moomin'
         abstractor_abstraction.save!

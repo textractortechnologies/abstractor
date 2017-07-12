@@ -54,11 +54,13 @@ describe Abstractor::AbstractorAbstractionGroup do
     abstractor_abstraction_group.abstractor_abstractions << abstraction_2
     abstractor_abstraction_group.save!
 
+    abstraction_1.value = 'moomin'
     abstraction_1.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
     abstraction_1.save!
 
     expect(abstractor_abstraction_group.submitted?).to be_falsey
 
+    abstraction_2.value = 'moomin'
     abstraction_2.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
     abstraction_2.save!
     expect(abstractor_abstraction_group.submitted?).to be_truthy
@@ -99,11 +101,13 @@ describe Abstractor::AbstractorAbstractionGroup do
     abstractor_abstraction_group.abstractor_abstractions << abstraction_2
     abstractor_abstraction_group.save!
 
+    abstraction_1.value = 'moomin'
     abstraction_1.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
     abstraction_1.save!
 
     expect(abstractor_abstraction_group.workflow_status).to match_array(['pending','submitted'])
 
+    abstraction_2.value = 'moomin'
     abstraction_2.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
     abstraction_2.save!
     expect(abstractor_abstraction_group.workflow_status).to match_array(['submitted'])
@@ -123,6 +127,7 @@ describe Abstractor::AbstractorAbstractionGroup do
 
     expect(abstractor_abstraction_group.read_only?).to be_falsey
 
+    abstraction_2.value = 'moomin'
     abstraction_2.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
     abstraction_2.save!
     expect(abstractor_abstraction_group.read_only?).to be_truthy

@@ -343,6 +343,7 @@ describe Article do
       article_2 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
       article_2.abstract
       article_2.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.value = 'moomin'
         abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
         abstractor_abstraction.save!
       end
@@ -365,6 +366,7 @@ describe Article do
       article_2 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
       article_2.abstract
       article_2.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.value = 'moomin'
         abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
         abstractor_abstraction.save!
       end
@@ -385,6 +387,7 @@ describe Article do
       article = FactoryGirl.create(:article, note_text: 'gobbledy gook')
       article.abstract
       article.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.value = 'moomin'
         abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
         abstractor_abstraction.workflow_status_whodunnit = 'little my'
         abstractor_abstraction.save!
@@ -398,6 +401,7 @@ describe Article do
       article_3 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
       article_3.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
       article_3.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.value = 'moomin'
         abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
         abstractor_abstraction.workflow_status_whodunnit = 'moominpapa'
         abstractor_abstraction.save!
@@ -407,6 +411,7 @@ describe Article do
       article_4.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
 
       article_4.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.value = 'moomin'
         abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
         abstractor_abstraction.workflow_status_whodunnit = 'moominpapa'
         abstractor_abstraction.save!
@@ -461,6 +466,7 @@ describe Article do
       article = FactoryGirl.create(:article, note_text: 'gobbledy gook')
       article.abstract
       article.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.value = 'moomin'
         abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
         abstractor_abstraction.workflow_status_whodunnit = 'little my'
         abstractor_abstraction.save!
@@ -482,6 +488,7 @@ describe Article do
       article_4 = FactoryGirl.create(:article, note_text: 'gobbledy gook')
       article_4.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
       article_4.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.value = 'moomin'
         abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
         abstractor_abstraction.workflow_status_whodunnit = 'moominpapa'
         abstractor_abstraction.save!

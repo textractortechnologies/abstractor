@@ -13,7 +13,7 @@ Feature: Editing moomin
     When I click within first ".has_favorite_moomin span.abstractor_abstraction_source_tooltip_img"
     Then I should see a "[style*='background-color: yellow;']" element
     And ".abstractor_source_tab label" should contain text "Moomin: Note text"
-    And ".abstractor_source_tab_content" should contain text "I like little my the best! favorite moomin: The groke is the bomb!"
+    And ".abstractor_source_tab_content" should contain text "I like little my the best!favorite moomin:The groke is the bomb!"
     And ".abstractor_source_tab_content" should equal highlighted text "little my"
     And I click within last ".has_favorite_moomin span.abstractor_abstraction_source_tooltip_img"
     And ".abstractor_source_tab_content" should equal highlighted text "The groke"
@@ -61,7 +61,7 @@ Feature: Editing moomin
     When I click within first ".has_favorite_moomin span.abstractor_abstraction_source_tooltip_img"
     Then I should see an "[style*='background-color: yellow;']" element
     And ".abstractor_source_tab label" should contain text "Moomin: Note text"
-    And ".abstractor_source_tab_content" should contain text "I like little my the best! Worse moomin: The groke is terrible!"
+    And ".abstractor_source_tab_content" should contain text "I like little my the best!Worse moomin:The groke is terrible!"
     And ".abstractor_source_tab_content" should equal highlighted text "little my"
     And I click within last ".has_favorite_moomin span.abstractor_abstraction_source_tooltip_img"
     Then I should see an "[style*='background-color: yellow;']" element
