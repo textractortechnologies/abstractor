@@ -466,6 +466,12 @@ Given(/^workflow status is enabled on the "(.*?)"  with "(.*?)" as the submit la
   abstractor_subject_group.save!
 end
 
+Given(/^workflow status is not enabled on the "(.*?)"$/) do |abstractor_subject_group_name|
+  abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: abstractor_subject_group_name).first
+  abstractor_subject_group.enable_workflow_status = false
+  abstractor_subject_group.save!
+end
+
 Then /^the "([^"]*)" button within(?: the (first|last))? "([^\"]*)" should( not)? be present$/ do |locator, position, scope_selector, negate|
   within_scope(get_scope(position, scope_selector)) {
     expectation = negate ? :should_not : :should

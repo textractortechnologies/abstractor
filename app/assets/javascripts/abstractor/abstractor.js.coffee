@@ -81,17 +81,17 @@ setSelectionRange = (el, start, end) ->
   return
 
 ## Serializes and returns the specified range
-# (ignoring it if its length is zero) 
+# (ignoring it if its length is zero)
 ##
 serializeRange = (range) ->
-  if !range or range.startContainer == range.endContainer and range.startOffset == range.endOffset then null else    
+  if !range or range.startContainer == range.endContainer and range.startOffset == range.endOffset then null else
     startContainer: range.startContainer
     startOffset: range.startOffset
     endContainer: range.endContainer
     endOffset: range.endOffset
 
 ### Restores the specified serialized version
-# (removing any ranges currently seleted) 
+# (removing any ranges currently seleted)
 ###
 restoreRange = (serialized) ->
   range = document.createRange()
@@ -115,19 +115,19 @@ makeEditableAndHighlight = (colour) ->
     range.commonAncestorContainer.contentEditable = true
   else # If another browser
     document.designMode = 'on'
-  
+
   if range
     sel.removeAllRanges()
-    sel.addRange range  
+    sel.addRange range
       # Use HiliteColor since some browsers apply BackColor to the whole block
 
   if !document.execCommand 'HiliteColor', false, colour
-    document.execCommand 'BackColor', false, colour  
+    document.execCommand 'BackColor', false, colour
   # it is important to serialize the range *after* hiliting,
   # because `execCommand` will change the DOM affecting the
   # range's start-/endContainer and offsets.
-  serializedRange = serializeRange(sel.getRangeAt(0))  
-  sel.removeAllRanges() 
+  serializedRange = serializeRange(sel.getRangeAt(0))
+  sel.removeAllRanges()
 
   if is_ie  # If Internet Explorer
     range.commonAncestorContainer.contentEditable = false
@@ -152,7 +152,7 @@ removeHihighlightFromRanges = (serializedRanges) ->
     sel = window.getSelection()
     range = sel.getRangeAt(0)
     if !document.execCommand 'HiliteColor', false, '#fff'
-      document.execCommand 'BackColor', false, '#fff' 
+      document.execCommand 'BackColor', false, '#fff'
     sel.removeAllRanges()
 
     if is_ie  # If Internet Explorer
@@ -165,7 +165,7 @@ highlightWithColor = (colour) ->
   range           = undefined
   serializedRange = undefined
   if window.getSelection
-    # IE9 and non-IE   
+    # IE9 and non-IE
     serializedRange = makeEditableAndHighlight colour
   else if document.selection and document.selection.createRange
     # IE <= 8 case
@@ -179,7 +179,7 @@ highlightRange = (el, start, end) ->
   serializedRange = highlightWithColor 'yellow'
   return serializedRange
 
-          
+
 #-------------------------------------------------------------------------------------------
 
 Abstractor = {}
@@ -317,7 +317,8 @@ Abstractor.AbstractionUI = ->
     return
 
   $(document).on "click", '.abstractor_update_workflow_status_link', (e) ->
-    if !allAnswered()
+    abstractionWorkflowStatus = $(".abstraction_workflow_status_form input[name='abstraction_workflow_status']").val()
+    if !allAnswered() && abstractionWorkflowStatus != 'pending'
       toggleWorkflowStatus()
       alert('Validation Error: please set a value for all data points before submission.')
       e.preventDefault()

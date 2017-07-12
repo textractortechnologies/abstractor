@@ -53,3 +53,11 @@ When(/^I delete the "(.*?)" object value for the "(.*?)" abstraction schema$/) d
   abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(predicate: abstraction_schema_predicate).first
   abstractor_abstraction_schema.abstractor_object_values.where(value: value).first.destroy
 end
+
+When(/^the radiation therapy prescription becomes not fully set$/) do
+  radiation_therapy_prescription = RadiationTherapyPrescription.first
+  radiation_therapy_prescription.abstractor_abstractions.first.abstractor_suggestions.each do |abstractor_suggestion|
+    abstractor_suggestion.accepted = false
+    abstractor_suggestion.save!
+  end
+end

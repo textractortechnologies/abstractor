@@ -226,6 +226,28 @@ Feature: Editing radiation therapy prescription
     And the ".abstractor_group_update_workflow_status_link_pend" button within the last ".abstractor_abstraction_group" should not be present
 
   @javascript
+  Scenario: Removing the workflowstatus of a radiation therapy when it is not fully set
+    Given abstraction schemas are set
+    And workflow status is not enabled on the "Anatomical Location"
+    And radiation therapy prescriptions with the following information exist
+      | Site                                    |
+      | right temporal lobe                     |
+    When I go to the last radiation therapy prescription edit page
+    When I check "temporal lobe" within the first ".abstractor_abstraction_group"
+    When I check "right" within the first ".abstractor_abstraction_group"
+    And I click on ".edit_link" within the first ".has_radiation_therapy_prescription_date"
+    And I wait for the ajax request to finish
+    And I fill in "abstractor_abstraction_value" with "2014-06-03" within ".has_radiation_therapy_prescription_date"
+    And I press "Save"
+    And I wait for the ajax request to finish
+    When I press "Submit" within the first ".abstraction_workflow_status_form"
+    And the radiation therapy prescription becomes not fully set
+    When I go to the last radiation therapy prescription edit page
+    When I press "Remove" within the first ".abstraction_workflow_status_form"
+    Then the ".abstractor_update_workflow_status_link" button within the first ".abstraction_workflow_status_form" should be present
+    And the ".abstractor_update_workflow_status_link" button within the first ".abstraction_workflow_status_form" should be disabled
+
+  @javascript
   Scenario: Submitting and discarding across an entire radiation therapy prescription
     Given abstraction schemas are set
     And workflow status is enabled on the "Anatomical Location"  with "Submit" as the submit label and "Remove" as the pend label
