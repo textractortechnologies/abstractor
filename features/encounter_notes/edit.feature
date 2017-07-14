@@ -99,6 +99,11 @@ Feature: Editing encounter note
     And I press "Save"
     And I go to the last encounter note edit page
     Then the "60" checkbox within ".has_karnofsky_performance_status" should be checked
+    When I follow "Edit" within ".has_karnofsky_performance_status"
+    And I wait for the ajax request to finish
+    And I follow "Cancel" within ".has_karnofsky_performance_status"
+    And I wait for the ajax request to finish
+    Then the "60" checkbox within ".has_karnofsky_performance_status" should be checked
 
   @javascript
   Scenario: Viewing source for suggestion with source and match value

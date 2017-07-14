@@ -32,6 +32,7 @@ Feature: Editing radiation therapy prescription
     When I go to the last radiation therapy prescription edit page
     Then I should not see "Delete Anatomical Location"
     And I should see "Add Anatomical Location"
+    And I wait 1 seconds
     When I do not confirm link "Add Anatomical Location"
     Then I should not see "Delete Anatomical Location"
     When I confirm link "Add Anatomical Location"
