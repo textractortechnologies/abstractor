@@ -216,6 +216,9 @@ Abstractor.AbstractionUI = ->
 
   $(document).on "click", ".abstractor_abstraction_value a.edit_link", (e) ->
     e.preventDefault()
+    $('.abstractor_update_workflow_status_link').removeClass('abstractor_update_workflow_status_link_enabled')
+    $('.abstractor_update_workflow_status_link').addClass('abstractor_update_workflow_status_link_disabled')
+    $('.abstractor_update_workflow_status_link').prop('disabled', true)
     abstractor_abstraction_group = $(this).closest('.abstractor_abstraction_group')
     parent_div = $(this).closest(".abstractor_abstraction")
     parent_div.load $(this).attr("href"), ->
