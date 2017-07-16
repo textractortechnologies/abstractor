@@ -276,7 +276,7 @@ end
 
 Then /^"([^"]*)" should be selected for "([^"]*)"(?: within "([^\"]*)")?$/ do |value, field, selector|
   with_scope(selector) do
-    field_labeled(field).find(:xpath, ".//option[@selected = 'selected'][text() = '#{value}']").should be_present
+    field_labeled(field).all(:xpath, ".//option[@selected = 'selected'][text() = '#{value}']").should be_present
   end
 end
 

@@ -1,0 +1,33 @@
+- if @abstractor_rule.new_record?
+  - path = Abstractor::UserInterface.abstractor_relative_path(abstractor_rules_path)
+  %h2
+    %b
+      New Rule
+- else
+  - path = Abstractor::UserInterface.abstractor_relative_path(abstractor_rule_path(@abstractor_rule))
+  %h2
+    %b
+      Edit Rule
+#abstractor_rule
+  = form_for @abstractor_rule, url: path do |f|
+    .value
+      = f.label :name
+      = f.text_field :name
+      - if validation_errors?(@abstractor_rule, :name)
+        %p.error
+          = format_validation_errors(@abstractor_rule, :name)
+    .value.abstractor_rule_abstractor_subject
+      = f.label :abstractor_subjects_not_deleted_ids, 'Abstraction subjects'
+      = f.grouped_collection_select :abstractor_subjects_not_deleted_ids, Abstractor::AbstractorAbstractionSchema.joins(:abstractor_subjects).not_deleted, :abstractor_subjects_not_deleted, :display_name, :id, :subject_type, {}, { multiple: true }
+      - if validation_errors?(@abstractor_rule, :abstractor_subjects_not_deleted_ids)
+        %p.error
+          = format_validation_errors(@abstractor_rule, :abstractor_subjects_not_deleted_ids)
+    .value
+      = f.label :rule
+      = f.text_area :rule, rows: 20
+      - if validation_errors?(@abstractor_rule, :rule)
+        %p.error
+          = format_validation_errors(@abstractor_rule, :rule)
+    .navigation
+      = f.submit 'Save'
+      = link_to 'Cancel', Abstractor::UserInterface.abstractor_relative_path(abstractor_rules_path), class: 'new_abstractor_abstraction_schema_abstractor_object_value_link'

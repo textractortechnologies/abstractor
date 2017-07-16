@@ -38,6 +38,10 @@ module Abstractor
             false
           end
         end
+
+        def abstractor_subjects_not_deleted
+          abstractor_subjects.not_deleted
+        end
       end
     end
   end

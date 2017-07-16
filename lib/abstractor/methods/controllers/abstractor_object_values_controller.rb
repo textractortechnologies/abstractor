@@ -9,7 +9,7 @@ module Abstractor
         end
 
         def index
-          @abstractor_object_values = @abstractor_abstraction_schema.abstractor_object_values.not_deleted.order(:value).search_across_fields(params[:search]).order(:value).paginate(per_page: 10, page: params[:page])
+          @abstractor_object_values = @abstractor_abstraction_schema.abstractor_object_values.not_deleted.search_across_fields(params[:search]).order(:value).paginate(per_page: 10, page: params[:page])
         end
 
         def new

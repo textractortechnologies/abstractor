@@ -1,0 +1,38 @@
+#abstractor_rules
+  .abstractor_rules_header
+    %h2
+      %b
+        Rules
+    = form_tag Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_rules_path), method: :get, id: 'search_abstractor_rules_form'  do
+      .abstractor_search
+        = label_tag :search, 'Search'
+        = text_field_tag :search, (params[:search].nil? ? '' : params[:search]), type: 'search'
+      .abstractor_navigation
+        %button{ type: 'submit', id: 'search_abstractor_rules_button', class: 'tiny' }
+          Search
+        = link_to 'Clear', abstractor_rules_path
+
+  .abstractor_rules_list
+    = will_paginate @abstractor_rules
+    %table
+      %thead
+        %tr
+          %th
+            Name
+          %th
+            Abstractor subjects
+          %th{colspan: 2}
+      %tbody
+        - @abstractor_rules.each do |abstractor_rule|
+          = content_tag_for(:tr, abstractor_rule) do
+            %td.abstractor_rule_name
+              %smaller
+                = abstractor_rule.name
+            %td.abstractor_rule_abstractor_subjects
+              = abstractor_rule.abstractor_rule_abstractor_subjects.not_deleted.map{|as| "#{as.abstractor_subject.abstractor_abstraction_schema.display_name} (#{as.abstractor_subject.subject_type})"}.join(', ').html_safe
+            %td.abstractor_rule_edit
+              = link_to 'Edit', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_rule_path(abstractor_rule)), class: 'edit_abstractor_rule_link'
+            %td.abstractor_rule_delete
+              = link_to 'Delete', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_rule_path(abstractor_rule)), method: :delete, class: 'delete_abstractor_rule_link', data: { confirm: 'Are you sure?' }
+    = will_paginate @abstractor_rules
+    = link_to 'New', Abstractor::UserInterface.abstractor_relative_path(abstractor.new_abstractor_rule_path), class: 'new_abstractor_rule_link'
