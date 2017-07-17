@@ -41,7 +41,7 @@
                                 = hashed_sentence = sentence[:sentence].hash
                             - sentence[:match_values].each do |match_value|
                               .match_value
-                                = ERB::Util.html_escape(match_value.gsub(/(?:\n\r?|\r\n?)/, ' '))
+                                = ERB::Util.html_escape(match_value.strip)
                 - abstractor_suggestion.abstractor_suggestion_sources.custom.each do |abstractor_suggestion_source|
                   .custom_explanation
                     %label
@@ -56,7 +56,7 @@
             %span{ class: 'abstractor_abstraction_source_tooltip_img', rel: "#abstraction_text_#{dom_id}", title: "#{source[:source_type].to_s} #{source[:source_method]} #{source[:section_name]}"}
               %i{ id: "abstraction_text_link_#{dom_id}" }
             %div{ id: "abstraction_text_#{dom_id}", class: 'tooltip'}
-              = simple_format(abstractor_text)
+              = format_text(abstractor_text)
       .abstractor_abstraction_value
         .clear
         .links

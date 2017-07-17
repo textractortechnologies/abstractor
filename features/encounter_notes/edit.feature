@@ -99,6 +99,11 @@ Feature: Editing encounter note
     And I press "Save"
     And I go to the last encounter note edit page
     Then the "60" checkbox within ".has_karnofsky_performance_status" should be checked
+    When I follow "Edit" within ".has_karnofsky_performance_status"
+    And I wait for the ajax request to finish
+    And I follow "Cancel" within ".has_karnofsky_performance_status"
+    And I wait for the ajax request to finish
+    Then the "60" checkbox within ".has_karnofsky_performance_status" should be checked
 
   @javascript
   Scenario: Viewing source for suggestion with source and match value
@@ -108,9 +113,9 @@ Feature: Editing encounter note
       |The patient is looking good.  KPS: 100|
     And I go to the last encounter note edit page
     And I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
-    Then I should see an ".highlight" element
+    Then I should see an "[style*='background-color: yellow;']" element
     When I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
-    Then I should not see an ".highlight" element
+    Then I should not see an "[style*='background-color: yellow;']" element
     When I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
     And ".abstractor_source_tab label" should contain text "Encounter Note: Note text"
     And ".abstractor_source_tab_content" should contain text "The patient is looking good.  KPS: 100"
@@ -124,7 +129,7 @@ Feature: Editing encounter note
       |The patient is looking good & fit. Much > than I would have thought.  KPS: 100|
     And I go to the last encounter note edit page
     And I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
-    Then I should see an ".highlight" element
+    Then I should see an "[style*='background-color: yellow;']" element
     And ".abstractor_source_tab label" should contain text "Encounter Note: Note text"
     And ".abstractor_source_tab_content" should contain text "The patient is looking good & fit. Much > than I would have thought.  KPS: 100"
     And ".abstractor_source_tab_content" should equal highlighted text "KPS: 100"
@@ -259,9 +264,9 @@ Feature: Editing encounter note
       | Little my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\nLittle my says hi!\n The patient is looking good.  KPS: 100|
     And I go to the last encounter note edit page
     And I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
-    Then I should see an ".highlight" element
+    Then I should see an "[style*='background-color: yellow;']" element
     When I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
-    Then I should not see an ".highlight" element
+    Then I should not see an "[style*='background-color: yellow;']" element
     When I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
     And ".abstractor_source_tab label" should contain text "Encounter Note: Note text"
     And ".abstractor_source_tab_content" should contain text "The patient is looking good.  KPS: 100"

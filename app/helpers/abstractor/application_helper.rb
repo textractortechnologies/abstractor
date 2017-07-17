@@ -11,5 +11,13 @@ module Abstractor
         end
       end
     end
+
+    def format_text(text, html_options = {}, options = {})
+      wrapper_tag = options.fetch(:wrapper_tag, :p)
+
+      text = sanitize(text) if options.fetch(:sanitize, true)
+      formatted_text = text.to_str.gsub(/\r\n?/, "\n").gsub(/\n/, '\1<br />')
+      content_tag(wrapper_tag, raw(formatted_text), html_options)
+    end
   end
 end

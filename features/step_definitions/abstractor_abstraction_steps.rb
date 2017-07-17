@@ -1,7 +1,7 @@
 Then /^"([^\"]*)"(?: in the(?: (first|last)?) "([^\"]*)")? should(?: (not))? equal highlighted text "([^\"]*)"$/ do |selector, position, scope_selector, negation, value|
   within_scope(get_scope(position, scope_selector)) {
     all(selector).should_not be_empty
-    elements_selector = "#{selector} span.highlight"
+    elements_selector = "#{selector} [style*='background-color: yellow;']"
     match = false
     all(elements_selector, :visible => true).each do |e|
       match = true if e.text == value

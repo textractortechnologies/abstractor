@@ -84,6 +84,7 @@
    end
 
    it "knows if it has a 'submitted' workflow_status", focus: false do
+     @abstractor_abstraction.value = 'moomin'
      @abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
      @abstractor_abstraction.save!
      expect(@abstractor_abstraction.submitted?).to be_truthy
@@ -122,6 +123,9 @@
    end
 
    it 'updates the workflow status of abstractions', focus: false do
+     @abstractor_abstraction.value = 'moomin'
+     @abstractor_abstraction_2.value = 'moomin'
+     @abstractor_abstraction_3.value = 'moomin'
      expect(@abstractor_abstraction.workflow_status).to be_nil
      expect(@abstractor_abstraction_2.workflow_status).to be_nil
      expect(@abstractor_abstraction_3.workflow_status).to be_nil
@@ -132,5 +136,44 @@
      expect(@abstractor_abstraction.reload.workflow_status_whodunnit).to eq('moomin')
      expect(@abstractor_abstraction_2.reload.workflow_status_whodunnit).to eq('moomin')
      expect(@abstractor_abstraction_3.reload.workflow_status_whodunnit).to be_nil
+   end
+
+   it "validates if it is blank and has a workflowstatus of submitted", focus: false do
+     @abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+     @abstractor_abstraction.valid?
+     expect(@abstractor_abstraction.errors.full_messages).to match_array(["Workflow status can't have a workflow status of submitted and be blank."])
+   end
+
+   it "validates if it is blank and has a workflowstatus of pending", focus: false do
+     @abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_PENDING
+     @abstractor_abstraction.valid?
+     expect(@abstractor_abstraction.errors.full_messages).to be_empty
+   end
+
+   it "validates if it is blank and has a workflowstatus of discarded", focus: false do
+     @abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_DISCARDED
+     @abstractor_abstraction.valid?
+     expect(@abstractor_abstraction.errors.full_messages).to be_empty
+   end
+
+   it "validates if it is not blank and has a workflowstatus of submitted", focus: false do
+     @abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+     @abstractor_abstraction.value = 'moomin'
+     @abstractor_abstraction.valid?
+     expect(@abstractor_abstraction.errors.full_messages).to be_empty
+
+     @abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+     @abstractor_abstraction.value = nil
+     @abstractor_abstraction.unknown = true
+     @abstractor_abstraction.not_applicable = nil
+     @abstractor_abstraction.valid?
+     expect(@abstractor_abstraction.errors.full_messages).to be_empty
+
+     @abstractor_abstraction.workflow_status = Abstractor::Enum::ABSTRACTION_WORKFLOW_STATUS_SUBMITTED
+     @abstractor_abstraction.value = nil
+     @abstractor_abstraction.unknown = nil
+     @abstractor_abstraction.not_applicable = false
+     @abstractor_abstraction.valid?
+     expect(@abstractor_abstraction.errors.full_messages).to be_empty
    end
  end

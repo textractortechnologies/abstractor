@@ -16,7 +16,7 @@ module Abstractor
         end
 
         def edit
-          @abstractor_abstraction.clear!
+          @abstractor_abstraction.clear
           respond_to do |format|
             format.html { render :layout => false }
           end

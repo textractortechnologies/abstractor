@@ -32,8 +32,159 @@ toggleGroupWorkflowStatus = (abstractor_abstraction_group) ->
     $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').addClass('abstractor_group_update_workflow_status_link_disabled')
     $(abstractor_abstraction_group).find('.abstractor_group_update_workflow_status_link').prop('disabled', true)
 
+# based on https://stackoverflow.com/questions/6240139/highlight-text-range-using-javascript
+# https://stackoverflow.com/questions/21441524/remove-added-highlight-from-dom
+# https://stackoverflow.com/questions/14028773/javascript-execcommandremoveformat-doesnt-strip-h2-tag
+
+getTextNodesIn = (node) ->
+  textNodes = []
+  if node.nodeType == 3
+    textNodes.push node
+  else
+    children = node.childNodes
+    i = 0
+    len = children.length
+    while i < len
+      textNodes.push.apply textNodes, getTextNodesIn(children[i])
+      ++i
+  textNodes
+
+setSelectionRange = (el, start, end) ->
+  if document.createRange and window.getSelection
+    range = document.createRange()
+    range.selectNodeContents el
+    textNodes = getTextNodesIn(el)
+    foundStart = false
+    charCount = 0
+    endCharCount = undefined
+    i = 0
+    textNode = undefined
+    while textNode = textNodes[i++]
+      endCharCount = charCount + textNode.length
+      if !foundStart and start >= charCount and (start < endCharCount or start == endCharCount and i <= textNodes.length)
+        range.setStart textNode, start - charCount
+        foundStart = true
+      if foundStart and end <= endCharCount
+        range.setEnd textNode, end - charCount
+        break
+      charCount = endCharCount
+    sel = window.getSelection()
+    sel.removeAllRanges()
+    sel.addRange range
+  else if document.selection and document.body.createTextRange
+    textRange = document.body.createTextRange()
+    textRange.moveToElementText el
+    textRange.collapse true
+    textRange.moveEnd 'character', end
+    textRange.moveStart 'character', start
+    textRange.select()
+  return
+
+## Serializes and returns the specified range
+# (ignoring it if its length is zero)
+##
+serializeRange = (range) ->
+  if !range or range.startContainer == range.endContainer and range.startOffset == range.endOffset then null else
+    startContainer: range.startContainer
+    startOffset: range.startOffset
+    endContainer: range.endContainer
+    endOffset: range.endOffset
+
+### Restores the specified serialized version
+# (removing any ranges currently seleted)
+###
+restoreRange = (serialized) ->
+  range = document.createRange()
+  range.setStart serialized.startContainer, serialized.startOffset
+  range.setEnd serialized.endContainer, serialized.endOffset
+  sel = window.getSelection()
+  sel.removeAllRanges()
+  sel.addRange range
+  return
+
+makeEditableAndHighlight = (colour) ->
+  sel = window.getSelection()
+  if sel.rangeCount and sel.getRangeAt
+    range = sel.getRangeAt(0)
+
+  ua = window.navigator.userAgent;
+  msie = ua.indexOf("MSIE ");
+  is_ie = (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))
+
+  if is_ie # If Internet Explorer
+    range.commonAncestorContainer.contentEditable = true
+  else # If another browser
+    document.designMode = 'on'
+
+  if range
+    sel.removeAllRanges()
+    sel.addRange range
+      # Use HiliteColor since some browsers apply BackColor to the whole block
+
+  if !document.execCommand 'HiliteColor', false, colour
+    document.execCommand 'BackColor', false, colour
+  # it is important to serialize the range *after* hiliting,
+  # because `execCommand` will change the DOM affecting the
+  # range's start-/endContainer and offsets.
+  serializedRange = serializeRange(sel.getRangeAt(0))
+  sel.removeAllRanges()
+
+  if is_ie  # If Internet Explorer
+    range.commonAncestorContainer.contentEditable = false
+  else  # If another browser
+    document.designMode = 'off'
+
+  return serializedRange
+
+removeHihighlightFromRanges = (serializedRanges) ->
+  ua = window.navigator.userAgent;
+  msie = ua.indexOf("MSIE ");
+  is_ie = (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))
+
+  for serializedRange in serializedRanges
+    if is_ie # If Internet Explorer
+      range.commonAncestorContainer.contentEditable = true
+    else # If another browser
+      document.designMode = 'on'
+
+    restoreRange serializedRange
+    serializedRange = null
+    sel = window.getSelection()
+    range = sel.getRangeAt(0)
+    if !document.execCommand 'HiliteColor', false, '#fff'
+      document.execCommand 'BackColor', false, '#fff'
+    sel.removeAllRanges()
+
+    if is_ie  # If Internet Explorer
+      range.commonAncestorContainer.contentEditable = false
+    else  # If another browser
+      document.designMode = 'off'
+  return
+
+highlightWithColor = (colour) ->
+  range           = undefined
+  serializedRange = undefined
+  if window.getSelection
+    # IE9 and non-IE
+    serializedRange = makeEditableAndHighlight colour
+  else if document.selection and document.selection.createRange
+    # IE <= 8 case
+    range = document.selection.createRange()
+    range.execCommand 'BackColor', false, colour
+    serializedRange = serializeRange(range)
+  return serializedRange
+
+highlightRange = (el, start, end) ->
+  setSelectionRange el, start, end
+  serializedRange = highlightWithColor 'yellow'
+  return serializedRange
+
+
+#-------------------------------------------------------------------------------------------
+
 Abstractor = {}
 Abstractor.AbstractionUI = ->
+  highlightedRanges = []
   $(document).on "click", ".abstractor_abstraction .clear_link", (e) ->
     e.preventDefault()
     that = this
@@ -46,7 +197,6 @@ Abstractor.AbstractionUI = ->
         $(that).closest(".abstractor_abstraction").html(data)
         toggleGroupWorkflowStatus(abstractor_abstraction_group)
         toggleWorkflowStatus()
-
         return
     return false
 
@@ -66,6 +216,9 @@ Abstractor.AbstractionUI = ->
 
   $(document).on "click", ".abstractor_abstraction_value a.edit_link", (e) ->
     e.preventDefault()
+    $('.abstractor_update_workflow_status_link').removeClass('abstractor_update_workflow_status_link_enabled')
+    $('.abstractor_update_workflow_status_link').addClass('abstractor_update_workflow_status_link_disabled')
+    $('.abstractor_update_workflow_status_link').prop('disabled', true)
     abstractor_abstraction_group = $(this).closest('.abstractor_abstraction_group')
     parent_div = $(this).closest(".abstractor_abstraction")
     parent_div.load $(this).attr("href"), ->
@@ -128,7 +281,8 @@ Abstractor.AbstractionUI = ->
     if tab.length == 1
       tab = $(tab).html().trim()
       $('#' + tab + ' input[type=radio]').prop('checked', true)
-      $('#' + tab + ' .abstractor_source_tab_content').unhighlight()
+      removeHihighlightFromRanges(highlightedRanges)
+      highlightedRanges = []
       if $(this).hasClass('highlighted_suggestion')
         highlight = false
         $(this).removeClass('highlighted_suggestion')
@@ -141,16 +295,21 @@ Abstractor.AbstractionUI = ->
         hashed_sentence = $(this).find('.sentence_match_value .hashed_sentence').html().trim()
         if highlight
           $(this).find('.match_value').each (index) ->
-            match_value = $(this).html().trim()
-            $('#' + tab + " .abstractor_source_tab_content ." + hashed_sentence).highlight(match_value)
-            $('.abstractor_source_tab_content').scrollTo($('.abstractor_highlight .highlight'))
-            return
+            # replace empty spaces with regex matcher and match to the text
+            text_element  = $('#' + tab + " .abstractor_source_tab_content ." + hashed_sentence)
+            if text_element.length
+              match_value   = $(this).html().trim().replace(/[-[\]{}()*+?.,\\^$|#]/g, "\\$&").replace(/\s+/, "\\s*")
+              regex         = new RegExp(match_value, 'gi')
+              while (match = regex.exec(text_element.get(0).textContent)) != null
+                highlightedRanges.push(highlightRange(text_element.get(0), match.index, match.index + match[0].length))
+              return
+          if highlightedRanges.length
+            $('.abstractor_source_tab_content').scrollTo($(highlightedRanges[0].endContainer.parentNode))
         else
-          $(this).find('.match_value').each (index) ->
-            match_value = $(this).html().trim()
-            $('#' + tab + " .abstractor_source_tab_content .abstractor_highlight:regex('" + sentence_match_value + "')").unhighlight(match_value)
-            return
+          removeHihighlightFromRanges(highlightedRanges)
+          highlightedRanges = []
         return
+
     return
 
   $(document).on "change", "select.indirect_source_list", ->
@@ -161,7 +320,8 @@ Abstractor.AbstractionUI = ->
     return
 
   $(document).on "click", '.abstractor_update_workflow_status_link', (e) ->
-    if !allAnswered()
+    abstractionWorkflowStatus = $(".abstraction_workflow_status_form input[name='abstraction_workflow_status']").val()
+    if !allAnswered() && abstractionWorkflowStatus != 'pending'
       toggleWorkflowStatus()
       alert('Validation Error: please set a value for all data points before submission.')
       e.preventDefault()

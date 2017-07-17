@@ -285,7 +285,7 @@ Then /^I should see an? "([^"]*)" element$/ do |selector|
 end
 
 Then /^I should not see an? "([^"]*)" element$/ do |selector|
-  page.evaluate_script("$('#{selector}');").should be_empty
+  page.evaluate_script("$(\"#{selector}\");").should be_empty
 end
 
 Then /^the element "([^\"]*)"(?: in the(?: (first|last)?) "([^\"]*)")? should(?: (not))? be visible$/ do |selector, position, scope_selector, negation|
@@ -463,6 +463,12 @@ Given(/^workflow status is enabled on the "(.*?)"  with "(.*?)" as the submit la
   abstractor_subject_group.enable_workflow_status = true
   abstractor_subject_group.workflow_status_submit = submit_label
   abstractor_subject_group.workflow_status_pend = pend_label
+  abstractor_subject_group.save!
+end
+
+Given(/^workflow status is not enabled on the "(.*?)"$/) do |abstractor_subject_group_name|
+  abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: abstractor_subject_group_name).first
+  abstractor_subject_group.enable_workflow_status = false
   abstractor_subject_group.save!
 end
 
