@@ -144,7 +144,7 @@ removeHihighlightFromRanges = (serializedRanges) ->
   for serializedRange in serializedRanges
     if !is_ie # If not IE
       document.designMode = 'on'
-      
+
     restoreRange serializedRange
     serializedRange = null
     sel = window.getSelection()
@@ -152,7 +152,7 @@ removeHihighlightFromRanges = (serializedRanges) ->
 
     if is_ie # If Internet Explorer
       range.commonAncestorContainer.contentEditable = true
-    
+
     if !document.execCommand 'HiliteColor', false, '#fff'
       document.execCommand 'BackColor', false, '#fff'
     sel.removeAllRanges()
@@ -298,9 +298,11 @@ Abstractor.AbstractionUI = ->
         if highlight
           $(this).find('.match_value').each (index) ->
             # replace empty spaces with regex matcher and match to the text
-            text_element  = $('#' + tab + " .abstractor_source_tab_content ." + hashed_sentence)
-            if text_element.length
-              match_value   = $(this).html().trim().replace(/[-[\]{}()*+?.,\\^$|#]/g, "\\$&").replace(/\s+/, "\\s*")
+            that = this
+            text_elements  = $('#' + tab + " .abstractor_source_tab_content ." + hashed_sentence)
+            text_elements.each (index) ->
+              text_element = $(this)
+              match_value   = $(that).html().trim().replace(/[-[\]{}()*+?.,\\^$|#]/g, "\\$&").replace(/\s+/, "\\s*")
               regex         = new RegExp(match_value, 'gi')
               while (match = regex.exec(text_element.get(0).textContent)) != null
                 highlightedRanges.push(highlightRange(text_element.get(0), match.index, match.index + match[0].length))
