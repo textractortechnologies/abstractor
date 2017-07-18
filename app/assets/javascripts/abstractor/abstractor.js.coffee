@@ -142,15 +142,16 @@ removeHihighlightFromRanges = (serializedRanges) ->
   is_ie = (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))
 
   for serializedRange in serializedRanges
-    if is_ie # If Internet Explorer
-      range.commonAncestorContainer.contentEditable = true
-    else # If another browser
-      document.designMode = 'on'
-
     restoreRange serializedRange
     serializedRange = null
     sel = window.getSelection()
     range = sel.getRangeAt(0)
+    
+    if is_ie # If Internet Explorer
+      range.commonAncestorContainer.contentEditable = true
+    else # If another browser
+      document.designMode = 'on'
+    
     if !document.execCommand 'HiliteColor', false, '#fff'
       document.execCommand 'BackColor', false, '#fff'
     sel.removeAllRanges()
