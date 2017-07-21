@@ -302,7 +302,7 @@ Abstractor.AbstractionUI = ->
             text_elements  = $('#' + tab + " .abstractor_source_tab_content ." + hashed_sentence)
             text_elements.each (index) ->
               text_element = $(this)
-              match_value   = $(that).html().trim().replace(/[-[\]{}()*+?.,\\^$|#]/g, "\\$&").replace(/\s+/, "\\s*")
+              match_value   = $(that).html().trim().replace(/[-[\]{}()*+?.,\\^$|#]/g, "\\$&").replace(/\s+/g, "\\s*")
               regex         = new RegExp(match_value, 'gi')
               while (match = regex.exec(text_element.get(0).textContent)) != null
                 highlightedRanges.push(highlightRange(text_element.get(0), match.index, match.index + match[0].length))
