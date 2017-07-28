@@ -1,0 +1,23 @@
+#abstractor_settings
+  .abstractor_settings_header
+    %h2
+      %b
+        Abstractor settings
+  .abstractor_settings_list
+    %table
+      %thead
+        %tr
+          %th
+            Name
+          %th
+      %tbody
+        %tr
+          %td.abstractor_setting
+            Dictionaries
+          %td.abstractor_setting_edit
+            = link_to 'Edit', abstractor_abstraction_schemas_path, class: 'edit_abstractor_setting_link'
+        %tr
+          %td.abstractor_setting
+            Rules
+          %td.abstractor_setting_edit
+            = link_to 'Edit', abstractor_rules_path, class: 'edit_abstractor_setting_link'
