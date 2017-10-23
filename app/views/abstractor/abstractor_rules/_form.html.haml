@@ -16,6 +16,12 @@
       - if validation_errors?(@abstractor_rule, :name)
         %p.error
           = format_validation_errors(@abstractor_rule, :name)
+    .value
+      = f.label :description
+      = f.text_area :description
+      - if validation_errors?(@abstractor_rule, :description)
+        %p.error
+          = format_validation_errors(@abstractor_rule, :description)
     .value.abstractor_rule_abstractor_subject
       = f.label :abstractor_subjects_not_deleted_ids, 'Abstraction subjects'
       = f.grouped_collection_select :abstractor_subjects_not_deleted_ids, Abstractor::AbstractorAbstractionSchema.joins(:abstractor_subjects).not_deleted, :abstractor_subjects_not_deleted, :display_name, :id, :subject_type, {}, { multiple: true }

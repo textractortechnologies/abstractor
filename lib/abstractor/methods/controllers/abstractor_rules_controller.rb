@@ -60,6 +60,7 @@ module Abstractor
           def abstractor_rule_params
             params.require(:abstractor_rule).permit(
               :name,
+              :description,
               :rule,
               abstractor_subjects_not_deleted_ids: []
             )
