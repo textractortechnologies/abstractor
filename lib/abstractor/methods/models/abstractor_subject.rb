@@ -14,6 +14,8 @@ module Abstractor
 
           base.send :has_many, :abstractor_abstractions
           base.send :has_many, :abstractor_abstraction_sources
+          base.send :has_many, :abstractor_rule_abstractor_subjects,  inverse_of: :abstractor_subject
+          base.send :has_many, :abstractor_rule,                      inverse_of: :abstractor_subject
 
           base.send :has_many, :object_relations,   :class_name => "Abstractor::AbstractorSubjectRelation", :foreign_key => "object_id"
           base.send :has_many, :subject_relations,  :class_name => "Abstractor::AbstractorSubjectRelation", :foreign_key => "subject_id"
@@ -417,6 +419,10 @@ module Abstractor
 
           def groupable?
             !abstractor_subject_group_member.nil?
+          end
+
+          def abstractor_abstraction_schema_name
+            abstractor_abstraction_schema.display_name
           end
 
           private

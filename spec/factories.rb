@@ -83,5 +83,6 @@ FactoryGirl.define do
   end
 
   factory :abstractor_rule, :class => Abstractor::AbstractorRule do
+    name 'The one to rule them all'
   end
 end

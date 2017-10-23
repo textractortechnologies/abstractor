@@ -19,7 +19,8 @@ describe Abstractor::AbstractorRulesController, :type => :request do
     @abstractor_abstraction_schema_2.abstractor_subjects << @abstractor_subject_2
 
     @rule = 'foo rule'
-    @abstractor_rule_1 = FactoryGirl.create(:abstractor_rule, rule: @rule)
+    @rule_name = 'foo rule name'
+    @abstractor_rule_1 = FactoryGirl.build(:abstractor_rule, rule: @rule, name: @rule_name)
     @abstractor_rule_1.abstractor_rule_abstractor_subjects.build(abstractor_subject: @abstractor_subject_1)
     @abstractor_rule_1.abstractor_rule_abstractor_subjects.build(abstractor_subject: @abstractor_subject_2)
     @abstractor_rule_1.save!

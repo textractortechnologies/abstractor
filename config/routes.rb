@@ -24,4 +24,6 @@ Abstractor::Engine.routes.draw do
 
   resources :abstractor_rules do
   end
+
+  get '/abstractor_settings', controller: 'abstractor_settings', action: :index
 end

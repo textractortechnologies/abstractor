@@ -32,6 +32,10 @@ module NavigationHelpers
       Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_schema_abstractor_object_values_path(abstraction_schema))
     when /the abstraction schemas index page/
       Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_schemas_path)
+    when /the abstractor rules index page/
+      Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_rules_path)
+     when /the last abstractor rule edit page/
+      Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_rule_path(Abstractor::AbstractorRule.last))
     else
       if path = match_rails_path_for(page_name)
         path

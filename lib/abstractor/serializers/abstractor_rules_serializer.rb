@@ -14,11 +14,13 @@ module Abstractor
           ar['rule'] = abstractor_rule.rule
           ar['abstractor_abstraction_schemas'] = []
           abstractor_rule.abstractor_rule_abstractor_subjects.each do |abstractor_rule_abstractor_subject|
+            abstractor_subject                                = abstractor_rule_abstractor_subject.abstractor_subject
+            abstractor_subject_abstractor_abstraction_schema  = abstractor_subject.abstractor_abstraction_schema
             abstractor_abstraction_schema = {
-              'predicate' => abstractor_rule_abstractor_subject.abstractor_subject.abstractor_abstraction_schema.predicate,
-              'display_name' => abstractor_rule_abstractor_subject.abstractor_subject.abstractor_abstraction_schema.display_name,
-              'abstractor_abstraction_schema_id' => abstractor_rule_abstractor_subject.abstractor_subject.abstractor_abstraction_schema.id,
-              'abstractor_subject_id' => abstractor_rule_abstractor_subject.abstractor_subject.abstractor_abstraction_schema.id
+              'predicate'                         => abstractor_subject_abstractor_abstraction_schema.predicate,
+              'display_name'                      => abstractor_subject_abstractor_abstraction_schema.display_name,
+              'abstractor_abstraction_schema_id'  => abstractor_subject_abstractor_abstraction_schema.id,
+              'abstractor_subject_id'             => abstractor_subject.id
             }
             ar['abstractor_abstraction_schemas'] << abstractor_abstraction_schema
           end
